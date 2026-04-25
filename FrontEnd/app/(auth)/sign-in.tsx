@@ -136,7 +136,7 @@ export default function Page() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Sign in</Text>
+      <Text style={styles.title}>Welcome Back</Text>
 
       <Text style={styles.label}>Email address</Text>
       <TextInput
@@ -180,12 +180,12 @@ export default function Page() {
         <Text style={styles.debug}>{JSON.stringify(errors, null, 2)}</Text>
       )}
 
-      <View style={styles.linkContainer}>
-        <Text>Do not have an account? </Text>
-        <Link href="/(auth)/sign-up">
-          <Text>Sign up</Text>
-        </Link>
-      </View>
+<View style={styles.linkContainer}>
+  <Text style={styles.linkText}>Do not have an account? </Text>
+  <Link href="/(auth)/sign-up">
+    <Text style={styles.linkAccent}>Sign up</Text>
+  </Link>
+</View>
     </View>
   );
 }
@@ -193,65 +193,95 @@ export default function Page() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    backgroundColor: "#0f172a",
+    paddingHorizontal: 24,
+    justifyContent: "center",
     gap: 12,
   },
+
   title: {
-    marginBottom: 8,
+    color: "#ffffff",
+    fontSize: 34,
+    fontWeight: "800",
+    marginBottom: 20,
+	textAlign: 'center'
   },
+
   label: {
-    fontWeight: "600",
+    color: "#cbd5e1",
     fontSize: 14,
+    fontWeight: "600",
   },
+
   input: {
+    backgroundColor: "#1e293b",
     borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    padding: 12,
+    borderColor: "#334155",
+    borderRadius: 16,
+    paddingVertical: 15,
+    paddingHorizontal: 16,
     fontSize: 16,
-    backgroundColor: "#fff",
+    color: "#ffffff",
   },
+
   button: {
-    backgroundColor: "#0a7ea4",
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 8,
+    backgroundColor: "#ff7a00",
+    paddingVertical: 16,
+    borderRadius: 16,
     alignItems: "center",
-    marginTop: 8,
+    marginTop: 12,
   },
+
   buttonPressed: {
-    opacity: 0.7,
+    opacity: 0.75,
   },
+
   buttonDisabled: {
     opacity: 0.5,
   },
+
   buttonText: {
-    color: "#fff",
-    fontWeight: "600",
+    color: "#ffffff",
+    fontSize: 16,
+    fontWeight: "700",
   },
+
   secondaryButton: {
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 8,
+    paddingVertical: 14,
     alignItems: "center",
-    marginTop: 8,
   },
+
   secondaryButtonText: {
-    color: "#0a7ea4",
+    color: "#ffb86b",
+    fontSize: 15,
     fontWeight: "600",
   },
+
   linkContainer: {
     flexDirection: "row",
+    justifyContent: "center",
     gap: 4,
-    marginTop: 12,
+    marginTop: 16,
     alignItems: "center",
   },
-  error: {
-    color: "#d32f2f",
-    fontSize: 12,
-    marginTop: -8,
+
+  linkText: {
+    color: "#cbd5e1",
   },
+
+  linkAccent: {
+    color: "#ff7a00",
+    fontWeight: "700",
+  },
+
+  error: {
+    color: "#fb7185",
+    fontSize: 12,
+    marginTop: -6,
+  },
+
   debug: {
+    color: "#94a3b8",
     fontSize: 10,
     opacity: 0.5,
     marginTop: 8,

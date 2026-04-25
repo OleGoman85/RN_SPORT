@@ -145,12 +145,12 @@ export default function Page() {
       {/* For your debugging purposes. You can just console.log errors, but we put them in the UI for convenience */}
       {errors && <Text style={styles.debug}>{JSON.stringify(errors, null, 2)}</Text>}
 
-      <View style={styles.linkContainer}>
-        <Text>Already have an account? </Text>
-        <Link href="/sign-in">
-          <Text>Sign in</Text>
-        </Link>
-      </View>
+<View style={styles.linkContainer}>
+  <Text style={styles.linkText}>Already have an account? </Text>
+  <Link href="/(auth)/sign-in">
+    <Text style={styles.linkAccent}>Sign in</Text>
+  </Link>
+</View>
 
       {/* Required for sign-up flows. Clerk's bot sign-up protection is enabled by default */}
       <View nativeID="clerk-captcha" />
@@ -161,67 +161,96 @@ export default function Page() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    backgroundColor: "#0f172a",
+    paddingHorizontal: 24,
+    justifyContent: "center",
     gap: 12,
   },
+
   title: {
-    marginBottom: 8,
+    color: "#ffffff",
+    fontSize: 34,
+    fontWeight: "800",
+    marginBottom: 20,
   },
+
   label: {
-    fontWeight: '600',
+    color: "#cbd5e1",
     fontSize: 14,
+    fontWeight: "600",
   },
+
   input: {
+    backgroundColor: "#1e293b",
     borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    padding: 12,
+    borderColor: "#334155",
+    borderRadius: 16,
+    paddingVertical: 15,
+    paddingHorizontal: 16,
     fontSize: 16,
-    backgroundColor: '#fff',
+    color: "#ffffff",
   },
+
   button: {
-    backgroundColor: '#0a7ea4',
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 8,
+    backgroundColor: "#ff7a00",
+    paddingVertical: 16,
+    borderRadius: 16,
+    alignItems: "center",
+    marginTop: 12,
   },
+
   buttonPressed: {
-    opacity: 0.7,
+    opacity: 0.75,
   },
+
   buttonDisabled: {
     opacity: 0.5,
   },
+
   buttonText: {
-    color: '#fff',
-    fontWeight: '600',
+    color: "#ffffff",
+    fontSize: 16,
+    fontWeight: "700",
   },
+
   secondaryButton: {
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 8,
+    paddingVertical: 14,
+    alignItems: "center",
   },
+
   secondaryButtonText: {
-    color: '#0a7ea4',
-    fontWeight: '600',
+    color: "#ffb86b",
+    fontSize: 15,
+    fontWeight: "600",
   },
+
   linkContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
+    justifyContent: "center",
     gap: 4,
-    marginTop: 12,
-    alignItems: 'center',
+    marginTop: 16,
+    alignItems: "center",
   },
+
+  linkText: {
+    color: "#cbd5e1",
+  },
+
+  linkAccent: {
+    color: "#ff7a00",
+    fontWeight: "700",
+  },
+
   error: {
-    color: '#d32f2f',
+    color: "#fb7185",
     fontSize: 12,
-    marginTop: -8,
+    marginTop: -6,
   },
+
   debug: {
+    color: "#94a3b8",
     fontSize: 10,
     opacity: 0.5,
     marginTop: 8,
   },
-})
+});
