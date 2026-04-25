@@ -12,7 +12,7 @@ if (!publishableKey) {
 export default function RootLayout() {
   return (
     <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
-		<SafeAreaView style={{flex:1}} edges={["top"]}>
+		<SafeAreaView style={{ flex: 1, backgroundColor: "#0f172a" }} edges={["top"]}>
       		<Stack screenOptions={{headerShown: false}}/>
 		</SafeAreaView>
     </ClerkProvider>
