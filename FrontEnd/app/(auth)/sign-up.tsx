@@ -4,11 +4,13 @@ import React from "react";
 import {
   ImageBackground,
   Pressable,
-  StyleSheet,
   Text,
   TextInput,
   View,
 } from "react-native";
+import { colors } from "../constants/colors";
+import { styles } from "../styles/sign_up.styles";
+
 
 export default function Page() {
   const { signUp, errors, fetchStatus } = useSignUp();
@@ -83,7 +85,7 @@ export default function Page() {
               style={styles.input}
               value={code}
               placeholder="Enter your verification code"
-              placeholderTextColor="#94a3b8"
+              placeholderTextColor={colors.secondaryText}
               onChangeText={setCode}
               keyboardType="numeric"
             />
@@ -135,7 +137,7 @@ export default function Page() {
             autoCapitalize="none"
             value={emailAddress}
             placeholder="Enter email"
-            placeholderTextColor="#94a3b8"
+            placeholderTextColor={colors.secondaryText}
             onChangeText={setEmailAddress}
             keyboardType="email-address"
           />
@@ -149,7 +151,7 @@ export default function Page() {
             style={styles.input}
             value={password}
             placeholder="Enter password"
-            placeholderTextColor="#94a3b8"
+            placeholderTextColor={colors.secondaryText}
             secureTextEntry
             onChangeText={setPassword}
           />
@@ -188,113 +190,3 @@ export default function Page() {
     </ImageBackground>
   );
 }
-
-const styles = StyleSheet.create({
-  background: {
-    flex: 1,
-  },
-
-  overlay: {
-    flex: 1,
-    backgroundColor: "rgba(15, 23, 42, 0.72)",
-    justifyContent: "center",
-    paddingHorizontal: 24,
-  },
-
-  formCard: {
-    backgroundColor: "rgba(15, 23, 42, 0.88)",
-    borderRadius: 24,
-    padding: 22,
-    gap: 12,
-    borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.12)",
-  },
-
-  title: {
-    color: "#ffffff",
-    fontSize: 34,
-    fontWeight: "800",
-    marginBottom: 16,
-    textAlign: "center",
-  },
-
-  label: {
-    color: "#cbd5e1",
-    fontSize: 14,
-    fontWeight: "600",
-  },
-
-  input: {
-    backgroundColor: "rgba(30, 41, 59, 0.94)",
-    borderWidth: 1,
-    borderColor: "#334155",
-    borderRadius: 16,
-    paddingVertical: 15,
-    paddingHorizontal: 16,
-    fontSize: 16,
-    color: "#ffffff",
-  },
-
-  button: {
-    backgroundColor: "#ff7a00",
-    paddingVertical: 16,
-    borderRadius: 16,
-    alignItems: "center",
-    marginTop: 12,
-  },
-
-  buttonPressed: {
-    opacity: 0.75,
-  },
-
-  buttonDisabled: {
-    opacity: 0.5,
-  },
-
-  buttonText: {
-    color: "#ffffff",
-    fontSize: 16,
-    fontWeight: "700",
-  },
-
-  secondaryButton: {
-    paddingVertical: 14,
-    alignItems: "center",
-  },
-
-  secondaryButtonText: {
-    color: "#ffb86b",
-    fontSize: 15,
-    fontWeight: "600",
-  },
-
-  linkContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: 4,
-    marginTop: 16,
-    alignItems: "center",
-  },
-
-  linkText: {
-    color: "#cbd5e1",
-  },
-
-  linkAccent: {
-    color: "#ff7a00",
-    fontWeight: "700",
-  },
-
-  error: {
-    color: "#fb7185",
-    fontSize: 12,
-    marginTop: -6,
-  },
-
-  debug: {
-    color: "#94a3b8",
-    fontSize: 10,
-    opacity: 0.5,
-    marginTop: 8,
-  },
-});

@@ -1,37 +1,39 @@
-import express from 'express'
-import dotenv from 'dotenv'
-import { serverTests } from '../serverTests.js'
-import { initDB } from './config/db.js'
-import ratelimit from './middleware/rateLimiter'
-import sportRouters from './routes/sportRoutes'
+import express from "express";
+import dotenv from "dotenv";
+import { serverTests } from "../serverTests.js";
+import { initDB } from "./config/db.js";
+import ratelimit from "./middleware/rateLimiter";
+import sportRouters from "./routes/sportRoutes";
+import userRouters from "./routes/userRoutes";
 
-dotenv.config()
+dotenv.config();
 
-const app = express()
+const app = express();
 
-//middleware
-app.use(ratelimit)
-app.use(express.json())
+app.use(ratelimit);
+app.use(express.json());
 
-const PORT = process.env.PORT || 5001
+const PORT = process.env.PORT || 5001;
 
-app.get('/', (req, res) => {
-	res.send("it's working")
-})
+app.get("/", (req, res) => {
+  res.send("it's working");
+});
 
-app.use("/api/sports", sportRouters)
+app.use("/api/sports", sportRouters);
+app.use("/api/users", userRouters);
 
 async function startServer() {
-	await initDB()
+  await initDB();
 
-	const server = app.listen(PORT, () => {
-		console.log(`✅ Server is UP, and running on PORT: ${PORT}`)
-		console.log(`my port is: ${PORT}`)
-	})
-	serverTests(server)
+  const server = app.listen(PORT, () => {
+    console.log(`✅ Server is UP, and running on PORT: ${PORT}`);
+    console.log(`my port is: ${PORT}`);
+  });
+
+  serverTests(server);
 }
 
-startServer()
+startServer();
 
 
 // 🔥 Short summary
