@@ -16,6 +16,7 @@ export const styles = StyleSheet.create({
   content: {
 	padding: 16,
 	paddingBottom: 44,
+	flexGrow:1
   },
 
   topBlock: {

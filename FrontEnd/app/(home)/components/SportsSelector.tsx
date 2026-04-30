@@ -30,10 +30,7 @@ export function SportsSelector({
           return (
             <View
               key={sport.id}
-              style={[
-                styles.sportCard,
-                isSelected && styles.sportCardSelected,
-              ]}
+              style={[styles.sportCard, isSelected && styles.sportCardSelected]}
             >
               <Pressable
                 style={styles.sportHeader}

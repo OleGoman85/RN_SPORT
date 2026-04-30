@@ -4,14 +4,14 @@ import "dotenv/config";
 const databaseUrl = process.env.DATABASE_URL;
 
 if (!databaseUrl) {
-  throw new Error("DATABASE_URL is missing in .env");
+	throw new Error("DATABASE_URL is missing in .env");
 }
 
 export const sql = neon(databaseUrl);
 
 export async function initDB() {
-  try {
-    await sql`
+	try {
+		await sql`
       CREATE TABLE IF NOT EXISTS users (
         id SERIAL PRIMARY KEY,
         clerk_user_id TEXT UNIQUE NOT NULL,
@@ -32,7 +32,7 @@ export async function initDB() {
       )
     `;
 
-    await sql`
+		await sql`
       CREATE TABLE IF NOT EXISTS user_sports (
         id SERIAL PRIMARY KEY,
         user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -43,7 +43,7 @@ export async function initDB() {
       )
     `;
 
-    await sql`
+		await sql`
       CREATE TABLE IF NOT EXISTS user_languages (
         id SERIAL PRIMARY KEY,
         user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -53,9 +53,9 @@ export async function initDB() {
       )
     `;
 
-    console.log("Database initialized successfully");
-  } catch (error) {
-    console.log("Error initializing DB", error);
-    process.exit(1);
-  }
+		console.log("Database initialized successfully");
+	} catch (error) {
+		console.log("Error initializing DB", error);
+		process.exit(1);
+	}
 }

@@ -54,11 +54,9 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-
         <Text style={styles.headerTitle}>
           Life begins at the end of your comfort zone!
         </Text>
-
       </View>
 
       <View style={styles.searchContainer}>
