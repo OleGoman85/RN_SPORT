@@ -1,16 +1,16 @@
 import { useSignIn } from "@clerk/expo";
 import { type Href, Link, useRouter } from "expo-router";
-import React from "react";
+import React, { useState } from "react";
 import { Pressable, TextInput, View, Text } from "react-native";
-import { styles } from "../styles/sign_in.styles";
+import { styles } from "../../styles/sign_in.styles";
 
 export default function Page() {
   const { signIn, errors, fetchStatus } = useSignIn();
   const router = useRouter();
 
-  const [emailAddress, setEmailAddress] = React.useState("");
-  const [password, setPassword] = React.useState("");
-  const [code, setCode] = React.useState("");
+  const [emailAddress, setEmailAddress] = useState("");
+  const [password, setPassword] = useState("");
+  const [code, setCode] = useState("");
 
   const handleSubmit = async () => {
     const { error } = await signIn.password({

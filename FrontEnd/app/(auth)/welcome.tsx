@@ -1,6 +1,6 @@
 import { router } from "expo-router";
 import { ImageBackground, Pressable, Text, View } from "react-native";
-import { styles } from "../styles/welcome.styles";
+import { styles } from "../../styles/welcome.styles";
 
 export default function WelcomeScreen() {
   return (

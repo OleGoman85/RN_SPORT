@@ -5,4 +5,6 @@ export const colors = {
   primary: "#ff7a00",
   text: "#ffffff",
   secondaryText: "#94a3b8",
+  borderCol: "#334155",
+  timeBg: "#E6AD81"
 };

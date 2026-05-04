@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { colors } from "../constants/colors";
+import { colors } from "../app/constants/colors";
 
 
 export const styles = StyleSheet.create({
@@ -47,7 +47,7 @@ export const styles = StyleSheet.create({
 	height: 48,
 	backgroundColor: "rgba(30, 41, 59, 0.94)",
 	borderWidth: 1,
-	borderColor: "#334155",
+	borderColor: colors.borderCol,
 	borderRadius: 16,
 	paddingHorizontal: 16,
 	color: colors.primary,

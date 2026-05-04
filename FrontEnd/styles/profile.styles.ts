@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { colors } from "../constants/colors";
+import { colors } from "../app/constants/colors";
 
 
 export const styles = StyleSheet.create({
@@ -111,7 +111,7 @@ export const styles = StyleSheet.create({
 	width: "100%",
 	backgroundColor: "rgba(15, 23, 42, 0.94)",
 	borderWidth: 1,
-	borderColor: "#334155",
+	borderColor: colors.borderCol,
 	borderRadius: 16,
 	paddingVertical: 14,
 	paddingHorizontal: 14,
@@ -142,7 +142,7 @@ export const styles = StyleSheet.create({
 	flex: 1,
 	backgroundColor: "rgba(15, 23, 42, 0.94)",
 	borderWidth: 1,
-	borderColor: "#334155",
+	borderColor: colors.borderCol,
 	borderRadius: 14,
 	paddingVertical: 12,
 	alignItems: "center",
@@ -217,7 +217,7 @@ export const styles = StyleSheet.create({
   sportCard: {
 	backgroundColor: "rgba(15, 23, 42, 0.94)",
 	borderWidth: 1,
-	borderColor: "#334155",
+	borderColor: colors.borderCol,
 	borderRadius: 18,
 	overflow: "hidden",
   },
@@ -268,7 +268,7 @@ export const styles = StyleSheet.create({
 	borderRadius: 12,
 	backgroundColor: "rgba(30, 41, 59, 0.9)",
 	borderWidth: 1,
-	borderColor: "#334155",
+	borderColor: colors.borderCol,
 	alignItems: "center",
   },
 
@@ -296,7 +296,7 @@ export const styles = StyleSheet.create({
   languageButton: {
 	backgroundColor: "rgba(15, 23, 42, 0.94)",
 	borderWidth: 1,
-	borderColor: "#334155",
+	borderColor: colors.borderCol,
 	paddingVertical: 11,
 	paddingHorizontal: 16,
 	borderRadius: 14,

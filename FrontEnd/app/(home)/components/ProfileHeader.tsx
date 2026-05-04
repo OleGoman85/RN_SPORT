@@ -1,4 +1,4 @@
-import { styles } from "../../styles/profile.styles";
+import { styles } from "../../../styles/profile.styles";
 import { Text, View } from "react-native";
 
 

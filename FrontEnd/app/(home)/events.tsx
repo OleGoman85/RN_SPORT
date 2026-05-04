@@ -1,5 +1,5 @@
 import { Text, View } from "react-native";
-import { styles } from "../styles/events.styles";
+import { styles } from "../../styles/events.styles";
 
 export default function EventsScreen() {
   return (

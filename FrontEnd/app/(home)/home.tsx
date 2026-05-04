@@ -8,13 +8,16 @@ import {
   TextInput,
   View,
 } from "react-native";
+import { OpponentSearchModal } from "./components/opponent-search/OpponentSearchModal";
 import { sports, type Sport } from "./data/sports";
-import { styles } from "../styles/home.styles";
 import { colors } from "../constants/colors";
+import { styles } from "../../styles/home.styles";
 
 export default function HomeScreen() {
   const [searchText, setSearchText] = useState("");
   const [isAscending, setIsAscending] = useState(true);
+  const [selectedSportName, setSelectedSportName] = useState("");
+  const [isSearchModalVisible, setIsSearchModalVisible] = useState(false);
 
   const filteredSports = sports
     .filter((sport) =>
@@ -28,11 +31,20 @@ export default function HomeScreen() {
       return secondSport.name.localeCompare(firstSport.name);
     });
 
+  const handleOpenSearchModal = (sportName: string) => {
+    setSelectedSportName(sportName);
+    setIsSearchModalVisible(true);
+  };
+
+  const handleCloseSearchModal = () => {
+    setIsSearchModalVisible(false);
+  };
+
   const renderSportCard = ({ item }: { item: Sport }) => {
     return (
       <Pressable
         style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
-        onPress={() => console.log("Selected sport:", item.name)}
+        onPress={() => handleOpenSearchModal(item.name)}
       >
         <Image source={item.image} style={styles.cardImage} />
 
@@ -91,6 +103,12 @@ export default function HomeScreen() {
         columnWrapperStyle={styles.row}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
+      />
+
+      <OpponentSearchModal
+        visible={isSearchModalVisible}
+        sportName={selectedSportName}
+        onClose={handleCloseSearchModal}
       />
     </View>
   );

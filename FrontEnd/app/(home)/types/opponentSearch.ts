@@ -1,17 +1,22 @@
-export type SearchLocationMode = "near_me" | "city";
+import {
+	MatchType,
+	OpponentLanguage,
+	OpponentLevel,
+	OpponentSex,
+} from "../constants/opponentSearchOptions";
 
-export type MatchType = "Any" | "Casual" | "Training" | "Competitive";
+export type SearchLocationMode = "near_me" | "city";
 
 export type OpponentSearchFilters = {
 	sportName: string;
-	level: string;
-	languages: string[];
-	ageMin: string;
-	ageMax: string;
-	sex: string[];
-	date: string;
+	level: OpponentLevel;
+	languages: OpponentLanguage[];
+	ageMin: number;
+	ageMax: number;
+	dates: string[];
 	timeFrom: string;
 	timeTo: string;
+	sex: OpponentSex[];
 	locationMode: SearchLocationMode;
 	radiusKm: number;
 	city: string;

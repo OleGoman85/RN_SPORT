@@ -1,33 +1,21 @@
 import { StyleSheet } from "react-native";
-import { colors } from "../constants/colors";
+import { colors } from "../app/constants/colors";
 
 export const styles = StyleSheet.create({
-  background: {
+  container: {
 	flex: 1,
-  },
-
-  overlay: {
-	flex: 1,
-	backgroundColor: "rgba(15, 23, 42, 0.72)",
-	justifyContent: "center",
+	backgroundColor: colors.background,
 	paddingHorizontal: 24,
-  },
-
-  formCard: {
-	backgroundColor: "rgba(15, 23, 42, 0.88)",
-	borderRadius: 24,
-	padding: 22,
+	justifyContent: "center",
 	gap: 12,
-	borderWidth: 1,
-	borderColor: "rgba(255, 255, 255, 0.12)",
   },
 
   title: {
 	color: colors.text,
 	fontSize: 34,
 	fontWeight: "800",
-	marginBottom: 16,
-	textAlign: "center",
+	marginBottom: 20,
+	textAlign: 'center'
   },
 
   label: {
@@ -37,9 +25,9 @@ export const styles = StyleSheet.create({
   },
 
   input: {
-	backgroundColor: "rgba(30, 41, 59, 0.94)",
+	backgroundColor: "#1e293b",
 	borderWidth: 1,
-	borderColor: "#334155",
+	borderColor: colors.borderCol,
 	borderRadius: 16,
 	paddingVertical: 15,
 	paddingHorizontal: 16,

@@ -1,7 +1,7 @@
 import { Pressable, Text, TextInput, View } from "react-native";
 import { colors } from "../../constants/colors";
 import { AvatarPicker } from "./AvatarPicker";
-import { styles } from "../../styles/profile.styles";
+import { styles } from "../../../styles/profile.styles";
 import { sexOptions } from "../constants/profileOptions";
 
 type ProfileInfoCardProps = {

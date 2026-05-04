@@ -1,5 +1,5 @@
 import {Text, View } from "react-native";
-import { styles } from "../styles/chat.styles";
+import { styles } from "../../styles/chat.styles";
 
 export default function ChatScreen() {
   return (

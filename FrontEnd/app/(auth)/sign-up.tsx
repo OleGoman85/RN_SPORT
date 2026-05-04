@@ -1,6 +1,6 @@
 import { useAuth, useSignUp } from "@clerk/expo";
 import { type Href, Link, useRouter } from "expo-router";
-import React from "react";
+import React, { useState } from "react";
 import {
   ImageBackground,
   Pressable,
@@ -9,7 +9,8 @@ import {
   View,
 } from "react-native";
 import { colors } from "../constants/colors";
-import { styles } from "../styles/sign_up.styles";
+import { styles } from "../../styles/sign_up.styles";
+useState
 
 
 export default function Page() {
@@ -17,9 +18,9 @@ export default function Page() {
   const { isSignedIn } = useAuth();
   const router = useRouter();
 
-  const [emailAddress, setEmailAddress] = React.useState("");
-  const [password, setPassword] = React.useState("");
-  const [code, setCode] = React.useState("");
+  const [emailAddress, setEmailAddress] = useState("");
+  const [password, setPassword] = useState("");
+  const [code, setCode] = useState("");
 
   const handleSubmit = async () => {
     const { error } = await signUp.password({
