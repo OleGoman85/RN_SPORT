@@ -1,8 +1,8 @@
 import Slider from "@react-native-community/slider";
 import { Text, View } from "react-native";
-import { styles } from "../../../../styles/opponentSearch.styles";
+import { styles } from "../../styles/opponentSearch.styles";
 import { OpponentSection } from "./OpponentSection";
-import { colors } from "../../../constants/colors";
+import { colors } from "../../constants/colors";
 
 type AgeRangeSelectorProps = {
   ageMin: number;

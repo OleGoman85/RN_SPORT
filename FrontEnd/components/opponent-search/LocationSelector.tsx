@@ -1,8 +1,8 @@
 import { Text, TextInput, View } from "react-native";
 import { radiusOptions } from "../../constants/opponentSearchOptions";
 import { SearchLocationMode } from "../../types/opponentSearch";
-import { colors } from "../../../constants/colors";
-import { styles } from "../../../../styles/opponentSearch.styles";
+import { colors } from "../../constants/colors";
+import { styles } from "../../styles/opponentSearch.styles";
 import { OptionButton } from "./OptionButton";
 import { OpponentSection } from "./OpponentSection";
 

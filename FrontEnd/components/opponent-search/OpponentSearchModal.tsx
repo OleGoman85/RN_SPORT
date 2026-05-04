@@ -1,5 +1,5 @@
 import { Modal, Pressable, ScrollView, Text, View } from "react-native";
-import { styles } from "../../../../styles/opponentSearch.styles";
+import { styles } from "../../styles/opponentSearch.styles";
 import { useOpponentSearchForm } from "../../hooks/useOpponentSearchForm";
 import { AgeRangeSelector } from "./AgeRangeSelector";
 import { DateSelector } from "./DateSelector";

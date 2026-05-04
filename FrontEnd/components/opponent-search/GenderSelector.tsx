@@ -3,7 +3,7 @@ import {
   opponentSexOptions,
   OpponentSex,
 } from "../../constants/opponentSearchOptions";
-import { styles } from "../../../../styles/opponentSearch.styles";
+import { styles } from "../../styles/opponentSearch.styles";
 import { OptionButton } from "./OptionButton";
 import { OpponentSection } from "./OpponentSection";
 

@@ -2,11 +2,11 @@ import { useClerk } from "@clerk/expo";
 import React from "react";
 import { Pressable, Text } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { LanguagesSelector } from "./components/LanguagesSelector";
-import { ProfileHeader } from "./components/ProfileHeader";
-import { ProfileInfoCard } from "./components/ProfileInfoCard";
-import { SportsSelector } from "./components/SportsSelector";
-import { useProfileForm } from "./hooks/useProfileForm";
+import { LanguagesSelector } from "../../components/LanguagesSelector";
+import { ProfileHeader } from "../../components/ProfileHeader";
+import { ProfileInfoCard } from "../../components/ProfileInfoCard";
+import { SportsSelector } from "../../components/SportsSelector";
+import { useProfileForm } from "../../hooks/useProfileForm";
 import { styles } from "../../styles/profile.styles";
 
 export default function ProfileScreen() {

@@ -1,7 +1,7 @@
 import { Image, Pressable, Text, View } from "react-native";
 import { sports } from "../data/sports";
 import { sportLevels } from "../constants/profileOptions";
-import { styles } from "../../../styles/profile.styles";
+import { styles } from "../styles/profile.styles";
 
 type SportsSelectorProps = {
   getSportLevel: (sportName: string) => string | undefined;

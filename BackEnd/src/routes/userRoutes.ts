@@ -1,126 +1,126 @@
-import express from 'express'
-import { sql } from '../config/db'
+import express from "express";
+import { sql } from "../config/db";
 
-const router = express.Router()
+const router = express.Router();
 
-router.get('/:clerkUserId', async (req, res) => {
-	try {
-		const { clerkUserId } = req.params
+router.get("/:clerkUserId", async (req, res) => {
+  try {
+    const { clerkUserId } = req.params;
 
-		console.log('🔍 Getting user profile:', clerkUserId)
+    console.log("🔍 Getting user profile:", clerkUserId);
 
-		const users = await sql`
+    const users = await sql`
       SELECT *
       FROM users
       WHERE clerk_user_id = ${clerkUserId}
-    `
+    `;
 
-		if (users.length === 0) {
-			console.log('❌ User not found:', clerkUserId)
+    if (users.length === 0) {
+      console.log("❌ User not found:", clerkUserId);
 
-			return res.status(404).json({
-				message: 'User not found',
-			})
-		}
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
 
-		const userSports = await sql`
+    const userSports = await sql`
       SELECT sport_name, level
       FROM user_sports
       WHERE user_id = ${users[0].id}
       ORDER BY sport_name ASC
-    `
+    `;
 
-		const userLanguages = await sql`
+    const userLanguages = await sql`
       SELECT language
       FROM user_languages
       WHERE user_id = ${users[0].id}
       ORDER BY language ASC
-    `
+    `;
 
-		console.log('✅ User profile loaded:', {
-			user: users[0],
-			sports: userSports,
-			languages: userLanguages,
-		})
+    console.log("✅ User profile loaded:", {
+      user: users[0],
+      sports: userSports,
+      languages: userLanguages,
+    });
 
-		return res.status(200).json({
-			...users[0],
-			sports: userSports,
-			languages: userLanguages,
-		})
-	} catch (error) {
-		console.log('Error getting user', error)
+    return res.status(200).json({
+      ...users[0],
+      sports: userSports,
+      languages: userLanguages,
+    });
+  } catch (error) {
+    console.log("Error getting user", error);
 
-		return res.status(500).json({
-			message: 'Internal server error',
-		})
-	}
-})
+    return res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+});
 
-router.post('/', async (req, res) => {
-	try {
-		console.log('📥 Incoming user data:')
-		console.log(req.body)
+router.post("/", async (req, res) => {
+  try {
+    console.log("📥 Incoming user data:");
+    console.log(req.body);
 
-		const {
-			clerk_user_id,
-			email,
-			first_name,
-			last_name,
-			nickname,
-			about_me,
-			age,
-			sex,
-			country,
-			city,
-			avatar_url,
-			latitude,
-			longitude,
-			sports,
-			languages,
-		} = req.body
+    const {
+      clerk_user_id,
+      email,
+      first_name,
+      last_name,
+      nickname,
+      about_me,
+      age,
+      sex,
+      country,
+      city,
+      avatar_url,
+      latitude,
+      longitude,
+      sports,
+      languages,
+    } = req.body;
 
-		if (
-			!clerk_user_id ||
-			!email ||
-			!first_name ||
-			!last_name ||
-			!nickname ||
-			!about_me ||
-			!age ||
-			!sex ||
-			!country ||
-			!city ||
-			!avatar_url ||
-			!sports ||
-			!languages ||
-			!Array.isArray(sports) ||
-			!Array.isArray(languages) ||
-			sports.length === 0 ||
-			languages.length === 0
-		) {
-			console.log('❌ Validation failed:', {
-				clerk_user_id,
-				email,
-				first_name,
-				last_name,
-				nickname,
-				about_me,
-				age,
-				sex,
-				country,
-				city,
-				avatar_url,
-				sports,
-				languages,
-			})
+    if (
+      !clerk_user_id ||
+      !email ||
+      !first_name ||
+      !last_name ||
+      !nickname ||
+      !about_me ||
+      !age ||
+      !sex ||
+      !country ||
+      !city ||
+      !avatar_url ||
+      !sports ||
+      !languages ||
+      !Array.isArray(sports) ||
+      !Array.isArray(languages) ||
+      sports.length === 0 ||
+      languages.length === 0
+    ) {
+      console.log("❌ Validation failed:", {
+        clerk_user_id,
+        email,
+        first_name,
+        last_name,
+        nickname,
+        about_me,
+        age,
+        sex,
+        country,
+        city,
+        avatar_url,
+        sports,
+        languages,
+      });
 
-			return res.status(400).json({
-				message: 'All required profile fields must be filled.',
-			})
-		}
+      return res.status(400).json({
+        message: "All required profile fields must be filled.",
+      });
+    }
 
-		const users = await sql`
+    const users = await sql`
       INSERT INTO users (
         clerk_user_id,
         email,
@@ -169,47 +169,55 @@ router.post('/', async (req, res) => {
         longitude = EXCLUDED.longitude,
         updated_at = CURRENT_TIMESTAMP
       RETURNING *
-    `
+    `;
 
-		const savedUser = users[0]
+    const savedUser = users[0];
 
-		console.log('💾 Saved user in DB:')
-		console.log(savedUser)
+    console.log("💾 Saved user in DB:");
+    console.log(savedUser);
 
-		await sql`
-			DELETE FROM user_sports
-			WHERE user_id = ${savedUser.id}
-			`
-			for (const sport of sports) {
-				if (!sport.sport_name || !sport.level) {
-					continue
-				}
+    await sql`
+      DELETE FROM user_sports
+      WHERE user_id = ${savedUser.id}
+    `;
 
-				await sql`
-					INSERT INTO user_sports (
-					user_id,
-					sport_name,
-					level
-					)
-					VALUES (
-					${savedUser.id},
-					${sport.sport_name},
-					${sport.level}
-					)
-					`
-			}
-
-		await sql`
+    await sql`
       DELETE FROM user_languages
       WHERE user_id = ${savedUser.id}
-    `
+    `;
 
-		for (const language of languages) {
-			if (!language) {
-				continue
-			}
+    for (const sport of sports) {
+      if (!sport.sport_name || !sport.level) {
+        continue;
+      }
 
-			await sql`
+      await sql`
+        INSERT INTO user_sports (
+          user_id,
+          sport_name,
+          level
+        )
+        VALUES (
+          ${savedUser.id},
+          ${sport.sport_name},
+          ${sport.level}
+        )
+      `;
+    }
+    const savedSports = await sql`
+      SELECT sport_name, level
+      FROM user_sports
+      WHERE user_id = ${savedUser.id}
+      ORDER BY sport_name ASC
+    `;
+
+
+    for (const language of languages) {
+      if (!language) {
+        continue;
+      }
+
+      await sql`
         INSERT INTO user_languages (
           user_id,
           language
@@ -218,44 +226,37 @@ router.post('/', async (req, res) => {
           ${savedUser.id},
           ${language}
         )
-      `
-		}
+      `;
+    }
 
-		const savedSports = await sql`
-      SELECT sport_name, level
-      FROM user_sports
-      WHERE user_id = ${savedUser.id}
-      ORDER BY sport_name ASC
-    `
-
-		const savedLanguages = await sql`
+    const savedLanguages = await sql`
       SELECT language
       FROM user_languages
       WHERE user_id = ${savedUser.id}
       ORDER BY language ASC
-    `
+    `;
 
-		console.log('🏀 Saved sports:')
-		console.log(savedSports)
+    console.log("🏀 Saved sports:");
+    console.log(savedSports);
 
-		console.log('🌍 Saved languages:')
-		console.log(savedLanguages)
+    console.log("🌍 Saved languages:");
+    console.log(savedLanguages);
 
-		return res.status(200).json({
-			...savedUser,
-			sports: savedSports,
-			languages: savedLanguages,
-		})
-	} catch (error) {
-		console.log('Error saving user', error)
+    return res.status(200).json({
+      ...savedUser,
+      sports: savedSports,
+      languages: savedLanguages,
+    });
+  } catch (error) {
+    console.log("Error saving user", error);
 
-		return res.status(500).json({
-			message: 'Internal server error',
-		})
-	}
-})
+    return res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+});
 
-export default router
+export default router;
 
 /**
  const clerkUserId = req.params.clerkUserId;

@@ -1,4 +1,4 @@
-import { styles } from "../../../styles/profile.styles";
+import { styles } from "../styles/profile.styles";
 import { Image, Pressable, Text, View } from "react-native";
 
 type AvatarPickerProps = {

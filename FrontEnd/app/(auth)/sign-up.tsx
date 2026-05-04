@@ -8,9 +8,8 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { colors } from "../constants/colors";
+import { colors } from "../../constants/colors";
 import { styles } from "../../styles/sign_up.styles";
-useState
 
 
 export default function Page() {

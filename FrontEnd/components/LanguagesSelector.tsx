@@ -1,6 +1,6 @@
 import { Pressable, Text, View } from "react-native";
 import { languageOptions } from "../constants/profileOptions";
-import { styles } from "../../../styles/profile.styles";
+import { styles } from "../styles/profile.styles";
 
 type LanguagesSelectorProps = {
   selectedLanguages: string[];

@@ -8,9 +8,9 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { OpponentSearchModal } from "./components/opponent-search/OpponentSearchModal";
-import { sports, type Sport } from "./data/sports";
-import { colors } from "../constants/colors";
+import { OpponentSearchModal } from "../../components/opponent-search/OpponentSearchModal";
+import { sports, type Sport } from "../../data/sports";
+import { colors } from "../../constants/colors";
 import { styles } from "../../styles/home.styles";
 
 export default function HomeScreen() {

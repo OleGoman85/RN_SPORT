@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { Text, View } from "react-native";
-import { styles } from "../../../../styles/opponentSearch.styles";
+import { styles } from "../../styles/opponentSearch.styles";
 
 type OpponentSectionProps = {
   title: string;

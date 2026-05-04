@@ -1,5 +1,5 @@
 import { Pressable, Text } from "react-native";
-import { styles } from "../../../../styles/opponentSearch.styles";
+import { styles } from "../../styles/opponentSearch.styles";
 
 type OptionButtonProps = {
   title: string;

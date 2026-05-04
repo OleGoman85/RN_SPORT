@@ -1,7 +1,7 @@
 import { Calendar } from "react-native-calendars";
 import { Text, View } from "react-native";
-import { colors } from "../../../constants/colors";
-import { styles } from "../../../../styles/opponentSearch.styles";
+import { colors } from "../../constants/colors";
+import { styles } from "../../styles/opponentSearch.styles";
 import { OpponentSection } from "./OpponentSection";
 
 type DateSelectorProps = {

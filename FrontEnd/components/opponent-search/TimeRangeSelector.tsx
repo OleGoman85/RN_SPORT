@@ -1,6 +1,6 @@
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Platform, Pressable, Text, View } from "react-native";
-import { styles } from "../../../../styles/opponentSearch.styles";
+import { styles } from "../../styles/opponentSearch.styles";
 import { OpponentSection } from "./OpponentSection";
 import { useState } from "react";
 
