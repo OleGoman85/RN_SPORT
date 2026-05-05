@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import { useState } from "react";
 import {
   FlatList,
@@ -9,9 +10,10 @@ import {
   View,
 } from "react-native";
 import { OpponentSearchModal } from "../../components/opponent-search/OpponentSearchModal";
-import { sports, type Sport } from "../../data/sports";
 import { colors } from "../../constants/colors";
+import { sports, type Sport } from "../../data/sports";
 import { styles } from "../../styles/home.styles";
+import { OpponentSearchResult } from "../../types/opponentSearch";
 
 export default function HomeScreen() {
   const [searchText, setSearchText] = useState("");
@@ -38,6 +40,16 @@ export default function HomeScreen() {
 
   const handleCloseSearchModal = () => {
     setIsSearchModalVisible(false);
+  };
+
+  const handleSearchFinished = (opponents: OpponentSearchResult[]) => {
+    router.push({
+      pathname: "/(home)/opponent-results",
+      params: {
+        sportName: selectedSportName,
+        opponents: JSON.stringify(opponents),
+      },
+    });
   };
 
   const renderSportCard = ({ item }: { item: Sport }) => {
@@ -109,6 +121,7 @@ export default function HomeScreen() {
         visible={isSearchModalVisible}
         sportName={selectedSportName}
         onClose={handleCloseSearchModal}
+        onSearchFinished={handleSearchFinished}
       />
     </View>
   );

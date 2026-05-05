@@ -1,8 +1,7 @@
+import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "@clerk/expo";
 import { Redirect, Tabs } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
 import { colors } from "../../constants/colors";
-
 
 export default function HomeLayout() {
   const { isSignedIn, isLoaded } = useAuth();
@@ -71,6 +70,13 @@ export default function HomeLayout() {
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="person" size={size} color={color} />
           ),
+        }}
+      />
+
+      <Tabs.Screen
+        name="opponent-results"
+        options={{
+          href: null,
         }}
       />
     </Tabs>

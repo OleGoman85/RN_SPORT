@@ -6,5 +6,6 @@ export const colors = {
   text: "#ffffff",
   secondaryText: "#94a3b8",
   borderCol: "#334155",
-  time: "#E6AD81"
+  time: "#E6AD81",
+  timeBg: "#ffffff"
 };

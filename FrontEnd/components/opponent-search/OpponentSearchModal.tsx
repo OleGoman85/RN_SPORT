@@ -1,6 +1,7 @@
 import { Modal, Pressable, ScrollView, Text, View } from "react-native";
 import { styles } from "../../styles/opponentSearch.styles";
 import { useOpponentSearchForm } from "../../hooks/useOpponentSearchForm";
+import { OpponentSearchResult } from "../../types/opponentSearch";
 import { AgeRangeSelector } from "./AgeRangeSelector";
 import { DateSelector } from "./DateSelector";
 import { GenderSelector } from "./GenderSelector";
@@ -14,14 +15,27 @@ type OpponentSearchModalProps = {
   visible: boolean;
   sportName: string;
   onClose: () => void;
+  onSearchFinished: (opponents: OpponentSearchResult[]) => void;
 };
 
 export const OpponentSearchModal = ({
   visible,
   sportName,
   onClose,
+  onSearchFinished,
 }: OpponentSearchModalProps) => {
   const opponentSearchForm = useOpponentSearchForm(sportName);
+
+  const handlePressSearch = async () => {
+    const opponents = await opponentSearchForm.handleSearch();
+
+    if (opponents === null) {
+      return;
+    }
+
+    onClose();
+    onSearchFinished(opponents);
+  };
 
   return (
     <Modal visible={visible} animationType="slide" transparent>
@@ -74,9 +88,12 @@ export const OpponentSearchModal = ({
               locationMode={opponentSearchForm.locationMode}
               radiusKm={opponentSearchForm.radiusKm}
               city={opponentSearchForm.city}
+              latitude={opponentSearchForm.latitude}
+              longitude={opponentSearchForm.longitude}
               onChangeLocationMode={opponentSearchForm.setLocationMode}
               onChangeRadiusKm={opponentSearchForm.setRadiusKm}
               onChangeCity={opponentSearchForm.setCity}
+              onUseLocation={opponentSearchForm.handleUseMyLocation}
             />
 
             <MatchTypeSelector
@@ -98,11 +115,15 @@ export const OpponentSearchModal = ({
               <Pressable
                 style={({ pressed }) => [
                   styles.searchButton,
+                  opponentSearchForm.isLoading && styles.buttonDisabled,
                   pressed && styles.buttonPressed,
                 ]}
-                onPress={opponentSearchForm.handleSearch}
+                onPress={handlePressSearch}
+                disabled={opponentSearchForm.isLoading}
               >
-                <Text style={styles.searchButtonText}>Search</Text>
+                <Text style={styles.searchButtonText}>
+                  {opponentSearchForm.isLoading ? "Searching..." : "Search"}
+                </Text>
               </Pressable>
             </View>
           </ScrollView>

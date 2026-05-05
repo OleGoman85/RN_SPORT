@@ -6,7 +6,8 @@ import { Alert, Platform } from "react-native";
 import { SelectedSport } from "../types/profile";
 
 
-const API_URL = "http://localhost:5001";
+// const API_URL = "http://localhost:5001";
+const API_URL = "http://192.168.32.127:5001";
 
 export function useProfileForm() {
 	const { user } = useUser();
