@@ -1,8 +1,8 @@
+import { styles } from "../styles/profile.styles";
 import { Pressable, Text, TextInput, View } from "react-native";
 import { colors } from "../constants/colors";
-import { AvatarPicker } from "./AvatarPicker";
-import { styles } from "../styles/profile.styles";
 import { sexOptions } from "../constants/profileOptions";
+import { AvatarPicker } from "./AvatarPicker";
 
 type ProfileInfoCardProps = {
   firstName: string;
@@ -22,6 +22,7 @@ type ProfileInfoCardProps = {
   city: string;
   setCity: (value: string) => void;
   avatarUrl: string;
+  isAvatarUploading: boolean;
   latitude: number | null;
   longitude: number | null;
   onPickFromGallery: () => void;
@@ -47,6 +48,7 @@ export function ProfileInfoCard({
   city,
   setCity,
   avatarUrl,
+  isAvatarUploading,
   latitude,
   longitude,
   onPickFromGallery,
@@ -55,15 +57,14 @@ export function ProfileInfoCard({
 }: ProfileInfoCardProps) {
   return (
     <View style={styles.card}>
-      {/* AVATAR */}
       <AvatarPicker
         avatarUrl={avatarUrl}
+        isAvatarUploading={isAvatarUploading}
         onPickFromGallery={onPickFromGallery}
         onTakePhoto={onTakePhoto}
       />
 
       <View style={styles.twoColumns}>
-        {/* Firstname */}
         <View style={styles.column}>
           <TextInput
             style={styles.input}
@@ -72,7 +73,7 @@ export function ProfileInfoCard({
             placeholder="First name"
             placeholderTextColor={colors.secondaryText}
           />
-          {/* Nickname */}
+
           <TextInput
             style={styles.input}
             value={nickname}
@@ -80,7 +81,7 @@ export function ProfileInfoCard({
             placeholder="Nickname"
             placeholderTextColor={colors.secondaryText}
           />
-          {/* Country */}
+
           <TextInput
             style={styles.input}
             value={country}
@@ -91,7 +92,6 @@ export function ProfileInfoCard({
         </View>
 
         <View style={styles.column}>
-          {/* Lastname */}
           <TextInput
             style={styles.input}
             value={lastName}
@@ -99,7 +99,7 @@ export function ProfileInfoCard({
             placeholder="Last name"
             placeholderTextColor={colors.secondaryText}
           />
-          {/* Age */}
+
           <TextInput
             style={styles.input}
             value={age}
@@ -108,7 +108,7 @@ export function ProfileInfoCard({
             placeholderTextColor={colors.secondaryText}
             keyboardType="numeric"
           />
-          {/* City */}
+
           <TextInput
             style={styles.input}
             value={city}
@@ -118,7 +118,7 @@ export function ProfileInfoCard({
           />
         </View>
       </View>
-      {/* Sex */}
+
       <Text style={styles.miniTitle}>Sex</Text>
 
       <View style={styles.optionRow}>
@@ -146,7 +146,7 @@ export function ProfileInfoCard({
           );
         })}
       </View>
-      {/* About Me */}
+
       <TextInput
         style={[styles.input, styles.textArea]}
         value={aboutMe}
@@ -155,7 +155,7 @@ export function ProfileInfoCard({
         placeholderTextColor={colors.secondaryText}
         multiline
       />
-      {/* Location */}
+
       <View style={styles.locationHeader}>
         <View style={styles.locationTextBlock}>
           <Text style={styles.miniTitle}>Location</Text>

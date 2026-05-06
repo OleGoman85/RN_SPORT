@@ -280,5 +280,32 @@ export const styles = StyleSheet.create({
 	},
 	buttonDisabled: {
   		opacity: 0.45,
-},
+	},
+	publishBox: {
+	backgroundColor: "rgba(15, 23, 42, 0.95)",
+	borderWidth: 1,
+	borderColor: colors.borderCol,
+	borderRadius: 16,
+	padding: 14,
+	marginTop: 4,
+	marginBottom: 12,
+	},
+
+	publishBoxActive: {
+		borderColor: colors.primary,
+		backgroundColor: "rgba(255, 122, 0, 0.14)",
+	},
+
+	publishTitle: {
+		color: colors.text,
+		fontSize: 15,
+		fontWeight: "900",
+		marginBottom: 4,
+	},
+
+	publishText: {
+		color: colors.secondaryText,
+		fontSize: 12,
+		lineHeight: 17,
+	},
 });

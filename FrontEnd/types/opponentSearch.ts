@@ -21,6 +21,7 @@ export type OpponentSearchFilters = {
 	radiusKm: number;
 	city: string;
 	matchType: MatchType;
+	publishToEvents: boolean;
 };
 
 export type OpponentSearchResult = {
@@ -40,4 +41,35 @@ export type OpponentSearchResult = {
 	longitude: string | number | null;
 	sport_name: string;
 	level: string;
+	available_date: string;
+	time_from: string;
+	time_to: string;
+	match_type: string;
+	distance_km: number | null;
+};
+
+export type SportEvent = {
+	id: number;
+	sport_name: string;
+	level: string;
+	available_date: string;
+	time_from: string;
+	time_to: string;
+	match_type: string;
+	location_mode: string;
+	radius_km: number | null;
+	event_city: string | null;
+	event_latitude: string | number | null;
+	event_longitude: string | number | null;
+	created_at: string;
+	clerk_user_id: string;
+	first_name: string;
+	last_name: string;
+	nickname: string;
+	about_me: string;
+	age: number;
+	sex: string;
+	country: string;
+	city: string;
+	avatar_url: string;
 };

@@ -3,15 +3,14 @@ import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
 import { useEffect, useState } from "react";
 import { Alert, Platform } from "react-native";
+import { uploadAvatarToServer } from "../services/avatarApi";
+import { loadUserProfile, saveUserProfile } from "../services/profileApi";
 import { SelectedSport } from "../types/profile";
-
-
-// const API_URL = "http://localhost:5001";
-const API_URL = "http://192.168.32.127:5001";
 
 export function useProfileForm() {
 	const { user } = useUser();
 
+	// ===== STATE =====
 	const [firstName, setFirstName] = useState("");
 	const [lastName, setLastName] = useState("");
 	const [nickname, setNickname] = useState("");
@@ -24,16 +23,14 @@ export function useProfileForm() {
 	const [latitude, setLatitude] = useState<number | null>(null);
 	const [longitude, setLongitude] = useState<number | null>(null);
 	const [selectedSports, setSelectedSports] = useState<SelectedSport[]>([]);
-	// selectedSports = [
-	// 	{ sport_name: "Football", level: "Beginner" },
-	// 	{ sport_name: "Tennis", level: "Amateur" }
-	// ]
 	const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
 	const [isSaving, setIsSaving] = useState(false);
 	const [isProfileLoading, setIsProfileLoading] = useState(true);
+	const [isAvatarUploading, setIsAvatarUploading] = useState(false);
 
 	const email = user?.primaryEmailAddress?.emailAddress ?? "";
 
+	// ===== LOAD PROFILE =====
 	useEffect(() => {
 		const loadProfile = async () => {
 			if (!user?.id) {
@@ -41,19 +38,9 @@ export function useProfileForm() {
 			}
 
 			try {
-				const response = await fetch(
-					`${API_URL}/api/users/${encodeURIComponent(user.id)}`,
-				);
+				const data = await loadUserProfile(user.id);
 
-				if (response.status === 404) {
-					setIsProfileLoading(false);
-					return;
-				}
-
-				const data = await response.json();
-
-				if (!response.ok) {
-					console.log("Profile loading error:", data);
+				if (!data) {
 					setIsProfileLoading(false);
 					return;
 				}
@@ -73,17 +60,17 @@ export function useProfileForm() {
 				setSelectedSports(
 					Array.isArray(data.sports)
 						? data.sports.map((sport: SelectedSport) => ({
-							sport_name: sport.sport_name,
-							level: sport.level,
-						}))
+								sport_name: sport.sport_name,
+								level: sport.level,
+							}))
 						: [],
 				);
 
 				setSelectedLanguages(
 					Array.isArray(data.languages)
 						? data.languages.map(
-							(languageItem: { language: string }) => languageItem.language,
-						)
+								(languageItem: { language: string }) => languageItem.language,
+							)
 						: [],
 				);
 			} catch (error) {
@@ -96,6 +83,7 @@ export function useProfileForm() {
 		loadProfile();
 	}, [user?.id]);
 
+	// ===== VALIDATION =====
 	const isFormValid =
 		firstName.trim() &&
 		lastName.trim() &&
@@ -109,6 +97,7 @@ export function useProfileForm() {
 		selectedSports.length > 0 &&
 		selectedLanguages.length > 0;
 
+	// ===== PICK AVATAR FROM GALLERY =====
 	const handlePickAvatarFromGallery = async () => {
 		try {
 			const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -124,26 +113,27 @@ export function useProfileForm() {
 				aspect: [1, 1],
 				quality: 0.8,
 			});
-			// result = {
-			// 		canceled: false,
-			// 		assets: [
-			// 			{
-			// 			uri: "file:///some/path/avatar.jpg",
-			// 			width: 1000,
-			// 			height: 1000
-			// 			}
-			// 		]
-			// 		}
 
-			if (!result.canceled) {
-				setAvatarUrl(result.assets[0].uri);
+			if (result.canceled) {
+				return;
 			}
+
+			setIsAvatarUploading(true);
+
+			const uploadedAvatarUrl = await uploadAvatarToServer(result.assets[0].uri);
+
+			setAvatarUrl(uploadedAvatarUrl);
+
+			Alert.alert("Success", "Avatar uploaded successfully");
 		} catch (error) {
-			console.log("Gallery error:", error);
-			Alert.alert("Error", "Could not open gallery.");
+			console.log("Gallery upload error:", error);
+			Alert.alert("Error", "Could not upload avatar.");
+		} finally {
+			setIsAvatarUploading(false);
 		}
 	};
 
+	// ===== TAKE AVATAR PHOTO =====
 	const handleTakeAvatarPhoto = async () => {
 		try {
 			if (Platform.OS === "ios" && __DEV__) {
@@ -163,26 +153,33 @@ export function useProfileForm() {
 				quality: 0.8,
 			});
 
-			if (!result.canceled) {
-				setAvatarUrl(result.assets[0].uri);
+			if (result.canceled) {
+				return;
 			}
+
+			setIsAvatarUploading(true);
+
+			const uploadedAvatarUrl = await uploadAvatarToServer(result.assets[0].uri);
+
+			setAvatarUrl(uploadedAvatarUrl);
+
+			Alert.alert("Success", "Avatar uploaded successfully");
 		} catch (error) {
-			console.log("Camera error:", error);
+			console.log("Camera upload error:", error);
 
 			Alert.alert(
-				"Camera is not available",
-				"Camera may not work on simulator. Please test camera on a real device or choose avatar from Gallery.",
+				"Camera error",
+				"Could not take or upload photo. Please try Gallery.",
 			);
+		} finally {
+			setIsAvatarUploading(false);
 		}
 	};
 
+	// ===== USE MY LOCATION =====
 	const handleUseMyLocation = async () => {
 		try {
 			const permission = await Location.requestForegroundPermissionsAsync();
-			// permission = {
-			// 	granted: true,
-			// 	status: "granted"
-			// 	}
 
 			if (permission.status !== "granted") {
 				Alert.alert("Location permission denied");
@@ -190,13 +187,6 @@ export function useProfileForm() {
 			}
 
 			const currentLocation = await Location.getCurrentPositionAsync({});
-			// 			// currentLocation = {
-			// 			// 	coords: {
-			// 			// 		latitude: 60.1699,
-			// 			// 		longitude: 24.9384,
-			// 			// 		accuracy: 10
-			// 			// 	}
-			// 			// 	}
 
 			setLatitude(currentLocation.coords.latitude);
 			setLongitude(currentLocation.coords.longitude);
@@ -205,14 +195,6 @@ export function useProfileForm() {
 				latitude: currentLocation.coords.latitude,
 				longitude: currentLocation.coords.longitude,
 			});
-			// adress = [
-			// 	{
-			// 		city: "Helsinki",
-			// 		country: "Finland",
-			// 		region: "Uusimaa",
-			// 		street: "...",
-			// 	}
-			// 	]
 
 			if (address.length > 0) {
 				setCountry(address[0].country ?? "");
@@ -228,6 +210,7 @@ export function useProfileForm() {
 		}
 	};
 
+	// ===== TOGGLE SPORT =====
 	const handleToggleSport = (sportName: string) => {
 		const alreadySelected = selectedSports.find(
 			(sport) => sport.sport_name === sportName,
@@ -249,6 +232,7 @@ export function useProfileForm() {
 		]);
 	};
 
+	// ===== CHANGE SPORT LEVEL =====
 	const handleChangeSportLevel = (sportName: string, level: string) => {
 		setSelectedSports((currentSports) =>
 			currentSports.map((sport) => {
@@ -264,6 +248,7 @@ export function useProfileForm() {
 		);
 	};
 
+	// ===== GET SPORT LEVEL =====
 	const getSportLevel = (sportName: string) => {
 		const selectedSport = selectedSports.find(
 			(sport) => sport.sport_name === sportName,
@@ -272,6 +257,7 @@ export function useProfileForm() {
 		return selectedSport?.level;
 	};
 
+	// ===== TOGGLE LANGUAGE =====
 	const handleToggleLanguage = (language: string) => {
 		const alreadySelected = selectedLanguages.includes(language);
 
@@ -290,6 +276,7 @@ export function useProfileForm() {
 		]);
 	};
 
+	// ===== SAVE PROFILE =====
 	const handleSaveProfile = async () => {
 		if (!user?.id || !email) {
 			Alert.alert("User is not loaded yet");
@@ -304,63 +291,43 @@ export function useProfileForm() {
 		setIsSaving(true);
 
 		try {
-			const response = await fetch(`${API_URL}/api/users`, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({
-					clerk_user_id: user.id,
-					email,
-					first_name: firstName,
-					last_name: lastName,
-					nickname,
-					about_me: aboutMe,
-					age: Number(age),
-					sex,
-					country,
-					city,
-					avatar_url: avatarUrl,
-					latitude,
-					longitude,
-					sports: selectedSports,
-					languages: selectedLanguages,
-				}),
+			await saveUserProfile({
+				clerk_user_id: user.id,
+				email,
+				first_name: firstName,
+				last_name: lastName,
+				nickname,
+				about_me: aboutMe,
+				age: Number(age),
+				sex,
+				country,
+				city,
+				avatar_url: avatarUrl,
+				latitude,
+				longitude,
+				sports: selectedSports,
+				languages: selectedLanguages,
 			});
-
-			const data = await response.json();
-
-			if (!response.ok) {
-				Alert.alert("Error", data.message ?? "Failed to save profile");
-				return;
-			}
 
 			Alert.alert("Success", "Profile saved successfully");
 		} catch (error) {
-			console.log(error);
-			Alert.alert("Error", "Could not connect to server");
+			console.log("Save profile error:", error);
+			Alert.alert("Error", "Could not save profile");
 		} finally {
 			setIsSaving(false);
 		}
 	};
 
 	return {
+		// state
 		firstName,
-		setFirstName,
 		lastName,
-		setLastName,
 		nickname,
-		setNickname,
 		aboutMe,
-		setAboutMe,
 		age,
-		setAge,
 		sex,
-		setSex,
 		country,
-		setCountry,
 		city,
-		setCity,
 		avatarUrl,
 		latitude,
 		longitude,
@@ -368,7 +335,20 @@ export function useProfileForm() {
 		selectedLanguages,
 		isSaving,
 		isProfileLoading,
+		isAvatarUploading,
 		isFormValid,
+
+		// setters
+		setFirstName,
+		setLastName,
+		setNickname,
+		setAboutMe,
+		setAge,
+		setSex,
+		setCountry,
+		setCity,
+
+		// handlers
 		handlePickAvatarFromGallery,
 		handleTakeAvatarPhoto,
 		handleUseMyLocation,

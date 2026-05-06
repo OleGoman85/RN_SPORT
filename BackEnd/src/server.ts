@@ -1,9 +1,10 @@
 import express from "express";
 import dotenv from "dotenv";
-import { serverTests } from "../serverTests.js";
-import { initDB } from "./config/db.js";
+import { serverTests } from "./serverTests";
+import { initDB } from "./config/db";
 import ratelimit from "./middleware/rateLimiter";
 import sportRouters from "./routes/sportRoutes";
+import uploadRouters from "./routes/uploadRoutes";
 import userRouters from "./routes/userRoutes";
 
 dotenv.config();
@@ -16,24 +17,26 @@ app.use(express.json());
 const PORT = process.env.PORT || 5001;
 
 app.get("/", (req, res) => {
-  res.send("it's working");
+	res.send("it's working");
 });
 
 app.use("/api/sports", sportRouters);
+app.use("/api/upload", uploadRouters);
 app.use("/api/users", userRouters);
 
 async function startServer() {
-  await initDB();
+	await initDB();
 
-  const server = app.listen(PORT, () => {
-    console.log(`✅ Server is UP, and running on PORT: ${PORT}`);
-    console.log(`my port is: ${PORT}`);
-  });
+	const server = app.listen(PORT, () => {
+		console.log(`✅ Server is UP, and running on PORT: ${PORT}`);
+		console.log(`my port is: ${PORT}`);
+	});
 
-  serverTests(server);
+	serverTests(server);
 }
 
 startServer();
+
 
 
 // 🔥 Short summary

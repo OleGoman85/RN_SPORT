@@ -1,6 +1,6 @@
 import { Modal, Pressable, ScrollView, Text, View } from "react-native";
-import { styles } from "../../styles/opponentSearch.styles";
 import { useOpponentSearchForm } from "../../hooks/useOpponentSearchForm";
+import { styles } from "../../styles/opponentSearch.styles";
 import { OpponentSearchResult } from "../../types/opponentSearch";
 import { AgeRangeSelector } from "./AgeRangeSelector";
 import { DateSelector } from "./DateSelector";
@@ -100,6 +100,29 @@ export const OpponentSearchModal = ({
               matchType={opponentSearchForm.matchType}
               onChangeMatchType={opponentSearchForm.setMatchType}
             />
+
+            <Pressable
+              style={({ pressed }) => [
+                styles.publishBox,
+                opponentSearchForm.publishToEvents && styles.publishBoxActive,
+                pressed && styles.buttonPressed,
+              ]}
+              onPress={() =>
+                opponentSearchForm.setPublishToEvents(
+                  !opponentSearchForm.publishToEvents,
+                )
+              }
+            >
+              <Text style={styles.publishTitle}>
+                {opponentSearchForm.publishToEvents
+                  ? "✓ Publish to Events"
+                  : "Do not publish"}
+              </Text>
+
+              <Text style={styles.publishText}>
+                Other users will be able to see this sport request later.
+              </Text>
+            </Pressable>
 
             <View style={styles.actions}>
               <Pressable

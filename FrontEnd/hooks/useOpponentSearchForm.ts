@@ -8,13 +8,12 @@ import {
 	OpponentLevel,
 	OpponentSex,
 } from "../constants/opponentSearchOptions";
+import { searchOpponents } from "../services/opponentSearchApi";
 import {
 	OpponentSearchFilters,
 	OpponentSearchResult,
 	SearchLocationMode,
 } from "../types/opponentSearch";
-
-const API_URL = "http://192.168.32.127:5001";
 
 const formatTime = (date: Date) => {
 	return date.toLocaleTimeString("en-GB", {
@@ -33,75 +32,81 @@ export function useOpponentSearchForm(sportName: string) {
 	const [ageMax, setAgeMax] = useState(45);
 	const [sex, setSex] = useState<OpponentSex[]>(["Male", "Female"]);
 	const [selectedDates, setSelectedDates] = useState<string[]>([]);
+	const [publishToEvents, setPublishToEvents] = useState(true);
 
 	const [timeFrom, setTimeFrom] = useState(() => {
-		const d = new Date();
-		d.setHours(18, 0, 0, 0);
-		return d;
+		const date = new Date();
+		date.setHours(18, 0, 0, 0);
+		return date;
 	});
 
 	const [timeTo, setTimeTo] = useState(() => {
-		const d = new Date();
-		d.setHours(21, 0, 0, 0);
-		return d;
+		const date = new Date();
+		date.setHours(21, 0, 0, 0);
+		return date;
 	});
 
 	const [locationMode, setLocationMode] =
 		useState<SearchLocationMode>("near_me");
 	const [radiusKm, setRadiusKm] = useState(10);
 	const [city, setCity] = useState("");
-
 	const [matchType, setMatchType] = useState<MatchType>("Any");
-
 	const [latitude, setLatitude] = useState<number | null>(null);
 	const [longitude, setLongitude] = useState<number | null>(null);
-
 	const [isLoading, setIsLoading] = useState(false);
 	const [results, setResults] = useState<OpponentSearchResult[]>([]);
 
-	// ===== DATE =====
+	// ===== TOGGLE DATE =====
 	const handleToggleDate = (date: string) => {
-		setSelectedDates((current) => {
-			if (current.includes(date)) {
-				return current.filter((d) => d !== date);
+		setSelectedDates((currentDates) => {
+			if (currentDates.includes(date)) {
+				return currentDates.filter((currentDate) => currentDate !== date);
 			}
 
-			return [...current, date].sort();
+			return [...currentDates, date].sort();
 		});
 	};
 
-	// ===== LANGUAGE =====
+	// ===== TOGGLE LANGUAGE =====
 	const handleToggleLanguage = (language: OpponentLanguage) => {
 		if (language === "Any") {
 			setLanguages(["Any"]);
 			return;
 		}
 
-		setLanguages((current) => {
-			const withoutAny = current.filter((l) => l !== "Any");
+		setLanguages((currentLanguages) => {
+			const languagesWithoutAny = currentLanguages.filter(
+				(currentLanguage) => currentLanguage !== "Any",
+			);
 
-			if (withoutAny.includes(language)) {
-				const next = withoutAny.filter((l) => l !== language);
-				return next.length === 0 ? ["Any"] : next;
+			if (languagesWithoutAny.includes(language)) {
+				const nextLanguages = languagesWithoutAny.filter(
+					(currentLanguage) => currentLanguage !== language,
+				);
+
+				return nextLanguages.length === 0 ? ["Any"] : nextLanguages;
 			}
 
-			return [...withoutAny, language];
+			return [...languagesWithoutAny, language];
 		});
 	};
 
-	// ===== SEX =====
+	// ===== TOGGLE SEX =====
 	const handleToggleSex = (selectedSex: OpponentSex) => {
-		setSex((current) => {
-			if (current.includes(selectedSex)) {
-				const next = current.filter((s) => s !== selectedSex);
-				return next.length === 0 ? current : next;
+		setSex((currentSex) => {
+			if (currentSex.includes(selectedSex)) {
+				const nextSex = currentSex.filter(
+					(currentSelectedSex) => currentSelectedSex !== selectedSex,
+				);
+
+				return nextSex.length === 0 ? currentSex : nextSex;
 			}
 
-			return [...current, selectedSex];
+			return [...currentSex, selectedSex];
 		});
 	};
 
-	// ===== LOCATION =====
+	// ===== USE MY LOCATION =====
 	const handleUseMyLocation = async () => {
 		try {
 			const permission = await Location.requestForegroundPermissionsAsync();
@@ -111,18 +116,23 @@ export function useOpponentSearchForm(sportName: string) {
 				return;
 			}
 
-			const loc = await Location.getCurrentPositionAsync({});
+			const currentLocation = await Location.getCurrentPositionAsync({});
 
-			setLatitude(loc.coords.latitude);
-			setLongitude(loc.coords.longitude);
-		} catch (err) {
-			console.log(err);
+			setLatitude(currentLocation.coords.latitude);
+			setLongitude(currentLocation.coords.longitude);
+		} catch (error) {
+			console.log("Location error:", error);
 			Alert.alert("Could not get location");
 		}
 	};
 
 	// ===== SEARCH =====
 	const handleSearch = async (): Promise<OpponentSearchResult[] | null> => {
+		if (!user?.id) {
+			Alert.alert("User is not loaded yet");
+			return null;
+		}
+
 		if (selectedDates.length === 0) {
 			Alert.alert("Missing dates", "Please select at least one date.");
 			return null;
@@ -133,7 +143,7 @@ export function useOpponentSearchForm(sportName: string) {
 			return null;
 		}
 
-		if (locationMode === "near_me" && (!latitude || !longitude)) {
+		if (locationMode === "near_me" && (latitude === null || longitude === null)) {
 			Alert.alert("Location required", "Please enable location.");
 			return null;
 		}
@@ -145,6 +155,7 @@ export function useOpponentSearchForm(sportName: string) {
 			ageMin,
 			ageMax,
 			sex,
+			publishToEvents,
 			dates: selectedDates,
 			timeFrom: formatTime(timeFrom),
 			timeTo: formatTime(timeTo),
@@ -159,34 +170,21 @@ export function useOpponentSearchForm(sportName: string) {
 		setIsLoading(true);
 
 		try {
-			const response = await fetch(`${API_URL}/api/sports/search-opponents`, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({
-					current_clerk_user_id: user?.id,
-					latitude,
-					longitude,
-					...filters,
-				}),
+			const opponents = await searchOpponents({
+				current_clerk_user_id: user.id,
+				latitude,
+				longitude,
+				...filters,
 			});
 
-			const data = await response.json();
+			console.log("✅ Results:", opponents);
 
-			if (!response.ok) {
-				Alert.alert("Error", data.message || "Search failed");
-				return null;
-			}
+			setResults(opponents);
 
-			console.log("✅ Results:", data.opponents);
-
-			setResults(data.opponents);
-
-			return data.opponents;
+			return opponents;
 		} catch (error) {
-			console.log(error);
-			Alert.alert("Error", "Could not connect to server");
+			console.log("Search error:", error);
+			Alert.alert("Error", "Could not search opponents");
 			return null;
 		} finally {
 			setIsLoading(false);
@@ -196,7 +194,6 @@ export function useOpponentSearchForm(sportName: string) {
 	return {
 		// state
 		level,
-		setLevel,
 		languages,
 		ageMin,
 		ageMax,
@@ -208,12 +205,14 @@ export function useOpponentSearchForm(sportName: string) {
 		radiusKm,
 		city,
 		matchType,
-		results,
-		isLoading,
 		latitude,
 		longitude,
+		results,
+		isLoading,
+		publishToEvents,
 
-		// setters
+		// state functions
+		setLevel,
 		setAgeMin,
 		setAgeMax,
 		setTimeFrom,
@@ -222,6 +221,7 @@ export function useOpponentSearchForm(sportName: string) {
 		setRadiusKm,
 		setCity,
 		setMatchType,
+		setPublishToEvents,
 
 		// handlers
 		handleToggleDate,

@@ -3,351 +3,376 @@ import { colors } from "../constants/colors";
 
 
 export const styles = StyleSheet.create({
-  keyboardContainer: {
-	flex: 1,
-	backgroundColor: colors.background,
-  },
+	keyboardContainer: {
+		flex: 1,
+		backgroundColor: colors.background,
+	},
 
-  container: {
-	flex: 1,
-	backgroundColor: colors.background,
-  },
+	container: {
+		flex: 1,
+		backgroundColor: colors.background,
+	},
 
-  content: {
-	padding: 16,
-	paddingBottom: 44,
-	flexGrow:1
-  },
+	content: {
+		padding: 16,
+		paddingBottom: 44,
+		flexGrow: 1
+	},
 
-  topBlock: {
-	marginBottom: 16,
-  },
+	topBlock: {
+		marginBottom: 16,
+	},
 
-  title: {
-	color: colors.text,
-	fontSize: 34,
-	fontWeight: "900",
-	marginBottom: 6,
-  },
+	title: {
+		color: colors.text,
+		fontSize: 34,
+		fontWeight: "900",
+		marginBottom: 6,
+	},
 
-  subtitle: {
-	color: colors.secondaryText,
-	fontSize: 15,
-	lineHeight: 21,
-  },
+	subtitle: {
+		color: colors.secondaryText,
+		fontSize: 15,
+		lineHeight: 21,
+	},
 
-  card: {
-	backgroundColor: colors.card,
-	borderWidth: 1,
-	borderColor: colors.border,
-	borderRadius: 24,
-	padding: 14,
-	marginBottom: 16,
-  },
+	card: {
+		backgroundColor: colors.card,
+		borderWidth: 1,
+		borderColor: colors.border,
+		borderRadius: 24,
+		padding: 14,
+		marginBottom: 16,
+	},
 
-  avatarBlock: {
-	alignItems: "center",
-	marginBottom: 18,
-	gap: 14,
-  },
+	avatarBlock: {
+		alignItems: "center",
+		marginBottom: 18,
+		gap: 14,
+	},
 
-  avatar: {
-	width: 112,
-	height: 112,
-	borderRadius: 56,
-	borderWidth: 3,
-	borderColor: colors.primary,
-  },
+	avatar: {
+		width: 112,
+		height: 112,
+		borderRadius: 56,
+		borderWidth: 3,
+		borderColor: colors.primary,
+	},
 
-  avatarPlaceholder: {
-	width: 112,
-	height: 112,
-	borderRadius: 56,
-	backgroundColor: "rgba(15, 23, 42, 0.95)",
-	borderWidth: 2,
-	borderColor: "rgba(255, 122, 0, 0.7)",
-	justifyContent: "center",
-	alignItems: "center",
-	padding: 10,
-  },
+	avatarPlaceholder: {
+		width: 112,
+		height: 112,
+		borderRadius: 56,
+		backgroundColor: "rgba(15, 23, 42, 0.95)",
+		borderWidth: 2,
+		borderColor: "rgba(255, 122, 0, 0.7)",
+		justifyContent: "center",
+		alignItems: "center",
+		padding: 10,
+	},
 
-  avatarText: {
-	color: "#cbd5e1",
-	fontSize: 12,
-	fontWeight: "700",
-	textAlign: "center",
-  },
+	avatarLoaderText: {
+		color: colors.text,
+		fontSize: 11,
+		fontWeight: "900",
+		marginTop: 6,
+	},
 
-  avatarButtons: {
-	flexDirection: "row",
-	gap: 12,
-  },
+	avatarWrapper: {
+		width: 112,
+		height: 112,
+		borderRadius: 56,
+		overflow: "hidden",
+	},
 
-  smallButton: {
-	backgroundColor: "rgba(255, 122, 0, 0.18)",
-	borderWidth: 1,
-	borderColor: colors.primary,
-	paddingVertical: 10,
-	paddingHorizontal: 18,
-	borderRadius: 14,
-  },
+	avatarLoaderOverlay: {
+		position: "absolute",
+		top: 0,
+		right: 0,
+		bottom: 0,
+		left: 0,
+		backgroundColor: "rgba(15, 23, 42, 0.78)",
+		justifyContent: "center",
+		alignItems: "center",
+	},
 
-  smallButtonText: {
-	color: "#ffb86b",
-	fontSize: 14,
-	fontWeight: "800",
-  },
+	avatarText: {
+		color: "#cbd5e1",
+		fontSize: 12,
+		fontWeight: "700",
+		textAlign: "center",
+	},
 
-  twoColumns: {
-	flexDirection: "row",
-	gap: 10,
-  },
+	avatarButtons: {
+		flexDirection: "row",
+		gap: 12,
+	},
 
-  column: {
-	flex: 1,
-  },
+	smallButton: {
+		backgroundColor: "rgba(255, 122, 0, 0.18)",
+		borderWidth: 1,
+		borderColor: colors.primary,
+		paddingVertical: 10,
+		paddingHorizontal: 18,
+		borderRadius: 14,
+	},
 
-  input: {
-	width: "100%",
-	backgroundColor: "rgba(15, 23, 42, 0.94)",
-	borderWidth: 1,
-	borderColor: colors.borderCol,
-	borderRadius: 16,
-	paddingVertical: 14,
-	paddingHorizontal: 14,
-	color: colors.text,
-	fontSize: 15,
-	marginBottom: 10,
-  },
+	smallButtonText: {
+		color: "#ffb86b",
+		fontSize: 14,
+		fontWeight: "800",
+	},
 
-  textArea: {
-	height: 105,
-	textAlignVertical: "top",
-  },
+	twoColumns: {
+		flexDirection: "row",
+		gap: 10,
+	},
 
-  miniTitle: {
-	color: colors.text,
-	fontSize: 16,
-	fontWeight: "900",
-	marginBottom: 10,
-  },
+	column: {
+		flex: 1,
+	},
 
-  optionRow: {
-	flexDirection: "row",
-	gap: 8,
-	marginBottom: 10,
-  },
+	input: {
+		width: "100%",
+		backgroundColor: "rgba(15, 23, 42, 0.94)",
+		borderWidth: 1,
+		borderColor: colors.borderCol,
+		borderRadius: 16,
+		paddingVertical: 14,
+		paddingHorizontal: 14,
+		color: colors.text,
+		fontSize: 15,
+		marginBottom: 10,
+	},
 
-  optionButton: {
-	flex: 1,
-	backgroundColor: "rgba(15, 23, 42, 0.94)",
-	borderWidth: 1,
-	borderColor: colors.borderCol,
-	borderRadius: 14,
-	paddingVertical: 12,
-	alignItems: "center",
-  },
+	textArea: {
+		height: 105,
+		textAlignVertical: "top",
+	},
 
-  optionButtonActive: {
-	backgroundColor: colors.primary,
-	borderColor: colors.primary,
-  },
+	miniTitle: {
+		color: colors.text,
+		fontSize: 16,
+		fontWeight: "900",
+		marginBottom: 10,
+	},
 
-  optionButtonText: {
-	color: "#cbd5e1",
-	fontSize: 13,
-	fontWeight: "800",
-  },
+	optionRow: {
+		flexDirection: "row",
+		gap: 8,
+		marginBottom: 10,
+	},
 
-  optionButtonTextActive: {
-	color: colors.text,
-  },
+	optionButton: {
+		flex: 1,
+		backgroundColor: "rgba(15, 23, 42, 0.94)",
+		borderWidth: 1,
+		borderColor: colors.borderCol,
+		borderRadius: 14,
+		paddingVertical: 12,
+		alignItems: "center",
+	},
 
-  locationHeader: {
-	flexDirection: "row",
-	justifyContent: "space-between",
-	alignItems: "center",
-	gap: 12,
-	marginTop: 4,
-  },
+	optionButtonActive: {
+		backgroundColor: colors.primary,
+		borderColor: colors.primary,
+	},
 
-  locationTextBlock: {
-	flex: 1,
-  },
+	optionButtonText: {
+		color: "#cbd5e1",
+		fontSize: 13,
+		fontWeight: "800",
+	},
 
-  locationButton: {
-	backgroundColor: "rgba(255, 122, 0, 0.18)",
-	borderWidth: 1,
-	borderColor: colors.primary,
-	paddingVertical: 11,
-	paddingHorizontal: 13,
-	borderRadius: 14,
-  },
+	optionButtonTextActive: {
+		color: colors.text,
+	},
 
-  locationButtonText: {
-	color: "#ffb86b",
-	fontSize: 12,
-	fontWeight: "900",
-  },
+	locationHeader: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+		alignItems: "center",
+		gap: 12,
+		marginTop: 4,
+	},
 
-  helperText: {
-	color: colors.secondaryText,
-	fontSize: 13,
-	lineHeight: 18,
-	marginBottom: 12,
-  },
+	locationTextBlock: {
+		flex: 1,
+	},
 
-  coordinates: {
-	color: colors.secondaryText,
-	fontSize: 13,
-	marginTop: 10,
-  },
+	locationButton: {
+		backgroundColor: "rgba(255, 122, 0, 0.18)",
+		borderWidth: 1,
+		borderColor: colors.primary,
+		paddingVertical: 11,
+		paddingHorizontal: 13,
+		borderRadius: 14,
+	},
 
-  sectionTitle: {
-	color: colors.text,
-	fontSize: 22,
-	fontWeight: "900",
-	marginBottom: 8,
-  },
+	locationButtonText: {
+		color: "#ffb86b",
+		fontSize: 12,
+		fontWeight: "900",
+	},
 
-  sportsList: {
-	gap: 12,
-  },
+	helperText: {
+		color: colors.secondaryText,
+		fontSize: 13,
+		lineHeight: 18,
+		marginBottom: 12,
+	},
 
-  sportCard: {
-	backgroundColor: "rgba(15, 23, 42, 0.94)",
-	borderWidth: 1,
-	borderColor: colors.borderCol,
-	borderRadius: 18,
-	overflow: "hidden",
-  },
+	coordinates: {
+		color: colors.secondaryText,
+		fontSize: 13,
+		marginTop: 10,
+	},
 
-  sportCardSelected: {
-	borderColor: colors.primary,
-  },
+	sectionTitle: {
+		color: colors.text,
+		fontSize: 22,
+		fontWeight: "900",
+		marginBottom: 8,
+	},
 
-  sportHeader: {
-	flexDirection: "row",
-	alignItems: "center",
-	padding: 10,
-	gap: 12,
-  },
+	sportsList: {
+		gap: 12,
+	},
 
-  sportImage: {
-	width: 54,
-	height: 54,
-	borderRadius: 14,
-  },
+	sportCard: {
+		backgroundColor: "rgba(15, 23, 42, 0.94)",
+		borderWidth: 1,
+		borderColor: colors.borderCol,
+		borderRadius: 18,
+		overflow: "hidden",
+	},
 
-  sportInfo: {
-	flex: 1,
-  },
+	sportCardSelected: {
+		borderColor: colors.primary,
+	},
 
-  sportName: {
-	color: colors.text,
-	fontSize: 16,
-	fontWeight: "900",
-  },
+	sportHeader: {
+		flexDirection: "row",
+		alignItems: "center",
+		padding: 10,
+		gap: 12,
+	},
 
-  sportStatus: {
-	color: colors.secondaryText,
-	fontSize: 13,
-	marginTop: 4,
-  },
+	sportImage: {
+		width: 54,
+		height: 54,
+		borderRadius: 14,
+	},
 
-  levelRow: {
-	flexDirection: "row",
-	gap: 8,
-	paddingHorizontal: 10,
-	paddingBottom: 10,
-  },
+	sportInfo: {
+		flex: 1,
+	},
 
-  levelButton: {
-	flex: 1,
-	paddingVertical: 10,
-	borderRadius: 12,
-	backgroundColor: "rgba(30, 41, 59, 0.9)",
-	borderWidth: 1,
-	borderColor: colors.borderCol,
-	alignItems: "center",
-  },
+	sportName: {
+		color: colors.text,
+		fontSize: 16,
+		fontWeight: "900",
+	},
 
-  levelButtonActive: {
-	backgroundColor: colors.primary,
-	borderColor: colors.primary,
-  },
+	sportStatus: {
+		color: colors.secondaryText,
+		fontSize: 13,
+		marginTop: 4,
+	},
 
-  levelButtonText: {
-	color: "#cbd5e1",
-	fontSize: 12,
-	fontWeight: "800",
-  },
+	levelRow: {
+		flexDirection: "row",
+		gap: 8,
+		paddingHorizontal: 10,
+		paddingBottom: 10,
+	},
 
-  levelButtonTextActive: {
-	color: colors.text,
-  },
+	levelButton: {
+		flex: 1,
+		paddingVertical: 10,
+		borderRadius: 12,
+		backgroundColor: "rgba(30, 41, 59, 0.9)",
+		borderWidth: 1,
+		borderColor: colors.borderCol,
+		alignItems: "center",
+	},
 
-  languagesContainer: {
-	flexDirection: "row",
-	flexWrap: "wrap",
-	gap: 10,
-  },
+	levelButtonActive: {
+		backgroundColor: colors.primary,
+		borderColor: colors.primary,
+	},
 
-  languageButton: {
-	backgroundColor: "rgba(15, 23, 42, 0.94)",
-	borderWidth: 1,
-	borderColor: colors.borderCol,
-	paddingVertical: 11,
-	paddingHorizontal: 16,
-	borderRadius: 14,
-  },
+	levelButtonText: {
+		color: "#cbd5e1",
+		fontSize: 12,
+		fontWeight: "800",
+	},
 
-  languageButtonActive: {
-	backgroundColor: colors.primary,
-	borderColor: colors.primary,
-  },
+	levelButtonTextActive: {
+		color: colors.text,
+	},
 
-  languageButtonText: {
-	color: "#cbd5e1",
-	fontSize: 14,
-	fontWeight: "800",
-  },
+	languagesContainer: {
+		flexDirection: "row",
+		flexWrap: "wrap",
+		gap: 10,
+	},
 
-  languageButtonTextActive: {
-	color: colors.text,
-  },
+	languageButton: {
+		backgroundColor: "rgba(15, 23, 42, 0.94)",
+		borderWidth: 1,
+		borderColor: colors.borderCol,
+		paddingVertical: 11,
+		paddingHorizontal: 16,
+		borderRadius: 14,
+	},
 
-  saveButton: {
-	backgroundColor: colors.primary,
-	paddingVertical: 16,
-	borderRadius: 18,
-	alignItems: "center",
-	marginTop: 4,
-  },
+	languageButtonActive: {
+		backgroundColor: colors.primary,
+		borderColor: colors.primary,
+	},
 
-  saveButtonText: {
-	color: colors.text,
-	fontSize: 16,
-	fontWeight: "900",
-  },
+	languageButtonText: {
+		color: "#cbd5e1",
+		fontSize: 14,
+		fontWeight: "800",
+	},
 
-  logoutButton: {
-	paddingVertical: 16,
-	alignItems: "center",
-	marginTop: 10,
-  },
+	languageButtonTextActive: {
+		color: colors.text,
+	},
 
-  logoutButtonText: {
-	color: "#fb7185",
-	fontSize: 16,
-	fontWeight: "900",
-  },
+	saveButton: {
+		backgroundColor: colors.primary,
+		paddingVertical: 16,
+		borderRadius: 18,
+		alignItems: "center",
+		marginTop: 4,
+	},
 
-  buttonPressed: {
-	opacity: 0.75,
-  },
+	saveButtonText: {
+		color: colors.text,
+		fontSize: 16,
+		fontWeight: "900",
+	},
 
-  buttonDisabled: {
-	opacity: 0.45,
-  },
+	logoutButton: {
+		paddingVertical: 16,
+		alignItems: "center",
+		marginTop: 10,
+	},
+
+	logoutButtonText: {
+		color: "#fb7185",
+		fontSize: 16,
+		fontWeight: "900",
+	},
+
+	buttonPressed: {
+		opacity: 0.75,
+	},
+
+	buttonDisabled: {
+		opacity: 0.45,
+	},
 });
