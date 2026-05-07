@@ -21,6 +21,16 @@ function getInitials(opponent: OpponentSearchResult) {
   return opponent.nickname?.[0]?.toUpperCase() ?? "?";
 }
 
+function formatRating(value: string | number) {
+  const numberValue = Number(value);
+
+  if (Number.isNaN(numberValue) || numberValue === 0) {
+    return "New";
+  }
+
+  return numberValue.toFixed(1);
+}
+
 function OpponentCard({ opponent }: OpponentCardProps) {
   const [imageFailed, setImageFailed] = useState(false);
 
@@ -50,7 +60,13 @@ function OpponentCard({ opponent }: OpponentCardProps) {
       )}
 
       <View style={styles.cardInfo}>
-        <Text style={styles.nickname}>{opponent.nickname}</Text>
+        <View style={styles.nicknameRow}>
+          <Text style={styles.nickname}>{opponent.nickname}</Text>
+
+          <Text style={styles.ratingBadge}>
+            ⭐ {formatRating(opponent.rating_avg)} ({opponent.games_count})
+          </Text>
+        </View>
 
         <Text style={styles.fullName}>
           {opponent.first_name} {opponent.last_name}
@@ -67,6 +83,19 @@ function OpponentCard({ opponent }: OpponentCardProps) {
         <Text style={styles.text}>
           Age: {opponent.age} · {opponent.sex}
         </Text>
+
+        <Text style={styles.matchSource}>
+          {opponent.match_source === "event"
+            ? "Matched by active event"
+            : "Matched by profile"}
+        </Text>
+
+        {opponent.available_date && opponent.time_from && opponent.time_to && (
+          <Text style={styles.text}>
+            Available: {opponent.available_date.slice(0, 10)} ·{" "}
+            {opponent.time_from.slice(0, 5)} - {opponent.time_to.slice(0, 5)}
+          </Text>
+        )}
 
         {opponent.about_me && (
           <Text style={styles.aboutMe} numberOfLines={3}>

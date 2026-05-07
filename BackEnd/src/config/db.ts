@@ -27,9 +27,27 @@ export async function initDB() {
 				avatar_url TEXT,
 				latitude DECIMAL(9,6),
 				longitude DECIMAL(9,6),
+				rating_avg DECIMAL(3,2) NOT NULL DEFAULT 0,
+				rating_count INT NOT NULL DEFAULT 0,
+				games_count INT NOT NULL DEFAULT 0,
 				created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 				updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 			)
+		`;
+
+		await sql`
+			ALTER TABLE users
+			ADD COLUMN IF NOT EXISTS rating_avg DECIMAL(3,2) NOT NULL DEFAULT 0
+		`;
+
+		await sql`
+			ALTER TABLE users
+			ADD COLUMN IF NOT EXISTS rating_count INT NOT NULL DEFAULT 0
+		`;
+
+		await sql`
+			ALTER TABLE users
+			ADD COLUMN IF NOT EXISTS games_count INT NOT NULL DEFAULT 0
 		`;
 
 		await sql`
@@ -65,6 +83,7 @@ export async function initDB() {
 				created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 			)
 		`;
+
 		await sql`
 			CREATE TABLE IF NOT EXISTS sport_events (
 				id SERIAL PRIMARY KEY,
@@ -82,6 +101,21 @@ export async function initDB() {
 				longitude DECIMAL(9,6),
 				is_active BOOLEAN NOT NULL DEFAULT TRUE,
 				created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+			)
+		`;
+
+		await sql`
+			CREATE TABLE IF NOT EXISTS user_ratings (
+				id SERIAL PRIMARY KEY,
+				rated_user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+				rater_user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+				stars INT NOT NULL,
+				reliable BOOLEAN NOT NULL DEFAULT FALSE,
+				friendly BOOLEAN NOT NULL DEFAULT FALSE,
+				fair_play BOOLEAN NOT NULL DEFAULT FALSE,
+				comment TEXT,
+				created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+				UNIQUE(rated_user_id, rater_user_id)
 			)
 		`;
 

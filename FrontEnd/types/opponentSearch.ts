@@ -7,6 +7,8 @@ import {
 
 export type SearchLocationMode = "near_me" | "city";
 
+export type MatchSource = "event" | "profile";
+
 export type OpponentSearchFilters = {
 	sportName: string;
 	level: OpponentLevel;
@@ -39,12 +41,16 @@ export type OpponentSearchResult = {
 	avatar_url: string;
 	latitude: string | number | null;
 	longitude: string | number | null;
+	rating_avg: string | number;
+	rating_count: number;
+	games_count: number;
 	sport_name: string;
 	level: string;
-	available_date: string;
-	time_from: string;
-	time_to: string;
-	match_type: string;
+	available_date: string | null;
+	time_from: string | null;
+	time_to: string | null;
+	match_type: string | null;
+	match_source: MatchSource;
 	distance_km: number | null;
 };
 
@@ -72,4 +78,7 @@ export type SportEvent = {
 	country: string;
 	city: string;
 	avatar_url: string;
+	rating_avg: string | number;
+	rating_count: number;
+	games_count: number;
 };

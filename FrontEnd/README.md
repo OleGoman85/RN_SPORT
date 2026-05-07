@@ -1,50 +1,65 @@
-# Welcome to your Expo app 👋
+Frontend libraries
+@clerk/expo
+Purpose: Authentication and user session management in Expo/React Native.
+@clerk/expo/token-cache
+Purpose: Stores Clerk session tokens securely on the device.
+expo-router
+Purpose: File-based navigation for Expo apps.
+react-native-safe-area-context
+Purpose: Handles safe screen areas on iPhone/Android devices.
+expo-location
+Purpose: Gets user location and reverse geocodes coordinates into city/country.
+expo-image-picker
+Purpose: Picks images from gallery or camera for avatar upload.
+react-native-calendars
+Purpose: Shows calendar UI and allows selecting dates.
+@react-native-community/slider
+Purpose: Range slider for selecting minimum and maximum age.
+@react-native-community/datetimepicker
+Purpose: Native time/date picker for selecting available time.
+@expo/vector-icons
+Purpose: Provides icons, for example Ionicons in tabs and buttons.
+react-native
+Purpose: Core mobile UI components like View, Text, Image, Pressable, FlatList.
+react
+Purpose: Core React logic: components, state, hooks like useState/useEffect.
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Backend libraries
+express
+Purpose: Creates backend server, routes, API endpoints.
+dotenv
+Purpose: Loads secret environment variables from .env.
+@neondatabase/serverless
+Purpose: Connects backend to Neon PostgreSQL database.
+cloudinary
+Purpose: Stores uploaded avatar images in cloud storage.
+multer
+Purpose: Handles file uploads from frontend to backend.
+@upstash/redis
+Purpose: Connects backend to Upstash Redis.
+@upstash/ratelimit
+Purpose: Limits how many requests one user/IP can send.
+http
+Purpose: Node.js built-in server type used in serverTests.ts.
 
-## Get started
-
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Tools / Services
+Neon
+Purpose: PostgreSQL cloud database for users, sports, languages, events, availability.
+Clerk
+Purpose: Authentication system: sign up, sign in, user ID, sessions.
+Cloudinary
+Purpose: Cloud image storage for user avatars.
+Upstash Redis
+Purpose: Redis storage used for rate limiting.
+Expo
+Purpose: React Native framework for building and running the mobile app.
+Expo Router
+Purpose: Navigation system based on folders/files.
+PostgreSQL
+Purpose: Relational database structure behind Neon.
+REST API
+Purpose: Communication style between frontend and backend using fetch.
+Fetch API
+Purpose: Sends HTTP requests from frontend to backend.
+TypeScript
+Purpose: Adds types to JavaScript and helps catch mistakes before runtime.

@@ -46,7 +46,10 @@ router.get("/events", async (req, res) => {
 				users.sex,
 				users.country,
 				users.city,
-				users.avatar_url
+				users.avatar_url,
+				users.rating_avg,
+				users.rating_count,
+				users.games_count
 			FROM sport_events
 
 			INNER JOIN users
@@ -237,12 +240,22 @@ router.post("/search-opponents", async (req, res) => {
 				users.avatar_url,
 				users.latitude,
 				users.longitude,
+				users.rating_avg,
+				users.rating_count,
+				users.games_count,
+
 				user_sports.sport_name,
 				user_sports.level,
+
 				user_availability.available_date,
 				user_availability.time_from,
 				user_availability.time_to,
 				user_availability.match_type,
+
+				CASE
+					WHEN user_availability.id IS NULL THEN 'profile'
+					ELSE 'event'
+				END AS match_source,
 
 				CASE
 					WHEN ${locationMode} = 'near_me'
@@ -270,17 +283,24 @@ router.post("/search-opponents", async (req, res) => {
 
 			INNER JOIN user_sports
 				ON user_sports.user_id = users.id
-
-			INNER JOIN user_availability
-				ON user_availability.user_id = users.id
-				AND user_availability.sport_name = ${sportName}
+				AND user_sports.sport_name = ${sportName}
 
 			LEFT JOIN user_languages
 				ON user_languages.user_id = users.id
 
-			WHERE users.clerk_user_id != ${current_clerk_user_id}
+			LEFT JOIN user_availability
+				ON user_availability.user_id = users.id
+				AND user_availability.sport_name = ${sportName}
+				AND user_availability.available_date = ANY(${dates}::date[])
+				AND user_availability.time_from <= ${timeTo}::time
+				AND user_availability.time_to >= ${timeFrom}::time
+				AND (
+					${searchMatchType}::text IS NULL
+					OR user_availability.match_type = 'Any'
+					OR user_availability.match_type = ${searchMatchType}
+				)
 
-			AND user_sports.sport_name = ${sportName}
+			WHERE users.clerk_user_id != ${current_clerk_user_id}
 
 			AND (
 				${searchLevel}::text IS NULL
@@ -295,17 +315,6 @@ router.post("/search-opponents", async (req, res) => {
 			AND (
 				${searchLanguages.length}::int = 0
 				OR user_languages.language = ANY(${searchLanguages})
-			)
-
-			AND user_availability.available_date = ANY(${dates}::date[])
-
-			AND user_availability.time_from <= ${timeTo}::time
-			AND user_availability.time_to >= ${timeFrom}::time
-
-			AND (
-				${searchMatchType}::text IS NULL
-				OR user_availability.match_type = 'Any'
-				OR user_availability.match_type = ${searchMatchType}
 			)
 
 			AND (

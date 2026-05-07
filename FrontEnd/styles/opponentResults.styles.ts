@@ -89,10 +89,30 @@ export const styles = StyleSheet.create({
 		flex: 1,
 	},
 
+	nicknameRow: {
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "space-between",
+		gap: 8,
+	},
+
 	nickname: {
 		color: colors.primary,
 		fontSize: 19,
 		fontWeight: "900",
+		flex: 1,
+	},
+
+	ratingBadge: {
+		color: "#facc15",
+		fontSize: 12,
+		fontWeight: "900",
+		backgroundColor: "rgba(250, 204, 21, 0.12)",
+		borderWidth: 1,
+		borderColor: "rgba(250, 204, 21, 0.35)",
+		borderRadius: 12,
+		paddingVertical: 4,
+		paddingHorizontal: 8,
 	},
 
 	fullName: {
@@ -106,6 +126,13 @@ export const styles = StyleSheet.create({
 		color: colors.secondaryText,
 		fontSize: 13,
 		marginTop: 4,
+	},
+
+	matchSource: {
+		color: "#ffb86b",
+		fontSize: 13,
+		fontWeight: "900",
+		marginTop: 6,
 	},
 
 	aboutMe: {
