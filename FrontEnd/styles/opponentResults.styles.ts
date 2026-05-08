@@ -13,7 +13,7 @@ export const styles = StyleSheet.create({
 		alignItems: "center",
 		gap: 12,
 		paddingTop: 14,
-		marginBottom: 18,
+		marginBottom: 14,
 	},
 
 	backButton: {
@@ -45,18 +45,53 @@ export const styles = StyleSheet.create({
 		marginTop: 3,
 	},
 
+	tabs: {
+		flexDirection: "row",
+		backgroundColor: "rgba(15, 23, 42, 0.95)",
+		borderWidth: 1,
+		borderColor: colors.borderCol,
+		borderRadius: 16,
+		padding: 4,
+		marginBottom: 14,
+	},
+
+	tabButton: {
+		flex: 1,
+		borderRadius: 12,
+		paddingVertical: 11,
+		alignItems: "center",
+	},
+
+	tabButtonActive: {
+		backgroundColor: colors.primary,
+	},
+
+	tabText: {
+		color: colors.secondaryText,
+		fontSize: 14,
+		fontWeight: "900",
+	},
+
+	tabTextActive: {
+		color: colors.text,
+	},
+
 	listContent: {
 		paddingBottom: 28,
 		gap: 12,
 	},
 
 	card: {
-		flexDirection: "row",
 		backgroundColor: colors.card,
 		borderWidth: 1,
 		borderColor: colors.border,
 		borderRadius: 22,
 		padding: 12,
+		gap: 12,
+	},
+
+	topRow: {
+		flexDirection: "row",
 		gap: 12,
 	},
 
@@ -89,11 +124,11 @@ export const styles = StyleSheet.create({
 		flex: 1,
 	},
 
-	nicknameRow: {
+	nameRow: {
 		flexDirection: "row",
-		alignItems: "center",
 		justifyContent: "space-between",
 		gap: 8,
+		alignItems: "center",
 	},
 
 	nickname: {
@@ -103,16 +138,10 @@ export const styles = StyleSheet.create({
 		flex: 1,
 	},
 
-	ratingBadge: {
+	ratingText: {
 		color: "#facc15",
 		fontSize: 12,
 		fontWeight: "900",
-		backgroundColor: "rgba(250, 204, 21, 0.12)",
-		borderWidth: 1,
-		borderColor: "rgba(250, 204, 21, 0.35)",
-		borderRadius: 12,
-		paddingVertical: 4,
-		paddingHorizontal: 8,
 	},
 
 	fullName: {
@@ -128,18 +157,67 @@ export const styles = StyleSheet.create({
 		marginTop: 4,
 	},
 
-	matchSource: {
-		color: "#ffb86b",
-		fontSize: 13,
+	infoBlock: {
+		backgroundColor: "rgba(15, 23, 42, 0.78)",
+		borderWidth: 1,
+		borderColor: colors.borderCol,
+		borderRadius: 16,
+		padding: 12,
+		gap: 3,
+	},
+
+	infoTitle: {
+		color: colors.text,
+		fontSize: 18,
 		fontWeight: "900",
-		marginTop: 6,
+		marginBottom: 4,
 	},
 
 	aboutMe: {
 		color: "#cbd5e1",
 		fontSize: 13,
 		lineHeight: 18,
-		marginTop: 8,
+	},
+
+	joinButton: {
+		backgroundColor: colors.primary,
+		borderRadius: 16,
+		paddingVertical: 13,
+		alignItems: "center",
+	},
+
+	joinButtonText: {
+		color: colors.text,
+		fontSize: 15,
+		fontWeight: "900",
+	},
+
+	messageButton: {
+		backgroundColor: colors.primary,
+		borderRadius: 16,
+		paddingVertical: 13,
+		alignItems: "center",
+	},
+
+	messageButtonText: {
+		color: colors.text,
+		fontSize: 15,
+		fontWeight: "900",
+	},
+
+	deleteButton: {
+		backgroundColor: "rgba(251, 113, 133, 0.16)",
+		borderWidth: 1,
+		borderColor: "#fb7185",
+		borderRadius: 16,
+		paddingVertical: 13,
+		alignItems: "center",
+	},
+
+	deleteButtonText: {
+		color: "#fb7185",
+		fontSize: 15,
+		fontWeight: "900",
 	},
 
 	emptyBlock: {
@@ -155,6 +233,7 @@ export const styles = StyleSheet.create({
 		fontWeight: "900",
 		marginTop: 16,
 		marginBottom: 8,
+		textAlign: "center",
 	},
 
 	emptyText: {

@@ -1,54 +1,54 @@
+import { useUser } from "@clerk/expo";
 import { useFocusEffect } from "expo-router";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
   Image,
   Modal,
   Pressable,
-  ScrollView,
   Text,
+  TextInput,
   View,
 } from "react-native";
 import { colors } from "../../constants/colors";
+import { sports } from "../../data/sports";
 import { loadSportEvents } from "../../services/eventsApi";
 import { styles } from "../../styles/events.styles";
 import { SportEvent } from "../../types/opponentSearch";
 
-function getInitials(event: SportEvent) {
-  const firstLetter = event.first_name?.[0] ?? "";
-  const lastLetter = event.last_name?.[0] ?? "";
+type SortMode = "date" | "sport" | "city";
 
-  if (firstLetter || lastLetter) {
-    return `${firstLetter}${lastLetter}`.toUpperCase();
-  }
+function getSportImage(sportName: string) {
+  const sport = sports.find(
+    (item) => item.name.toLowerCase() === sportName.toLowerCase(),
+  );
 
-  return event.nickname?.[0]?.toUpperCase() ?? "?";
+  return sport?.image ?? sports[0].image;
 }
 
 function formatDate(date: string) {
   return new Date(date).toLocaleDateString("en-GB", {
     day: "2-digit",
     month: "short",
-    year: "numeric",
   });
 }
 
-function formatRating(value: string | number) {
-  const numberValue = Number(value);
-
-  if (Number.isNaN(numberValue) || numberValue === 0) {
+function formatRating(event: SportEvent) {
+  if (!event.rating_avg || event.rating_count === 0) {
     return "New";
   }
 
-  return numberValue.toFixed(1);
+  return `${Number(event.rating_avg).toFixed(1)} (${event.games_count} games)`;
 }
 
-function EventProfileModal({
+function EventDetailsModal({
   event,
+  isMyEvent,
   onClose,
 }: {
   event: SportEvent | null;
+  isMyEvent: boolean;
   onClose: () => void;
 }) {
   if (!event) {
@@ -57,72 +57,110 @@ function EventProfileModal({
 
   return (
     <Modal visible={Boolean(event)} animationType="fade" transparent>
-      <View style={styles.profileModalOverlay}>
-        <View style={styles.profileModalCard}>
-          <ScrollView showsVerticalScrollIndicator={false}>
-            <View style={styles.profileHeader}>
-              {event.avatar_url ? (
-                <Image
-                  source={{ uri: event.avatar_url }}
-                  style={styles.profileAvatar}
-                />
-              ) : (
-                <View style={styles.profileAvatarPlaceholder}>
-                  <Text style={styles.profileAvatarText}>
-                    {getInitials(event)}
-                  </Text>
-                </View>
-              )}
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalCard}>
+          <View style={styles.modalHeader}>
+            <Image
+              source={getSportImage(event.sport_name)}
+              style={styles.modalSportImage}
+            />
 
-              <Text style={styles.profileNickname}>{event.nickname}</Text>
+            <View style={styles.modalHeaderInfo}>
+              <Text style={styles.modalTitle}>{event.sport_name}</Text>
 
-              <Text style={styles.profileName}>
-                {event.first_name} {event.last_name}
+              <Text style={styles.modalSubtitle}>
+                {event.nickname} · {event.city}
               </Text>
 
-              <Text style={styles.profileRating}>
-                ⭐ {formatRating(event.rating_avg)} ({event.games_count} games)
-              </Text>
+              <Text style={styles.ratingText}>★ {formatRating(event)}</Text>
             </View>
+          </View>
 
-            <View style={styles.profileInfoBlock}>
-              <Text style={styles.profileInfoText}>Age: {event.age}</Text>
+          <View style={styles.infoBlock}>
+            <Text style={styles.infoText}>Level: {event.level}</Text>
 
-              <Text style={styles.profileInfoText}>Sex: {event.sex}</Text>
+            <Text style={styles.infoText}>
+              Date: {formatDate(event.available_date)}
+            </Text>
 
-              <Text style={styles.profileInfoText}>
-                Location: {event.city}, {event.country}
-              </Text>
+            <Text style={styles.infoText}>
+              Time: {event.time_from.slice(0, 5)} - {event.time_to.slice(0, 5)}
+            </Text>
 
-              <Text style={styles.profileInfoText}>
-                Sport: {event.sport_name}
-              </Text>
+            <Text style={styles.infoText}>Match type: {event.match_type}</Text>
 
-              <Text style={styles.profileInfoText}>Level: {event.level}</Text>
+            <Text style={styles.infoText}>
+              Location:{" "}
+              {event.location_mode === "city"
+                ? event.event_city
+                : `${event.radius_km} km radius`}
+            </Text>
+          </View>
 
-              <Text style={styles.profileInfoText}>
-                Ratings: {event.rating_count}
-              </Text>
-            </View>
+          <View style={styles.profileBlock}>
+            <Text style={styles.profileTitle}>Player profile</Text>
+
+            <Text style={styles.profileText}>
+              {event.first_name} {event.last_name}
+            </Text>
+
+            <Text style={styles.profileText}>
+              Age: {event.age} · {event.sex}
+            </Text>
+
+            <Text style={styles.profileText}>
+              {event.city}, {event.country}
+            </Text>
 
             {event.about_me && (
-              <View style={styles.profileAboutBlock}>
-                <Text style={styles.profileAboutTitle}>About me</Text>
-
-                <Text style={styles.profileAboutText}>{event.about_me}</Text>
-              </View>
+              <Text style={styles.aboutMe}>{event.about_me}</Text>
             )}
+          </View>
 
+          <View style={styles.modalActions}>
             <Pressable
               style={({ pressed }) => [
-                styles.profileCloseButton,
+                styles.closeButton,
                 pressed && styles.buttonPressed,
               ]}
               onPress={onClose}
             >
-              <Text style={styles.profileCloseButtonText}>Close</Text>
+              <Text style={styles.closeButtonText}>Close</Text>
             </Pressable>
-          </ScrollView>
+
+            {isMyEvent ? (
+              <>
+                <Pressable
+                  style={({ pressed }) => [
+                    styles.secondaryButton,
+                    pressed && styles.buttonPressed,
+                  ]}
+                >
+                  <Text style={styles.secondaryButtonText}>Edit</Text>
+                </Pressable>
+
+                <Pressable
+                  style={({ pressed }) => [
+                    styles.deleteButton,
+                    pressed && styles.buttonPressed,
+                  ]}
+                >
+                  <Text style={styles.actionButtonText}>Delete</Text>
+                </Pressable>
+              </>
+            ) : (
+              <>
+                <Pressable
+                  style={({ pressed }) => [
+                    styles.secondaryButton,
+                    pressed && styles.buttonPressed,
+                  ]}
+                >
+                  <Text style={styles.secondaryButtonText}>Message</Text>
+                </Pressable>
+              </>
+            )}
+          </View>
         </View>
       </View>
     </Modal>
@@ -131,102 +169,52 @@ function EventProfileModal({
 
 function EventCard({
   event,
-  onOpenProfile,
+  onPress,
 }: {
   event: SportEvent;
-  onOpenProfile: (event: SportEvent) => void;
+  onPress: () => void;
 }) {
-  const [imageFailed, setImageFailed] = useState(false);
-
-  const shouldShowAvatar =
-    Boolean(event.avatar_url) &&
-    event.avatar_url.startsWith("http") &&
-    !imageFailed;
-
   return (
-    <View style={styles.card}>
-      <View style={styles.topRow}>
-        <Pressable
-          style={({ pressed }) => [
-            styles.avatarButton,
-            pressed && styles.buttonPressed,
-          ]}
-          onPress={() => onOpenProfile(event)}
-        >
-          {shouldShowAvatar ? (
-            <Image
-              source={{ uri: event.avatar_url }}
-              style={styles.avatar}
-              onError={() => setImageFailed(true)}
-            />
-          ) : (
-            <View style={styles.avatarPlaceholder}>
-              <Text style={styles.avatarPlaceholderText}>
-                {getInitials(event)}
-              </Text>
-            </View>
-          )}
-        </Pressable>
+    <Pressable
+      style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+      onPress={onPress}
+    >
+      <Image
+        source={getSportImage(event.sport_name)}
+        style={styles.cardImage}
+      />
 
-        <View style={styles.userInfo}>
-          <View style={styles.nameRow}>
-            <Text style={styles.nickname}>{event.nickname}</Text>
-
-            <Text style={styles.ratingBadge}>
-              ⭐ {formatRating(event.rating_avg)} ({event.games_count})
-            </Text>
-          </View>
-
-          <Text style={styles.name}>
-            {event.first_name} {event.last_name}
-          </Text>
-
-          <Text style={styles.location}>
-            {event.city}, {event.country}
-          </Text>
-        </View>
-      </View>
-
-      <View style={styles.infoBlock}>
-        <Text style={styles.sport}>{event.sport_name}</Text>
-
-        <Text style={styles.text}>Level: {event.level}</Text>
-
-        <Text style={styles.text}>
-          Date: {formatDate(event.available_date)}
+      <View style={styles.cardContent}>
+        <Text style={styles.sportName} numberOfLines={1}>
+          {event.sport_name}
         </Text>
 
-        <Text style={styles.text}>
-          Time: {event.time_from.slice(0, 5)} - {event.time_to.slice(0, 5)}
+        <Text style={styles.nickname} numberOfLines={1}>
+          {event.nickname}
         </Text>
 
-        <Text style={styles.text}>Match type: {event.match_type}</Text>
+        <Text style={styles.cardText} numberOfLines={1}>
+          {event.city}
+        </Text>
 
-        <Text style={styles.text}>
-          Location:{" "}
-          {event.location_mode === "city"
-            ? event.event_city
-            : `${event.radius_km} km radius`}
+        <Text style={styles.cardText}>{formatDate(event.available_date)}</Text>
+
+        <Text style={styles.ratingText} numberOfLines={1}>
+          ★ {formatRating(event)}
         </Text>
       </View>
-
-      {event.about_me && (
-        <Text style={styles.aboutMe} numberOfLines={3}>
-          {event.about_me}
-        </Text>
-      )}
-
-      <Pressable style={styles.joinButton}>
-        <Text style={styles.joinButtonText}>I want to join</Text>
-      </Pressable>
-    </View>
+    </Pressable>
   );
 }
 
 export default function EventsScreen() {
+  const { user } = useUser();
+
   const [events, setEvents] = useState<SportEvent[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedEvent, setSelectedEvent] = useState<SportEvent | null>(null);
+  const [cityFilter, setCityFilter] = useState("");
+  const [sortMode, setSortMode] = useState<SortMode>("date");
 
   const loadEvents = async () => {
     try {
@@ -248,6 +236,34 @@ export default function EventsScreen() {
     }, []),
   );
 
+  const visibleEvents = useMemo(() => {
+    const filteredEvents = events.filter((event) => {
+      if (!cityFilter.trim()) {
+        return true;
+      }
+
+      return event.city.toLowerCase().includes(cityFilter.toLowerCase());
+    });
+
+    return [...filteredEvents].sort((firstEvent, secondEvent) => {
+      if (sortMode === "sport") {
+        return firstEvent.sport_name.localeCompare(secondEvent.sport_name);
+      }
+
+      if (sortMode === "city") {
+        return firstEvent.city.localeCompare(secondEvent.city);
+      }
+
+      return (
+        new Date(firstEvent.available_date).getTime() -
+        new Date(secondEvent.available_date).getTime()
+      );
+    });
+  }, [events, cityFilter, sortMode]);
+
+  const isMySelectedEvent =
+    Boolean(selectedEvent) && selectedEvent?.clerk_user_id === user?.id;
+
   if (isLoading) {
     return (
       <View style={styles.centerContainer}>
@@ -260,11 +276,6 @@ export default function EventsScreen() {
 
   return (
     <View style={styles.container}>
-      <EventProfileModal
-        event={selectedEvent}
-        onClose={() => setSelectedEvent(null)}
-      />
-
       <View style={styles.header}>
         <Text style={styles.title}>Events</Text>
 
@@ -273,25 +284,75 @@ export default function EventsScreen() {
         </Text>
       </View>
 
-      {events.length === 0 ? (
+      <View style={styles.filterBlock}>
+        <TextInput
+          style={styles.searchInput}
+          value={cityFilter}
+          onChangeText={setCityFilter}
+          placeholder="Filter by city..."
+          placeholderTextColor={colors.secondaryText}
+        />
+
+        <View style={styles.sortRow}>
+          <Pressable
+            style={[
+              styles.sortButton,
+              sortMode === "date" && styles.sortButtonActive,
+            ]}
+            onPress={() => setSortMode("date")}
+          >
+            <Text style={styles.sortButtonText}>Date</Text>
+          </Pressable>
+
+          <Pressable
+            style={[
+              styles.sortButton,
+              sortMode === "sport" && styles.sortButtonActive,
+            ]}
+            onPress={() => setSortMode("sport")}
+          >
+            <Text style={styles.sortButtonText}>Sport</Text>
+          </Pressable>
+
+          <Pressable
+            style={[
+              styles.sortButton,
+              sortMode === "city" && styles.sortButtonActive,
+            ]}
+            onPress={() => setSortMode("city")}
+          >
+            <Text style={styles.sortButtonText}>City</Text>
+          </Pressable>
+        </View>
+      </View>
+
+      {visibleEvents.length === 0 ? (
         <View style={styles.emptyBlock}>
-          <Text style={styles.emptyTitle}>No events yet</Text>
+          <Text style={styles.emptyTitle}>No events found</Text>
 
           <Text style={styles.emptyText}>
-            When users publish their searches, they will appear here.
+            Try changing city filter or search parameters.
           </Text>
         </View>
       ) : (
         <FlatList
-          data={events}
+          data={visibleEvents}
           keyExtractor={(item) => String(item.id)}
           renderItem={({ item }) => (
-            <EventCard event={item} onOpenProfile={setSelectedEvent} />
+            <EventCard event={item} onPress={() => setSelectedEvent(item)} />
           )}
+          numColumns={3}
+          columnWrapperStyle={styles.row}
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
         />
       )}
+
+      <EventDetailsModal
+        event={selectedEvent}
+        isMyEvent={isMySelectedEvent}
+        onClose={() => setSelectedEvent(null)}
+      />
     </View>
   );
 }

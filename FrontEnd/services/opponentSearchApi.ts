@@ -1,6 +1,6 @@
 import {
 	OpponentSearchFilters,
-	OpponentSearchResult,
+	OpponentSearchResponse,
 } from "../types/opponentSearch";
 
 const API_URL = "http://192.168.32.127:5001";
@@ -13,7 +13,7 @@ export type SearchOpponentsParams = OpponentSearchFilters & {
 
 export async function searchOpponents(
 	filters: SearchOpponentsParams,
-): Promise<OpponentSearchResult[]> {
+): Promise<OpponentSearchResponse> {
 	const response = await fetch(`${API_URL}/api/sports/search-opponents`, {
 		method: "POST",
 		headers: {
@@ -28,5 +28,9 @@ export async function searchOpponents(
 		throw new Error(data.message ?? "Search failed");
 	}
 
-	return data.opponents;
+	return {
+		eventOpponents: data.eventOpponents ?? [],
+		profileOpponents: data.profileOpponents ?? [],
+		opponents: data.opponents ?? [],
+	};
 }

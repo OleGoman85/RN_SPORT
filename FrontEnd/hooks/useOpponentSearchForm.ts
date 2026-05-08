@@ -11,6 +11,7 @@ import {
 import { searchOpponents } from "../services/opponentSearchApi";
 import {
 	OpponentSearchFilters,
+	OpponentSearchResponse,
 	OpponentSearchResult,
 	SearchLocationMode,
 } from "../types/opponentSearch";
@@ -25,7 +26,6 @@ const formatTime = (date: Date) => {
 export function useOpponentSearchForm(sportName: string) {
 	const { user } = useUser();
 
-	// ===== STATE =====
 	const [level, setLevel] = useState<OpponentLevel>("Any");
 	const [languages, setLanguages] = useState<OpponentLanguage[]>(["Any"]);
 	const [ageMin, setAgeMin] = useState(18);
@@ -56,7 +56,6 @@ export function useOpponentSearchForm(sportName: string) {
 	const [isLoading, setIsLoading] = useState(false);
 	const [results, setResults] = useState<OpponentSearchResult[]>([]);
 
-	// ===== TOGGLE DATE =====
 	const handleToggleDate = (date: string) => {
 		setSelectedDates((currentDates) => {
 			if (currentDates.includes(date)) {
@@ -67,7 +66,6 @@ export function useOpponentSearchForm(sportName: string) {
 		});
 	};
 
-	// ===== TOGGLE LANGUAGE =====
 	const handleToggleLanguage = (language: OpponentLanguage) => {
 		if (language === "Any") {
 			setLanguages(["Any"]);
@@ -91,7 +89,6 @@ export function useOpponentSearchForm(sportName: string) {
 		});
 	};
 
-	// ===== TOGGLE SEX =====
 	const handleToggleSex = (selectedSex: OpponentSex) => {
 		setSex((currentSex) => {
 			if (currentSex.includes(selectedSex)) {
@@ -106,7 +103,6 @@ export function useOpponentSearchForm(sportName: string) {
 		});
 	};
 
-	// ===== USE MY LOCATION =====
 	const handleUseMyLocation = async () => {
 		try {
 			const permission = await Location.requestForegroundPermissionsAsync();
@@ -126,8 +122,7 @@ export function useOpponentSearchForm(sportName: string) {
 		}
 	};
 
-	// ===== SEARCH =====
-	const handleSearch = async (): Promise<OpponentSearchResult[] | null> => {
+	const handleSearch = async (): Promise<OpponentSearchResponse | null> => {
 		if (!user?.id) {
 			Alert.alert("User is not loaded yet");
 			return null;
@@ -165,23 +160,19 @@ export function useOpponentSearchForm(sportName: string) {
 			matchType,
 		};
 
-		console.log("🔎 Sending filters:", filters);
-
 		setIsLoading(true);
 
 		try {
-			const opponents = await searchOpponents({
+			const response = await searchOpponents({
 				current_clerk_user_id: user.id,
 				latitude,
 				longitude,
 				...filters,
 			});
 
-			console.log("✅ Results:", opponents);
+			setResults(response.opponents);
 
-			setResults(opponents);
-
-			return opponents;
+			return response;
 		} catch (error) {
 			console.log("Search error:", error);
 			Alert.alert("Error", "Could not search opponents");
@@ -192,7 +183,6 @@ export function useOpponentSearchForm(sportName: string) {
 	};
 
 	return {
-		// state
 		level,
 		languages,
 		ageMin,
@@ -211,7 +201,6 @@ export function useOpponentSearchForm(sportName: string) {
 		isLoading,
 		publishToEvents,
 
-		// state functions
 		setLevel,
 		setAgeMin,
 		setAgeMax,
@@ -223,7 +212,6 @@ export function useOpponentSearchForm(sportName: string) {
 		setMatchType,
 		setPublishToEvents,
 
-		// handlers
 		handleToggleDate,
 		handleToggleLanguage,
 		handleToggleSex,

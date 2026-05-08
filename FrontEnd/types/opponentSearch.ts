@@ -7,8 +7,6 @@ import {
 
 export type SearchLocationMode = "near_me" | "city";
 
-export type MatchSource = "event" | "profile";
-
 export type OpponentSearchFilters = {
 	sportName: string;
 	level: OpponentLevel;
@@ -41,28 +39,35 @@ export type OpponentSearchResult = {
 	avatar_url: string;
 	latitude: string | number | null;
 	longitude: string | number | null;
-	rating_avg: string | number;
-	rating_count: number;
-	games_count: number;
 	sport_name: string;
 	level: string;
 	available_date: string | null;
 	time_from: string | null;
 	time_to: string | null;
-	match_type: string | null;
-	match_source: MatchSource;
+	match_type: string;
 	distance_km: number | null;
+	match_source: "event" | "profile";
+	rating_avg: number | null;
+	rating_count: number;
+	games_count: number;
+};
+
+export type OpponentSearchResponse = {
+	eventOpponents: OpponentSearchResult[];
+	profileOpponents: OpponentSearchResult[];
+	opponents: OpponentSearchResult[];
 };
 
 export type SportEvent = {
 	id: number;
+	user_id: number;
 	sport_name: string;
 	level: string;
 	available_date: string;
 	time_from: string;
 	time_to: string;
 	match_type: string;
-	location_mode: string;
+	location_mode: SearchLocationMode;
 	radius_km: number | null;
 	event_city: string | null;
 	event_latitude: string | number | null;
@@ -78,7 +83,20 @@ export type SportEvent = {
 	country: string;
 	city: string;
 	avatar_url: string;
-	rating_avg: string | number;
+	rating_avg: number | null;
 	rating_count: number;
 	games_count: number;
+};
+
+export type UpdateSportEventParams = {
+	current_clerk_user_id: string;
+	available_date: string;
+	time_from: string;
+	time_to: string;
+	match_type: string;
+	location_mode: SearchLocationMode;
+	radius_km: number | null;
+	city: string | null;
+	latitude: number | null;
+	longitude: number | null;
 };

@@ -1,7 +1,7 @@
 import { Modal, Pressable, ScrollView, Text, View } from "react-native";
 import { useOpponentSearchForm } from "../../hooks/useOpponentSearchForm";
 import { styles } from "../../styles/opponentSearch.styles";
-import { OpponentSearchResult } from "../../types/opponentSearch";
+import { OpponentSearchResponse } from "../../types/opponentSearch";
 import { AgeRangeSelector } from "./AgeRangeSelector";
 import { DateSelector } from "./DateSelector";
 import { GenderSelector } from "./GenderSelector";
@@ -15,7 +15,7 @@ type OpponentSearchModalProps = {
   visible: boolean;
   sportName: string;
   onClose: () => void;
-  onSearchFinished: (opponents: OpponentSearchResult[]) => void;
+  onSearchFinished: (response: OpponentSearchResponse) => void;
 };
 
 export const OpponentSearchModal = ({
@@ -27,14 +27,14 @@ export const OpponentSearchModal = ({
   const opponentSearchForm = useOpponentSearchForm(sportName);
 
   const handlePressSearch = async () => {
-    const opponents = await opponentSearchForm.handleSearch();
+    const response = await opponentSearchForm.handleSearch();
 
-    if (opponents === null) {
+    if (response === null) {
       return;
     }
 
     onClose();
-    onSearchFinished(opponents);
+    onSearchFinished(response);
   };
 
   return (

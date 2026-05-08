@@ -13,7 +13,7 @@ import { OpponentSearchModal } from "../../components/opponent-search/OpponentSe
 import { colors } from "../../constants/colors";
 import { sports, type Sport } from "../../data/sports";
 import { styles } from "../../styles/home.styles";
-import { OpponentSearchResult } from "../../types/opponentSearch";
+import { OpponentSearchResponse } from "../../types/opponentSearch";
 
 export default function HomeScreen() {
   const [searchText, setSearchText] = useState("");
@@ -42,12 +42,13 @@ export default function HomeScreen() {
     setIsSearchModalVisible(false);
   };
 
-  const handleSearchFinished = (opponents: OpponentSearchResult[]) => {
+  const handleSearchFinished = (response: OpponentSearchResponse) => {
     router.push({
       pathname: "/(home)/opponent-results",
       params: {
         sportName: selectedSportName,
-        opponents: JSON.stringify(opponents),
+        eventOpponents: JSON.stringify(response.eventOpponents),
+        profileOpponents: JSON.stringify(response.profileOpponents),
       },
     });
   };
