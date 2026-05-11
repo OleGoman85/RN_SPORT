@@ -2,320 +2,140 @@ import { StyleSheet } from "react-native";
 import { colors } from "../constants/colors";
 
 export const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		backgroundColor: colors.background,
-		paddingHorizontal: 12,
-	},
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
+    paddingHorizontal: 16,
+    paddingTop: 14,
+  },
 
-	centerContainer: {
-		flex: 1,
-		backgroundColor: colors.background,
-		justifyContent: "center",
-		alignItems: "center",
-	},
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 16,
+  },
 
-	loadingText: {
-		color: colors.secondaryText,
-		fontSize: 15,
-		marginTop: 12,
-	},
+  title: {
+    color: colors.text,
+    fontSize: 28,
+    fontWeight: "900",
+  },
 
-	header: {
-		paddingTop: 14,
-		marginBottom: 14,
-	},
+  subtitle: {
+    color: colors.secondaryText,
+    fontSize: 13,
+    fontWeight: "600",
+    marginTop: 4,
+  },
 
-	title: {
-		color: colors.text,
-		fontSize: 34,
-		fontWeight: "900",
-	},
+  headerIcon: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: colors.card,
+    borderWidth: 1,
+    borderColor: colors.border,
+    alignItems: "center",
+    justifyContent: "center",
+  },
 
-	subtitle: {
-		color: colors.secondaryText,
-		fontSize: 15,
-		marginTop: 4,
-		lineHeight: 21,
-	},
+  searchBox: {
+    height: 48,
+    borderRadius: 16,
+    backgroundColor: colors.card,
+    borderWidth: 1,
+    borderColor: colors.border,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 14,
+    gap: 8,
+    marginBottom: 14,
+  },
 
-	filterBlock: {
-		marginBottom: 14,
-		gap: 10,
-	},
+  searchInput: {
+    flex: 1,
+    color: colors.text,
+    fontSize: 15,
+    fontWeight: "600",
+  },
 
-	searchInput: {
-		height: 48,
-		backgroundColor: "rgba(30, 41, 59, 0.94)",
-		borderWidth: 1,
-		borderColor: colors.borderCol,
-		borderRadius: 16,
-		paddingHorizontal: 16,
-		color: colors.text,
-		fontSize: 15,
-	},
+  filtersRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    marginBottom: 16,
+  },
 
-	sortRow: {
-		flexDirection: "row",
-		gap: 8,
-	},
+  filterButton: {
+    flex: 1,
+    minHeight: 40,
+    borderRadius: 20,
+    backgroundColor: colors.card,
+    borderWidth: 1,
+    borderColor: colors.border,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 10,
+  },
 
-	sortButton: {
-		flex: 1,
-		backgroundColor: "rgba(15, 23, 42, 0.95)",
-		borderWidth: 1,
-		borderColor: colors.borderCol,
-		borderRadius: 14,
-		paddingVertical: 10,
-		alignItems: "center",
-	},
+  filterButtonActive: {
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
+  },
 
-	sortButtonActive: {
-		backgroundColor: colors.primary,
-		borderColor: colors.primary,
-	},
+  filterText: {
+    color: colors.secondaryText,
+    fontSize: 12,
+    fontWeight: "900",
+    textAlign: "center",
+  },
 
-	sortButtonText: {
-		color: colors.text,
-		fontSize: 13,
-		fontWeight: "900",
-	},
+  filterTextActive: {
+    color: colors.background,
+  },
 
-	listContent: {
-		paddingBottom: 28,
-	},
+  centerBlock: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingBottom: 80,
+  },
 
-	row: {
-		gap: 10,
-		marginBottom: 12,
-	},
+  loadingText: {
+    color: colors.secondaryText,
+    fontSize: 14,
+    fontWeight: "700",
+    marginTop: 12,
+  },
 
-	card: {
-		flex: 1,
-		backgroundColor: "rgba(30, 41, 59, 0.94)",
-		borderRadius: 16,
-		overflow: "hidden",
-		borderWidth: 1,
-		borderColor: colors.border,
-	},
+  emptyBlock: {
+    backgroundColor: colors.card,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 18,
+    padding: 18,
+  },
 
-	cardPressed: {
-		opacity: 0.78,
-		transform: [
-			{
-				scale: 0.98,
-			},
-		],
-	},
+  emptyTitle: {
+    color: colors.text,
+    fontSize: 17,
+    fontWeight: "900",
+    marginBottom: 6,
+  },
 
-	cardImage: {
-		width: "100%",
-		height: 82,
-	},
+  emptyText: {
+    color: colors.secondaryText,
+    fontSize: 13,
+    fontWeight: "600",
+    lineHeight: 19,
+  },
 
-	cardContent: {
-		padding: 8,
-	},
+  listContent: {
+    paddingBottom: 110,
+  },
 
-	sportName: {
-		color: colors.primary,
-		fontSize: 12,
-		fontWeight: "900",
-		marginBottom: 3,
-	},
-
-	nickname: {
-		color: colors.text,
-		fontSize: 12,
-		fontWeight: "800",
-		marginBottom: 3,
-	},
-
-	cardText: {
-		color: "#cbd5e1",
-		fontSize: 10,
-		fontWeight: "600",
-		marginBottom: 2,
-	},
-
-	ratingText: {
-		color: "#ffb86b",
-		fontSize: 11,
-		fontWeight: "900",
-		marginTop: 2,
-	},
-
-	emptyBlock: {
-		flex: 1,
-		justifyContent: "center",
-		alignItems: "center",
-		paddingHorizontal: 28,
-	},
-
-	emptyTitle: {
-		color: colors.text,
-		fontSize: 24,
-		fontWeight: "900",
-		marginBottom: 8,
-	},
-
-	emptyText: {
-		color: colors.secondaryText,
-		fontSize: 15,
-		textAlign: "center",
-		lineHeight: 22,
-	},
-
-	modalOverlay: {
-		flex: 1,
-		backgroundColor: "rgba(0, 0, 0, 0.72)",
-		justifyContent: "center",
-		padding: 18,
-	},
-
-	modalCard: {
-		backgroundColor: colors.background,
-		borderWidth: 1,
-		borderColor: colors.border,
-		borderRadius: 24,
-		padding: 16,
-	},
-
-	modalHeader: {
-		flexDirection: "row",
-		gap: 12,
-		marginBottom: 14,
-	},
-
-	modalSportImage: {
-		width: 86,
-		height: 86,
-		borderRadius: 18,
-	},
-
-	modalHeaderInfo: {
-		flex: 1,
-		justifyContent: "center",
-	},
-
-	modalTitle: {
-		color: colors.primary,
-		fontSize: 24,
-		fontWeight: "900",
-	},
-
-	modalSubtitle: {
-		color: colors.text,
-		fontSize: 15,
-		fontWeight: "800",
-		marginTop: 4,
-	},
-
-	infoBlock: {
-		backgroundColor: "rgba(15, 23, 42, 0.78)",
-		borderWidth: 1,
-		borderColor: colors.borderCol,
-		borderRadius: 16,
-		padding: 12,
-		gap: 5,
-		marginBottom: 12,
-	},
-
-	infoText: {
-		color: colors.secondaryText,
-		fontSize: 13,
-		fontWeight: "700",
-	},
-
-	profileBlock: {
-		backgroundColor: "rgba(15, 23, 42, 0.78)",
-		borderWidth: 1,
-		borderColor: colors.borderCol,
-		borderRadius: 16,
-		padding: 12,
-		marginBottom: 14,
-	},
-
-	profileTitle: {
-		color: colors.text,
-		fontSize: 16,
-		fontWeight: "900",
-		marginBottom: 8,
-	},
-
-	profileText: {
-		color: colors.secondaryText,
-		fontSize: 13,
-		fontWeight: "700",
-		marginBottom: 4,
-	},
-
-	aboutMe: {
-		color: "#cbd5e1",
-		fontSize: 13,
-		lineHeight: 18,
-		marginTop: 8,
-	},
-
-	modalActions: {
-		flexDirection: "row",
-		gap: 8,
-	},
-
-	closeButton: {
-		flex: 1,
-		borderWidth: 1,
-		borderColor: colors.border,
-		borderRadius: 14,
-		paddingVertical: 13,
-		alignItems: "center",
-	},
-
-	closeButtonText: {
-		color: colors.secondaryText,
-		fontSize: 13,
-		fontWeight: "900",
-	},
-
-	secondaryButton: {
-		flex: 1,
-		backgroundColor: "rgba(255, 122, 0, 0.18)",
-		borderWidth: 1,
-		borderColor: colors.primary,
-		borderRadius: 14,
-		paddingVertical: 13,
-		alignItems: "center",
-	},
-
-	secondaryButtonText: {
-		color: "#ffb86b",
-		fontSize: 13,
-		fontWeight: "900",
-	},
-
-	joinButton: {
-		flex: 1,
-		backgroundColor: colors.primary,
-		borderRadius: 14,
-		paddingVertical: 13,
-		alignItems: "center",
-	},
-
-	deleteButton: {
-		flex: 1,
-		backgroundColor: "#ef4444",
-		borderRadius: 14,
-		paddingVertical: 13,
-		alignItems: "center",
-	},
-
-	actionButtonText: {
-		color: colors.text,
-		fontSize: 13,
-		fontWeight: "900",
-	},
-
-	buttonPressed: {
-		opacity: 0.75,
-	},
+  buttonPressed: {
+    opacity: 0.75,
+  },
 });

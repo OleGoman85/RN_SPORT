@@ -7,12 +7,12 @@ import {
   ScrollView,
   Text,
 } from "react-native";
-import { LanguagesSelector } from "../../components/LanguagesSelector";
-import { ProfileHeader } from "../../components/ProfileHeader";
-import { ProfileInfoCard } from "../../components/ProfileInfoCard";
-import { SportsSelector } from "../../components/SportsSelector";
-import { useProfileForm } from "../../hooks/useProfileForm";
-import { styles } from "../../styles/profile.styles";
+import { LanguagesSelector } from "../../../components/LanguagesSelector";
+import { ProfileHeader } from "../../../components/ProfileHeader";
+import { ProfileInfoCard } from "../../../components/ProfileInfoCard";
+import { SportsSelector } from "../../../components/SportsSelector";
+import { useProfileForm } from "../../../hooks/useProfileForm";
+import { styles } from "../../../styles/profile.styles";
 
 export default function ProfileScreen() {
   const { signOut } = useClerk();

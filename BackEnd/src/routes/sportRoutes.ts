@@ -3,612 +3,352 @@ import { sql } from "../config/db";
 
 const router = express.Router();
 
+type DayFilter = "all" | "today" | "tomorrow" | "week";
+
 function isValidString(value: unknown) {
-	return typeof value === "string" && value.trim().length > 0;
+  return typeof value === "string" && value.trim().length > 0;
 }
 
 function isValidNumber(value: unknown) {
-	return typeof value === "number" && !Number.isNaN(value);
+  return typeof value === "number" && !Number.isNaN(value);
 }
 
-function isValidStringArray(value: unknown) {
-	return (
-		Array.isArray(value) &&
-		value.length > 0 &&
-		value.every((item) => typeof item === "string")
-	);
+function getDayFilter(value: unknown): DayFilter {
+  if (value === "today" || value === "tomorrow" || value === "week") {
+    return value;
+  }
+
+  return "all";
 }
 
 router.get("/events", async (req, res) => {
-	try {
-		const events = await sql`
-			SELECT
-				sport_events.id,
-				sport_events.user_id,
-				sport_events.sport_name,
-				sport_events.level,
-				sport_events.available_date,
-				sport_events.time_from,
-				sport_events.time_to,
-				sport_events.match_type,
-				sport_events.location_mode,
-				sport_events.radius_km,
-				sport_events.city AS event_city,
-				sport_events.latitude AS event_latitude,
-				sport_events.longitude AS event_longitude,
-				sport_events.created_at,
+  try {
+    const dayFilter = getDayFilter(req.query.day);
+    const search = typeof req.query.search === "string" ? req.query.search.trim() : "";
+    const sport = typeof req.query.sport === "string" ? req.query.sport.trim() : "";
+    const latitude = Number(req.query.latitude);
+    const longitude = Number(req.query.longitude);
+    const hasCoordinates = !Number.isNaN(latitude) && !Number.isNaN(longitude);
 
-				users.clerk_user_id,
-				users.first_name,
-				users.last_name,
-				users.nickname,
-				users.about_me,
-				users.age,
-				users.sex,
-				users.country,
-				users.city,
-				users.avatar_url
-			FROM sport_events
+    const events = await sql`
+      SELECT
+        sport_events.id,
+        sport_events.sport_name,
+        sport_events.event_name,
+        sport_events.event_description,
+        sport_events.available_date,
+        sport_events.time_from,
+        sport_events.location_name,
+        sport_events.city AS event_city,
+        sport_events.latitude AS event_latitude,
+        sport_events.longitude AS event_longitude,
+        sport_events.max_participants,
+        sport_events.current_participants,
+        sport_events.event_image_url,
+        sport_events.created_at,
+        users.clerk_user_id,
+        users.first_name,
+        users.last_name,
+        users.nickname,
+        users.about_me,
+        users.age,
+        users.sex,
+        users.country,
+        users.city,
+        users.avatar_url,
+        users.rating_avg,
+        users.rating_count,
+        users.games_count,
+        CASE
+          WHEN ${hasCoordinates} = TRUE
+          AND sport_events.latitude IS NOT NULL
+          AND sport_events.longitude IS NOT NULL
+          THEN (
+            6371 * acos(
+              LEAST(
+                1,
+                GREATEST(
+                  -1,
+                  cos(radians(${hasCoordinates ? latitude : 0}))
+                  * cos(radians(sport_events.latitude::float))
+                  * cos(radians(sport_events.longitude::float) - radians(${hasCoordinates ? longitude : 0}))
+                  + sin(radians(${hasCoordinates ? latitude : 0}))
+                  * sin(radians(sport_events.latitude::float))
+                )
+              )
+            )
+          )
+          ELSE NULL
+        END AS distance_km
+      FROM sport_events
+      INNER JOIN users ON users.id = sport_events.user_id
+      WHERE sport_events.is_active = TRUE
+      AND sport_events.available_date >= CURRENT_DATE
+      AND (${sport} = '' OR LOWER(sport_events.sport_name) = LOWER(${sport}))
+      AND (
+        ${search} = ''
+        OR LOWER(sport_events.sport_name) LIKE LOWER(${'%' + search + '%'})
+        OR LOWER(sport_events.event_name) LIKE LOWER(${'%' + search + '%'})
+      )
+      AND (
+        ${dayFilter} = 'all'
+        OR (${dayFilter} = 'today' AND sport_events.available_date = CURRENT_DATE)
+        OR (${dayFilter} = 'tomorrow' AND sport_events.available_date = CURRENT_DATE + INTERVAL '1 day')
+        OR (
+          ${dayFilter} = 'week'
+          AND sport_events.available_date >= CURRENT_DATE
+          AND sport_events.available_date < CURRENT_DATE + INTERVAL '7 days'
+        )
+      )
+      ORDER BY
+        distance_km ASC NULLS LAST,
+        sport_events.available_date ASC,
+        sport_events.time_from ASC,
+        sport_events.created_at DESC
+    `;
 
-			INNER JOIN users
-				ON users.id = sport_events.user_id
-
-			WHERE sport_events.is_active = TRUE
-			AND sport_events.available_date >= CURRENT_DATE
-
-			ORDER BY
-				sport_events.available_date ASC,
-				sport_events.time_from ASC,
-				sport_events.created_at DESC
-		`;
-
-		return res.status(200).json({
-			events,
-		});
-	} catch (error) {
-		console.log("Error loading events", error);
-
-		return res.status(500).json({
-			message: "Internal server error",
-		});
-	}
+    return res.status(200).json({ events });
+  } catch (error) {
+    console.log("Error loading events", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
 });
 
-router.put("/events/:eventId", async (req, res) => {
-	try {
-		const { eventId } = req.params;
+router.post("/events", async (req, res) => {
+  try {
+    const {
+      current_clerk_user_id,
+      sport_name,
+      event_name,
+      event_description,
+      available_date,
+      time_from,
+      location_name,
+      city,
+      latitude,
+      longitude,
+      max_participants,
+      event_image_url,
+    } = req.body;
 
-		const {
-			current_clerk_user_id,
-			available_date,
-			time_from,
-			time_to,
-			match_type,
-			location_mode,
-			radius_km,
-			city,
-			latitude,
-			longitude,
-		} = req.body;
+    if (
+      !isValidString(current_clerk_user_id) ||
+      !isValidString(sport_name) ||
+      !isValidString(event_name) ||
+      !isValidString(available_date) ||
+      !isValidString(time_from) ||
+      !isValidString(location_name) ||
+      !isValidNumber(max_participants)
+    ) {
+      return res.status(400).json({ message: "Missing required event fields." });
+    }
 
-		if (!isValidString(current_clerk_user_id)) {
-			return res.status(400).json({
-				message: "Current user id is required.",
-			});
-		}
+    if (max_participants < 1 || max_participants > 100) {
+      return res.status(400).json({ message: "Max participants must be between 1 and 100." });
+    }
 
-		if (
-			!isValidString(available_date) ||
-			!isValidString(time_from) ||
-			!isValidString(time_to) ||
-			!isValidString(match_type) ||
-			!isValidString(location_mode)
-		) {
-			return res.status(400).json({
-				message: "Missing required event fields.",
-			});
-		}
+    const users = await sql`
+      SELECT id
+      FROM users
+      WHERE clerk_user_id = ${current_clerk_user_id}
+    `;
 
-		if (location_mode !== "near_me" && location_mode !== "city") {
-			return res.status(400).json({
-				message: "Invalid location mode.",
-			});
-		}
+    if (users.length === 0) {
+      return res.status(404).json({ message: "Current user profile was not found." });
+    }
 
-		if (location_mode === "city" && !isValidString(city)) {
-			return res.status(400).json({
-				message: "City is required.",
-			});
-		}
+    const createdEvents = await sql`
+      INSERT INTO sport_events (
+        user_id,
+        sport_name,
+        event_name,
+        event_description,
+        available_date,
+        time_from,
+        location_name,
+        city,
+        latitude,
+        longitude,
+        max_participants,
+        current_participants,
+        event_image_url,
+        is_active
+      )
+      VALUES (
+        ${users[0].id},
+        ${sport_name.trim()},
+        ${event_name.trim()},
+        ${isValidString(event_description) ? event_description.trim() : null},
+        ${available_date}::date,
+        ${time_from}::time,
+        ${location_name.trim()},
+        ${isValidString(city) ? city.trim() : null},
+        ${isValidNumber(latitude) ? latitude : null},
+        ${isValidNumber(longitude) ? longitude : null},
+        ${max_participants},
+        1,
+        ${isValidString(event_image_url) ? event_image_url.trim() : null},
+        TRUE
+      )
+      RETURNING *
+    `;
 
-		const currentUsers = await sql`
-			SELECT id
-			FROM users
-			WHERE clerk_user_id = ${current_clerk_user_id}
-		`;
+    await sql`
+      INSERT INTO sport_event_members (event_id, user_id)
+      VALUES (${createdEvents[0].id}, ${users[0].id})
+      ON CONFLICT (event_id, user_id)
+      DO NOTHING
+    `;
 
-		if (currentUsers.length === 0) {
-			return res.status(404).json({
-				message: "Current user profile was not found.",
-			});
-		}
+    return res.status(201).json({ event: createdEvents[0] });
+  } catch (error) {
+    console.log("Error creating event", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+});
 
-		const currentUserId = currentUsers[0].id;
+router.post("/events/:eventId/join", async (req, res) => {
+  try {
+    const numericEventId = Number(req.params.eventId);
+    const { current_clerk_user_id } = req.body;
 
-		const updatedEvents = await sql`
-			UPDATE sport_events
-			SET
-				available_date = ${available_date}::date,
-				time_from = ${time_from}::time,
-				time_to = ${time_to}::time,
-				match_type = ${match_type},
-				location_mode = ${location_mode},
-				radius_km = ${radius_km},
-				city = ${city},
-				latitude = ${latitude},
-				longitude = ${longitude}
-			WHERE id = ${Number(eventId)}
-			AND user_id = ${currentUserId}
-			AND is_active = TRUE
-			RETURNING *
-		`;
+    if (Number.isNaN(numericEventId)) {
+      return res.status(400).json({ message: "Invalid event id." });
+    }
 
-		if (updatedEvents.length === 0) {
-			return res.status(404).json({
-				message: "Event was not found or you are not allowed to edit it.",
-			});
-		}
+    if (!isValidString(current_clerk_user_id)) {
+      return res.status(400).json({ message: "Current user id is required." });
+    }
 
-		return res.status(200).json({
-			event: updatedEvents[0],
-		});
-	} catch (error) {
-		console.log("Error updating event", error);
+    const users = await sql`
+      SELECT id
+      FROM users
+      WHERE clerk_user_id = ${current_clerk_user_id}
+    `;
 
-		return res.status(500).json({
-			message: "Internal server error",
-		});
-	}
+    if (users.length === 0) {
+      return res.status(404).json({ message: "Current user profile was not found." });
+    }
+
+    const events = await sql`
+      SELECT id, user_id, max_participants, current_participants
+      FROM sport_events
+      WHERE id = ${numericEventId}
+      AND is_active = TRUE
+    `;
+
+    if (events.length === 0) {
+      return res.status(404).json({ message: "Event was not found." });
+    }
+
+    if (events[0].user_id === users[0].id) {
+      return res.status(400).json({ message: "You are already the creator of this event." });
+    }
+
+    if (events[0].current_participants >= events[0].max_participants) {
+      return res.status(400).json({ message: "This event is full." });
+    }
+
+    const insertedMembers = await sql`
+      INSERT INTO sport_event_members (event_id, user_id)
+      VALUES (${numericEventId}, ${users[0].id})
+      ON CONFLICT (event_id, user_id)
+      DO NOTHING
+      RETURNING *
+    `;
+
+    if (insertedMembers.length > 0) {
+      await sql`
+        UPDATE sport_events
+        SET current_participants = current_participants + 1,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = ${numericEventId}
+      `;
+    }
+
+    const updatedEvents = await sql`
+      SELECT
+        sport_events.id,
+        sport_events.sport_name,
+        sport_events.event_name,
+        sport_events.event_description,
+        sport_events.available_date,
+        sport_events.time_from,
+        sport_events.location_name,
+        sport_events.city AS event_city,
+        sport_events.latitude AS event_latitude,
+        sport_events.longitude AS event_longitude,
+        sport_events.max_participants,
+        sport_events.current_participants,
+        sport_events.event_image_url,
+        sport_events.created_at,
+        users.clerk_user_id,
+        users.first_name,
+        users.last_name,
+        users.nickname,
+        users.about_me,
+        users.age,
+        users.sex,
+        users.country,
+        users.city,
+        users.avatar_url,
+        users.rating_avg,
+        users.rating_count,
+        users.games_count,
+        NULL AS distance_km
+      FROM sport_events
+      INNER JOIN users ON users.id = sport_events.user_id
+      WHERE sport_events.id = ${numericEventId}
+    `;
+
+    return res.status(200).json({ event: updatedEvents[0] });
+  } catch (error) {
+    console.log("Error joining event", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
 });
 
 router.delete("/events/:eventId", async (req, res) => {
-	try {
-		const { eventId } = req.params;
-		const { current_clerk_user_id } = req.body;
+  try {
+    const numericEventId = Number(req.params.eventId);
+    const { current_clerk_user_id } = req.body;
 
-		if (!isValidString(current_clerk_user_id)) {
-			return res.status(400).json({
-				message: "Current user id is required.",
-			});
-		}
+    if (Number.isNaN(numericEventId)) {
+      return res.status(400).json({ message: "Invalid event id." });
+    }
 
-		const currentUsers = await sql`
-			SELECT id
-			FROM users
-			WHERE clerk_user_id = ${current_clerk_user_id}
-		`;
+    if (!isValidString(current_clerk_user_id)) {
+      return res.status(400).json({ message: "Current user id is required." });
+    }
 
-		if (currentUsers.length === 0) {
-			return res.status(404).json({
-				message: "Current user profile was not found.",
-			});
-		}
+    const users = await sql`
+      SELECT id
+      FROM users
+      WHERE clerk_user_id = ${current_clerk_user_id}
+    `;
 
-		const currentUserId = currentUsers[0].id;
+    if (users.length === 0) {
+      return res.status(404).json({ message: "Current user profile was not found." });
+    }
 
-		const deletedEvents = await sql`
-			UPDATE sport_events
-			SET is_active = FALSE
-			WHERE id = ${Number(eventId)}
-			AND user_id = ${currentUserId}
-			AND is_active = TRUE
-			RETURNING *
-		`;
+    const deletedEvents = await sql`
+      UPDATE sport_events
+      SET is_active = FALSE,
+          updated_at = CURRENT_TIMESTAMP
+      WHERE id = ${numericEventId}
+      AND user_id = ${users[0].id}
+      RETURNING *
+    `;
 
-		if (deletedEvents.length === 0) {
-			return res.status(404).json({
-				message: "Event was not found or you are not allowed to delete it.",
-			});
-		}
+    if (deletedEvents.length === 0) {
+      return res.status(404).json({ message: "Event was not found or you are not the creator." });
+    }
 
-		return res.status(200).json({
-			message: "Event deleted successfully.",
-		});
-	} catch (error) {
-		console.log("Error deleting event", error);
-
-		return res.status(500).json({
-			message: "Internal server error",
-		});
-	}
-});
-
-router.post("/search-opponents", async (req, res) => {
-	try {
-		console.log("🔎 Incoming opponent search filters:");
-		console.log(req.body);
-
-		const {
-			current_clerk_user_id,
-			sportName,
-			level,
-			languages,
-			ageMin,
-			ageMax,
-			sex,
-			locationMode,
-			radiusKm,
-			city,
-			latitude,
-			longitude,
-			dates,
-			timeFrom,
-			timeTo,
-			matchType,
-			publishToEvents,
-		} = req.body;
-
-		if (
-			!isValidString(current_clerk_user_id) ||
-			!isValidString(sportName) ||
-			!isValidString(level) ||
-			!Array.isArray(languages) ||
-			!Array.isArray(sex) ||
-			!isValidNumber(ageMin) ||
-			!isValidNumber(ageMax) ||
-			!isValidString(locationMode) ||
-			!isValidStringArray(dates) ||
-			!isValidString(timeFrom) ||
-			!isValidString(timeTo) ||
-			!isValidString(matchType)
-		) {
-			return res.status(400).json({
-				message: "Missing required search filters.",
-			});
-		}
-
-		if (locationMode !== "near_me" && locationMode !== "city") {
-			return res.status(400).json({
-				message: "Invalid location mode.",
-			});
-		}
-
-		if (locationMode === "city" && !isValidString(city)) {
-			return res.status(400).json({
-				message: "City is required for city search.",
-			});
-		}
-
-		if (
-			locationMode === "near_me" &&
-			(!isValidNumber(latitude) ||
-				!isValidNumber(longitude) ||
-				!isValidNumber(radiusKm))
-		) {
-			return res.status(400).json({
-				message: "Latitude, longitude and radius are required.",
-			});
-		}
-
-		const currentUsers = await sql`
-			SELECT id
-			FROM users
-			WHERE clerk_user_id = ${current_clerk_user_id}
-		`;
-
-		if (currentUsers.length === 0) {
-			return res.status(404).json({
-				message: "Current user profile was not found.",
-			});
-		}
-
-		const currentUserId = currentUsers[0].id;
-
-		for (const date of dates) {
-			await sql`
-				INSERT INTO user_availability (
-					user_id,
-					sport_name,
-					available_date,
-					time_from,
-					time_to,
-					match_type
-				)
-				VALUES (
-					${currentUserId},
-					${sportName},
-					${date}::date,
-					${timeFrom}::time,
-					${timeTo}::time,
-					${matchType}
-				)
-				ON CONFLICT (
-					user_id,
-					sport_name,
-					available_date,
-					time_from,
-					time_to,
-					match_type
-				)
-				DO NOTHING
-			`;
-
-			if (publishToEvents === true) {
-				await sql`
-					INSERT INTO sport_events (
-						user_id,
-						sport_name,
-						level,
-						available_date,
-						time_from,
-						time_to,
-						match_type,
-						location_mode,
-						radius_km,
-						city,
-						latitude,
-						longitude
-					)
-					VALUES (
-						${currentUserId},
-						${sportName},
-						${level},
-						${date}::date,
-						${timeFrom}::time,
-						${timeTo}::time,
-						${matchType},
-						${locationMode},
-						${radiusKm},
-						${city},
-						${latitude},
-						${longitude}
-					)
-				`;
-			}
-		}
-
-		const searchLevel = level === "Any" ? null : level;
-		const searchLanguages = languages.includes("Any") ? [] : languages;
-		const searchMatchType = matchType === "Any" ? null : matchType;
-
-		const eventOpponents = await sql`
-			SELECT DISTINCT
-				users.id,
-				users.clerk_user_id,
-				users.email,
-				users.first_name,
-				users.last_name,
-				users.nickname,
-				users.about_me,
-				users.age,
-				users.sex,
-				users.country,
-				users.city,
-				users.avatar_url,
-				users.latitude,
-				users.longitude,
-				user_sports.sport_name,
-				user_sports.level,
-				user_availability.available_date,
-				user_availability.time_from,
-				user_availability.time_to,
-				user_availability.match_type,
-				'event' AS match_source,
-
-				CASE
-					WHEN ${locationMode} = 'near_me'
-					AND users.latitude IS NOT NULL
-					AND users.longitude IS NOT NULL
-					THEN (
-						6371 * acos(
-							LEAST(
-								1,
-								GREATEST(
-									-1,
-									cos(radians(${latitude}))
-									* cos(radians(users.latitude::float))
-									* cos(radians(users.longitude::float) - radians(${longitude}))
-									+ sin(radians(${latitude}))
-									* sin(radians(users.latitude::float))
-								)
-							)
-						)
-					)
-					ELSE NULL
-				END AS distance_km
-
-			FROM users
-
-			INNER JOIN user_sports
-				ON user_sports.user_id = users.id
-
-			INNER JOIN user_availability
-				ON user_availability.user_id = users.id
-				AND user_availability.sport_name = ${sportName}
-
-			LEFT JOIN user_languages
-				ON user_languages.user_id = users.id
-
-			WHERE users.clerk_user_id != ${current_clerk_user_id}
-
-			AND user_sports.sport_name = ${sportName}
-
-			AND (
-				${searchLevel}::text IS NULL
-				OR user_sports.level = ${searchLevel}
-			)
-
-			AND users.age >= ${ageMin}
-			AND users.age <= ${ageMax}
-
-			AND users.sex = ANY(${sex})
-
-			AND (
-				${searchLanguages.length}::int = 0
-				OR user_languages.language = ANY(${searchLanguages})
-			)
-
-			AND user_availability.available_date = ANY(${dates}::date[])
-
-			AND user_availability.time_from <= ${timeTo}::time
-			AND user_availability.time_to >= ${timeFrom}::time
-
-			AND (
-				${searchMatchType}::text IS NULL
-				OR user_availability.match_type = 'Any'
-				OR user_availability.match_type = ${searchMatchType}
-			)
-
-			AND (
-				${locationMode} != 'city'
-				OR LOWER(users.city) = LOWER(${city})
-			)
-
-			AND (
-				${locationMode} != 'near_me'
-				OR (
-					users.latitude IS NOT NULL
-					AND users.longitude IS NOT NULL
-					AND (
-						6371 * acos(
-							LEAST(
-								1,
-								GREATEST(
-									-1,
-									cos(radians(${latitude}))
-									* cos(radians(users.latitude::float))
-									* cos(radians(users.longitude::float) - radians(${longitude}))
-									+ sin(radians(${latitude}))
-									* sin(radians(users.latitude::float))
-								)
-							)
-						)
-					) <= ${radiusKm}
-				)
-			)
-		`;
-
-		const profileOpponents = await sql`
-			SELECT DISTINCT
-				users.id,
-				users.clerk_user_id,
-				users.email,
-				users.first_name,
-				users.last_name,
-				users.nickname,
-				users.about_me,
-				users.age,
-				users.sex,
-				users.country,
-				users.city,
-				users.avatar_url,
-				users.latitude,
-				users.longitude,
-				user_sports.sport_name,
-				user_sports.level,
-				NULL AS available_date,
-				NULL AS time_from,
-				NULL AS time_to,
-				'Any' AS match_type,
-				'profile' AS match_source,
-
-				CASE
-					WHEN ${locationMode} = 'near_me'
-					AND users.latitude IS NOT NULL
-					AND users.longitude IS NOT NULL
-					THEN (
-						6371 * acos(
-							LEAST(
-								1,
-								GREATEST(
-									-1,
-									cos(radians(${latitude}))
-									* cos(radians(users.latitude::float))
-									* cos(radians(users.longitude::float) - radians(${longitude}))
-									+ sin(radians(${latitude}))
-									* sin(radians(users.latitude::float))
-								)
-							)
-						)
-					)
-					ELSE NULL
-				END AS distance_km
-
-			FROM users
-
-			INNER JOIN user_sports
-				ON user_sports.user_id = users.id
-
-			LEFT JOIN user_languages
-				ON user_languages.user_id = users.id
-
-			WHERE users.clerk_user_id != ${current_clerk_user_id}
-
-			AND user_sports.sport_name = ${sportName}
-
-			AND (
-				${searchLevel}::text IS NULL
-				OR user_sports.level = ${searchLevel}
-			)
-
-			AND users.age >= ${ageMin}
-			AND users.age <= ${ageMax}
-
-			AND users.sex = ANY(${sex})
-
-			AND (
-				${searchLanguages.length}::int = 0
-				OR user_languages.language = ANY(${searchLanguages})
-			)
-
-			AND (
-				${locationMode} != 'city'
-				OR LOWER(users.city) = LOWER(${city})
-			)
-
-			AND (
-				${locationMode} != 'near_me'
-				OR (
-					users.latitude IS NOT NULL
-					AND users.longitude IS NOT NULL
-					AND (
-						6371 * acos(
-							LEAST(
-								1,
-								GREATEST(
-									-1,
-									cos(radians(${latitude}))
-									* cos(radians(users.latitude::float))
-									* cos(radians(users.longitude::float) - radians(${longitude}))
-									+ sin(radians(${latitude}))
-									* sin(radians(users.latitude::float))
-								)
-							)
-						)
-					) <= ${radiusKm}
-				)
-			)
-
-			AND NOT EXISTS (
-				SELECT 1
-				FROM user_availability
-				WHERE user_availability.user_id = users.id
-				AND user_availability.sport_name = ${sportName}
-			)
-		`;
-
-		return res.status(200).json({
-			eventOpponents,
-			profileOpponents,
-			opponents: [...eventOpponents, ...profileOpponents],
-		});
-	} catch (error) {
-		console.log("Error searching opponents", error);
-
-		return res.status(500).json({
-			message: "Internal server error",
-		});
-	}
+    return res.status(200).json({ event: deletedEvents[0] });
+  } catch (error) {
+    console.log("Error deleting event", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
 });
 
 export default router;

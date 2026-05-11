@@ -5,43 +5,33 @@ export const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
-    paddingHorizontal: 16,
-    paddingTop: 14,
-  },
-
-  sportsContainer: {
-  height: 95,
   },
 
   header: {
+    height: 58,
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 16,
+    justifyContent: "space-between",
+    paddingHorizontal: 16,
+  },
+
+  closeButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: "center",
+    justifyContent: "center",
   },
 
   title: {
     color: colors.text,
-    fontSize: 28,
+    fontSize: 18,
     fontWeight: "900",
   },
 
-  subtitle: {
-    color: colors.secondaryText,
-    fontSize: 13,
-    fontWeight: "600",
-    marginTop: 4,
-  },
-
-  notificationButton: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    backgroundColor: colors.card,
-    borderWidth: 1,
-    borderColor: colors.border,
-    alignItems: "center",
-    justifyContent: "center",
+  scrollContent: {
+    paddingHorizontal: 16,
+    paddingBottom: 40,
   },
 
   searchBox: {
@@ -66,13 +56,13 @@ export const styles = StyleSheet.create({
 
   sportsList: {
     paddingRight: 6,
-    paddingBottom: 12,
+    paddingBottom: 14,
   },
 
   sportItem: {
     width: 66,
     alignItems: "center",
-    marginRight: 1,
+    marginRight: 4,
   },
 
   sportIcon: {
@@ -110,55 +100,81 @@ export const styles = StyleSheet.create({
     color: colors.primary,
   },
 
-  sectionHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: 2,
-    marginBottom: 12,
+  label: {
+    color: colors.text,
+    fontSize: 13,
+    fontWeight: "800",
+    marginBottom: 8,
+    marginTop: 12,
   },
 
-  sectionTitle: {
+  input: {
+    minHeight: 48,
+    borderRadius: 14,
+    backgroundColor: colors.card,
+    borderWidth: 1,
+    borderColor: colors.border,
+    color: colors.text,
+    paddingHorizontal: 14,
+    fontSize: 15,
+    fontWeight: "600",
+  },
+
+  twoColumns: {
+    flexDirection: "row",
+    gap: 12,
+  },
+
+  column: {
+    flex: 1,
+  },
+
+  counter: {
+    height: 48,
+    borderRadius: 14,
+    backgroundColor: colors.card,
+    borderWidth: 1,
+    borderColor: colors.border,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 10,
+  },
+
+  counterButton: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: colors.borderCol,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  counterValue: {
     color: colors.text,
     fontSize: 18,
     fontWeight: "900",
   },
 
-  sectionLink: {
-    color: colors.primary,
-    fontSize: 13,
-    fontWeight: "800",
+  descriptionInput: {
+    height: 96,
+    textAlignVertical: "top",
+    paddingTop: 12,
   },
 
-  loadingBlock: {
-    paddingVertical: 30,
+  createButton: {
+    height: 54,
+    borderRadius: 16,
+    backgroundColor: colors.primary,
     alignItems: "center",
+    justifyContent: "center",
+    marginTop: 22,
   },
 
-  emptyBlock: {
-    backgroundColor: colors.card,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 18,
-    padding: 18,
-  },
-
-  emptyTitle: {
-    color: colors.text,
-    fontSize: 17,
+  createButtonText: {
+    color: colors.background,
+    fontSize: 16,
     fontWeight: "900",
-    marginBottom: 6,
-  },
-
-  emptyText: {
-    color: colors.secondaryText,
-    fontSize: 13,
-    fontWeight: "600",
-    lineHeight: 19,
-  },
-
-  eventsList: {
-    paddingBottom: 110,
   },
 
   buttonPressed: {
