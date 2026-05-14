@@ -2,33 +2,27 @@ export type EventDayFilter = "all" | "today" | "tomorrow" | "week";
 
 export type SportEvent = {
   id: number;
+  user_id: number;
+  clerk_user_id: string;
   sport_name: string;
   event_name: string;
   event_description: string | null;
   available_date: string;
   time_from: string;
   location_name: string;
-  event_city: string | null;
-  event_latitude: string | number | null;
-  event_longitude: string | number | null;
+  city: string | null;
+  latitude: string | number | null;
+  longitude: string | number | null;
   max_participants: number;
   current_participants: number;
   event_image_url: string | null;
+  is_active: boolean;
   created_at: string;
-  clerk_user_id: string;
+  updated_at: string;
   first_name: string | null;
   last_name: string | null;
   nickname: string | null;
-  about_me: string | null;
-  age: number | null;
-  sex: string | null;
-  country: string | null;
-  city: string | null;
   avatar_url: string | null;
-  rating_avg: string | number;
-  rating_count: number;
-  games_count: number;
-  distance_km: string | number | null;
 };
 
 export type LoadSportEventsParams = {
@@ -43,13 +37,15 @@ export type CreateSportEventParams = {
   current_clerk_user_id: string;
   sport_name: string;
   event_name: string;
-  event_description?: string | null;
+  event_description: string | null;
   available_date: string;
   time_from: string;
   location_name: string;
-  city?: string | null;
-  latitude?: number | null;
-  longitude?: number | null;
+  city: string | null;
+  latitude: number | null;
+  longitude: number | null;
   max_participants: number;
-  event_image_url?: string | null;
+  event_image_url: string | null;
 };
+
+export type UpdateSportEventParams = CreateSportEventParams;

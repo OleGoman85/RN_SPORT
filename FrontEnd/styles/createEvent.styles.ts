@@ -34,6 +34,84 @@ export const styles = StyleSheet.create({
     paddingBottom: 40,
   },
 
+  sectionTitle: {
+    color: colors.text,
+    fontSize: 17,
+    fontWeight: "900",
+    marginBottom: 10,
+    marginTop: 8,
+  },
+
+  myEventsList: {
+    paddingRight: 8,
+    paddingBottom: 12,
+  },
+
+  myEventCard: {
+    width: 170,
+    minHeight: 92,
+    backgroundColor: colors.card,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 18,
+    padding: 12,
+    marginRight: 8,
+  },
+
+  myEventCardActive: {
+    borderColor: colors.primary,
+    borderWidth: 2,
+  },
+
+  myEventTitle: {
+    color: colors.text,
+    fontSize: 15,
+    fontWeight: "900",
+    marginBottom: 4,
+  },
+
+  myEventSport: {
+    color: colors.primary,
+    fontSize: 13,
+    fontWeight: "900",
+    marginBottom: 6,
+  },
+
+  myEventMeta: {
+    color: colors.secondaryText,
+    fontSize: 12,
+    fontWeight: "700",
+    marginBottom: 3,
+  },
+
+  myEventsLoadingBlock: {
+    height: 92,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  noMyEventsBlock: {
+    backgroundColor: colors.card,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 18,
+    padding: 14,
+    marginBottom: 12,
+  },
+
+  noMyEventsTitle: {
+    color: colors.text,
+    fontSize: 15,
+    fontWeight: "900",
+    marginBottom: 4,
+  },
+
+  noMyEventsText: {
+    color: colors.secondaryText,
+    fontSize: 13,
+    fontWeight: "600",
+  },
+
   searchBox: {
     height: 48,
     borderRadius: 16,
@@ -174,6 +252,61 @@ export const styles = StyleSheet.create({
   createButtonText: {
     color: colors.background,
     fontSize: 16,
+    fontWeight: "900",
+  },
+
+  editActions: {
+    flexDirection: "row",
+    gap: 8,
+    marginTop: 22,
+  },
+
+  deleteButton: {
+    flex: 1,
+    height: 52,
+    borderRadius: 16,
+    backgroundColor: "rgba(239, 68, 68, 0.18)",
+    borderWidth: 1,
+    borderColor: "#ef4444",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  cancelButton: {
+    flex: 1,
+    height: 52,
+    borderRadius: 16,
+    backgroundColor: colors.card,
+    borderWidth: 1,
+    borderColor: colors.border,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  saveButton: {
+    flex: 1,
+    height: 52,
+    borderRadius: 16,
+    backgroundColor: colors.primary,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  deleteButtonText: {
+    color: "#ef4444",
+    fontSize: 14,
+    fontWeight: "900",
+  },
+
+  cancelButtonText: {
+    color: colors.text,
+    fontSize: 14,
+    fontWeight: "900",
+  },
+
+  saveButtonText: {
+    color: colors.background,
+    fontSize: 14,
     fontWeight: "900",
   },
 

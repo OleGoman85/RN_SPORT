@@ -1,154 +1,192 @@
 import {
-  CreateSportEventParams,
-  EventDayFilter,
-  LoadSportEventsParams,
-  SportEvent,
+	CreateSportEventParams,
+	EventDayFilter,
+	LoadSportEventsParams,
+	SportEvent,
+	UpdateSportEventParams,
 } from "../types/events";
 
 const API_URL = "http://192.168.32.127:5001";
 
 function buildEventsQuery(params: LoadSportEventsParams = {}) {
-  const query = new URLSearchParams();
+	const query = new URLSearchParams();
 
-  if (params.day && params.day !== "all") {
-    query.set("day", params.day);
-  }
+	if (params.day && params.day !== "all") {
+		query.set("day", params.day);
+	}
 
-  if (params.search?.trim()) {
-    query.set("search", params.search.trim());
-  }
+	if (params.search?.trim()) {
+		query.set("search", params.search.trim());
+	}
 
-  if (params.sport?.trim()) {
-    query.set("sport", params.sport.trim());
-  }
+	if (params.sport?.trim()) {
+		query.set("sport", params.sport.trim());
+	}
 
-  if (
-    typeof params.latitude === "number" &&
-    typeof params.longitude === "number"
-  ) {
-    query.set("latitude", String(params.latitude));
-    query.set("longitude", String(params.longitude));
-  }
+	if (
+		typeof params.latitude === "number" &&
+		typeof params.longitude === "number"
+	) {
+		query.set("latitude", String(params.latitude));
+		query.set("longitude", String(params.longitude));
+	}
 
-  const queryString = query.toString();
+	const queryString = query.toString();
 
-  return queryString ? `?${queryString}` : "";
+	return queryString ? `?${queryString}` : "";
 }
 
 async function readJsonResponse(response: Response) {
-  const text = await response.text();
+	const text = await response.text();
 
-  if (!text) {
-    return {};
-  }
+	if (!text) {
+		return {};
+	}
 
-  try {
-    return JSON.parse(text);
-  } catch {
-    throw new Error(text);
-  }
+	try {
+		return JSON.parse(text);
+	} catch {
+		throw new Error(text);
+	}
 }
 
 export const eventDayFilters: {
-  label: string;
-  value: EventDayFilter;
+	label: string;
+	value: EventDayFilter;
 }[] = [
-  {
-    label: "All",
-    value: "all",
-  },
-  {
-    label: "Today",
-    value: "today",
-  },
-  {
-    label: "Tomorrow",
-    value: "tomorrow",
-  },
-  {
-    label: "This Week",
-    value: "week",
-  },
-];
+		{
+			label: "All",
+			value: "all",
+		},
+		{
+			label: "Today",
+			value: "today",
+		},
+		{
+			label: "Tomorrow",
+			value: "tomorrow",
+		},
+		{
+			label: "This Week",
+			value: "week",
+		},
+	];
 
 export async function loadSportEvents(
-  params: LoadSportEventsParams = {},
+	params: LoadSportEventsParams = {},
 ): Promise<SportEvent[]> {
-  const response = await fetch(
-    `${API_URL}/api/sports/events${buildEventsQuery(params)}`,
-  );
+	const response = await fetch(
+		`${API_URL}/api/sports/events${buildEventsQuery(params)}`,
+	);
 
-  const data = await readJsonResponse(response);
+	const data = await readJsonResponse(response);
 
-  if (!response.ok) {
-    throw new Error(data.message ?? "Could not load events.");
-  }
+	if (!response.ok) {
+		throw new Error(data.message ?? "Could not load events.");
+	}
 
-  return data.events ?? [];
+	return data.events ?? [];
+}
+
+export async function loadMySportEvents(
+	currentClerkUserId: string,
+): Promise<SportEvent[]> {
+	const response = await fetch(
+		`${API_URL}/api/sports/my-events/${currentClerkUserId}`,
+	);
+
+	const data = await readJsonResponse(response);
+
+	if (!response.ok) {
+		throw new Error(data.message ?? "Could not load your events.");
+	}
+
+	return data.events ?? [];
 }
 
 export async function createSportEvent(
-  params: CreateSportEventParams,
+	params: CreateSportEventParams,
 ): Promise<SportEvent> {
-  const response = await fetch(`${API_URL}/api/sports/events`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(params),
-  });
+	const response = await fetch(`${API_URL}/api/sports/events`, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify(params),
+	});
 
-  const data = await readJsonResponse(response);
+	const data = await readJsonResponse(response);
 
-  if (!response.ok) {
-    throw new Error(data.message ?? "Could not create event.");
-  }
+	if (!response.ok) {
+		throw new Error(data.message ?? "Could not create event.");
+	}
 
-  return data.event;
+	return data.event;
 }
 
-export async function joinSportEvent(
-  eventId: number,
-  currentClerkUserId: string,
+export async function updateSportEvent(
+	eventId: number,
+	params: UpdateSportEventParams,
 ): Promise<SportEvent> {
-  const response = await fetch(`${API_URL}/api/sports/events/${eventId}/join`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      current_clerk_user_id: currentClerkUserId,
-    }),
-  });
+	const response = await fetch(`${API_URL}/api/sports/events/${eventId}`, {
+		method: "PUT",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify(params),
+	});
 
-  const data = await readJsonResponse(response);
+	const data = await readJsonResponse(response);
 
-  if (!response.ok) {
-    throw new Error(data.message ?? "Could not join event.");
-  }
+	if (!response.ok) {
+		throw new Error(data.message ?? "Could not update event.");
+	}
 
-  return data.event;
+	return data.event;
 }
 
 export async function deleteSportEvent(
-  eventId: number,
-  currentClerkUserId: string,
+	eventId: number,
+	currentClerkUserId: string,
 ): Promise<SportEvent> {
-  const response = await fetch(`${API_URL}/api/sports/events/${eventId}`, {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      current_clerk_user_id: currentClerkUserId,
-    }),
-  });
+	const response = await fetch(`${API_URL}/api/sports/events/${eventId}`, {
+		method: "DELETE",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({
+			current_clerk_user_id: currentClerkUserId,
+		}),
+	});
 
-  const data = await readJsonResponse(response);
+	const data = await readJsonResponse(response);
 
-  if (!response.ok) {
-    throw new Error(data.message ?? "Could not delete event.");
-  }
+	if (!response.ok) {
+		throw new Error(data.message ?? "Could not delete event.");
+	}
 
-  return data.event;
+	return data.event;
+}
+
+export async function joinSportEvent(
+	eventId: number,
+	currentClerkUserId: string,
+): Promise<SportEvent> {
+	const response = await fetch(`${API_URL}/api/sports/events/${eventId}/join`, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({
+			current_clerk_user_id: currentClerkUserId,
+		}),
+	});
+
+	const data = await readJsonResponse(response);
+
+	if (!response.ok) {
+		throw new Error(data.message ?? "Could not join event.");
+	}
+
+	return data.event;
 }
