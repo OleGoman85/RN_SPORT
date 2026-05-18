@@ -3,7 +3,7 @@ import { colors } from "../constants/colors";
 import { styles } from "../styles/profile.styles";
 import { AvatarPicker } from "./AvatarPicker";
 
-const sexOptions = ["Male", "Female", "Other"];
+const sexOptions = ["Male", "Female"];
 
 type ProfileInfoCardProps = {
   firstName: string;

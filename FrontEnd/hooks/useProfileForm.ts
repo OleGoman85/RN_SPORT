@@ -1,11 +1,11 @@
 import { useUser } from "@clerk/expo";
-import * as ImagePicker from "expo-image-picker";
-import * as Location from "expo-location";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { Alert, Platform } from "react-native";
-import { uploadAvatarToServer } from "../services/avatarApi";
+import { useEffect, useMemo, useState } from "react";
+import { Alert } from "react-native";
 import { loadUserProfile, saveUserProfile } from "../services/profileApi";
 import { SelectedSport } from "../types/profile";
+import { useAvatarUpload } from "./useAvatarUpload";
+import { useBirthDateFields } from "./useBirthDateFields";
+import { useCurrentLocation } from "./useCurrentLocation";
 
 export function useProfileForm() {
 	const { user } = useUser();
@@ -14,90 +14,42 @@ export function useProfileForm() {
 	const [lastName, setLastName] = useState("");
 	const [nickname, setNickname] = useState("");
 	const [aboutMe, setAboutMe] = useState("");
-
-	const [birthDay, setBirthDay] = useState("");
-	const [birthMonth, setBirthMonth] = useState("");
-	const [birthYear, setBirthYear] = useState("");
-
 	const [sex, setSex] = useState("");
 	const [country, setCountry] = useState("");
 	const [city, setCity] = useState("");
-	const [avatarUrl, setAvatarUrl] = useState("");
-	const [latitude, setLatitude] = useState<number | null>(null);
-	const [longitude, setLongitude] = useState<number | null>(null);
 
 	const [selectedSports, setSelectedSports] = useState<SelectedSport[]>([]);
 	const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
 
 	const [isSaving, setIsSaving] = useState(false);
-	const [isAvatarUploading, setIsAvatarUploading] = useState(false);
 
-	const buildDateOfBirth = useCallback(() => {
-		const day = birthDay.trim().padStart(2, "0");
-		const month = birthMonth.trim().padStart(2, "0");
-		const year = birthYear.trim();
+	const {
+		birthDay,
+		setBirthDay,
+		birthMonth,
+		setBirthMonth,
+		birthYear,
+		setBirthYear,
+		birthDateIsValid,
+		dateOfBirth,
+		setBirthDateFromProfile,
+	} = useBirthDateFields();
 
-		return `${year}-${month}-${day}`;
-	}, [birthDay, birthMonth, birthYear]);
+	const {
+		avatarUrl,
+		setAvatarUrl,
+		isAvatarUploading,
+		handlePickAvatarFromGallery,
+		handleTakeAvatarPhoto,
+	} = useAvatarUpload();
 
-	function splitDateOfBirth(dateOfBirth: string | null) {
-		if (!dateOfBirth) {
-			return {
-				day: "",
-				month: "",
-				year: "",
-			};
-		}
-
-		const [year, month, day] = dateOfBirth.split("-");
-
-		return {
-			day: day ?? "",
-			month: month ?? "",
-			year: year ?? "",
-		};
-	}
-
-	const birthDateIsValid = useMemo(() => {
-		if (!birthDay.trim() || !birthMonth.trim() || !birthYear.trim()) {
-			return false;
-		}
-
-		const day = Number(birthDay);
-		const month = Number(birthMonth);
-		const year = Number(birthYear);
-
-		if (
-			Number.isNaN(day) ||
-			Number.isNaN(month) ||
-			Number.isNaN(year) ||
-			day < 1 ||
-			day > 31 ||
-			month < 1 ||
-			month > 12 ||
-			birthYear.trim().length !== 4
-		) {
-			return false;
-		}
-
-		const dateOfBirth = buildDateOfBirth();
-		const date = new Date(dateOfBirth);
-		const today = new Date();
-
-		if (Number.isNaN(date.getTime())) {
-			return false;
-		}
-
-		if (date > today) {
-			return false;
-		}
-
-		return (
-			date.getFullYear() === year &&
-			date.getMonth() + 1 === month &&
-			date.getDate() === day
-		);
-	}, [birthDay, birthMonth, birthYear, buildDateOfBirth]);
+	const {
+		latitude,
+		setLatitude,
+		longitude,
+		setLongitude,
+		handleUseMyLocation,
+	} = useCurrentLocation();
 
 	const isFormValid = useMemo(() => {
 		return (
@@ -137,23 +89,16 @@ export function useProfileForm() {
 				const profile = await loadUserProfile(user.id);
 
 				if (!profile) {
-					if (user.primaryEmailAddress?.emailAddress) {
-						setFirstName(user.firstName ?? "");
-						setLastName(user.lastName ?? "");
-					}
-
+					setFirstName(user.firstName ?? "");
+					setLastName(user.lastName ?? "");
 					return;
 				}
-
-				const birthDate = splitDateOfBirth(profile.date_of_birth);
 
 				setFirstName(profile.first_name ?? "");
 				setLastName(profile.last_name ?? "");
 				setNickname(profile.nickname ?? "");
 				setAboutMe(profile.about_me ?? "");
-				setBirthDay(birthDate.day);
-				setBirthMonth(birthDate.month);
-				setBirthYear(birthDate.year);
+				setBirthDateFromProfile(profile.date_of_birth);
 				setSex(profile.sex ?? "");
 				setCountry(profile.country ?? "");
 				setCity(profile.city ?? "");
@@ -171,7 +116,15 @@ export function useProfileForm() {
 		}
 
 		loadProfile();
-	}, [user?.id, user?.firstName, user?.lastName, user?.primaryEmailAddress]);
+	}, [
+		user?.id,
+		user?.firstName,
+		user?.lastName,
+		setAvatarUrl,
+		setBirthDateFromProfile,
+		setLatitude,
+		setLongitude,
+	]);
 
 	const handleToggleSport = (sportName: string) => {
 		setSelectedSports((currentSports) => {
@@ -220,97 +173,6 @@ export function useProfileForm() {
 		});
 	};
 
-	const handlePickAvatarFromGallery = async () => {
-		try {
-			const permission =
-				await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-			if (!permission.granted) {
-				Alert.alert("Permission required", "Gallery permission is required.");
-				return;
-			}
-
-			const result = await ImagePicker.launchImageLibraryAsync({
-				mediaTypes: ["images"],
-				allowsEditing: true,
-				aspect: [1, 1],
-				quality: 0.8,
-			});
-
-			if (result.canceled) {
-				return;
-			}
-
-			await uploadAvatar(result.assets[0].uri);
-		} catch (error) {
-			console.log("Gallery avatar error:", error);
-			Alert.alert("Error", "Could not select avatar.");
-		}
-	};
-
-	const handleTakeAvatarPhoto = async () => {
-		try {
-			const permission = await ImagePicker.requestCameraPermissionsAsync();
-
-			if (!permission.granted) {
-				Alert.alert("Permission required", "Camera permission is required.");
-				return;
-			}
-
-			const result = await ImagePicker.launchCameraAsync({
-				allowsEditing: true,
-				aspect: [1, 1],
-				quality: 0.8,
-			});
-
-			if (result.canceled) {
-				return;
-			}
-
-			await uploadAvatar(result.assets[0].uri);
-		} catch (error) {
-			console.log("Camera avatar error:", error);
-			Alert.alert("Error", "Could not take photo.");
-		}
-	};
-
-	const uploadAvatar = async (imageUri: string) => {
-		try {
-			setIsAvatarUploading(true);
-
-			const uploadedAvatarUrl = await uploadAvatarToServer(imageUri);
-
-			setAvatarUrl(uploadedAvatarUrl);
-		} catch (error) {
-			console.log("Avatar upload error:", error);
-			Alert.alert("Error", "Could not upload avatar.");
-		} finally {
-			setIsAvatarUploading(false);
-		}
-	};
-
-	const handleUseMyLocation = async () => {
-		try {
-			const permission = await Location.requestForegroundPermissionsAsync();
-
-			if (permission.status !== "granted") {
-				Alert.alert("Permission required", "Location permission is required.");
-				return;
-			}
-
-			const currentPosition = await Location.getCurrentPositionAsync({});
-
-			setLatitude(currentPosition.coords.latitude);
-			setLongitude(currentPosition.coords.longitude);
-		} catch (error) {
-			console.log("Location error:", error);
-
-			if (Platform.OS === "android" || Platform.OS === "ios") {
-				Alert.alert("Error", "Could not get current location.");
-			}
-		}
-	};
-
 	const handleSaveProfile = async () => {
 		if (!user?.id || !user.primaryEmailAddress?.emailAddress) {
 			Alert.alert("Error", "User is not loaded yet.");
@@ -332,7 +194,7 @@ export function useProfileForm() {
 				last_name: lastName.trim(),
 				nickname: nickname.trim(),
 				about_me: aboutMe.trim(),
-				date_of_birth: buildDateOfBirth(),
+				date_of_birth: dateOfBirth,
 				sex,
 				country: country.trim(),
 				city: city.trim(),
@@ -379,11 +241,14 @@ export function useProfileForm() {
 		setCountry,
 		city,
 		setCity,
+
 		avatarUrl,
 		latitude,
 		longitude,
+
 		selectedSports,
 		selectedLanguages,
+
 		isSaving,
 		isAvatarUploading,
 		isFormValid,

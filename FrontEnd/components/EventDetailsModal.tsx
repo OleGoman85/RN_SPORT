@@ -52,6 +52,32 @@ function formatRating(rating: string | number | null | undefined) {
   return numericRating.toFixed(1);
 }
 
+function calculateAge(dateOfBirth: string | null | undefined) {
+  if (!dateOfBirth) {
+    return null;
+  }
+
+  const birthDate = new Date(dateOfBirth);
+  const today = new Date();
+
+  if (Number.isNaN(birthDate.getTime())) {
+    return null;
+  }
+
+  let age = today.getFullYear() - birthDate.getFullYear();
+
+  const hasBirthdayPassed =
+    today.getMonth() > birthDate.getMonth() ||
+    (today.getMonth() === birthDate.getMonth() &&
+      today.getDate() >= birthDate.getDate());
+
+  if (!hasBirthdayPassed) {
+    age -= 1;
+  }
+
+  return age;
+}
+
 function getNickname(user: {
   nickname: string | null;
   first_name?: string | null;
@@ -258,6 +284,7 @@ function CreatorProfile({ creator }: { creator: EventCreator }) {
   const nickname = getNickname(creator);
   const languages = creator.languages?.join(", ") || "Not added";
   const creatorSports = creator.sports ?? [];
+  const creatorAge = calculateAge(creator.date_of_birth);
 
   return (
     <>
@@ -290,7 +317,9 @@ function CreatorProfile({ creator }: { creator: EventCreator }) {
             />
 
             <Text style={styles.creatorMetaText}>
-              {creator.age ? `${creator.age} years old` : "Age not added"}
+              {creatorAge !== null
+                ? `${creatorAge} years old`
+                : "Age not added"}
             </Text>
           </View>
         </View>
@@ -459,6 +488,7 @@ export function EventDetailsModal({
 
   const creator = details?.creator;
   const event = details?.event;
+
   const members = useMemo(() => {
     return details?.members ?? [];
   }, [details?.members]);
