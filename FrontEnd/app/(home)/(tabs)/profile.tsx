@@ -40,8 +40,12 @@ export default function ProfileScreen() {
           setNickname={profileForm.setNickname}
           aboutMe={profileForm.aboutMe}
           setAboutMe={profileForm.setAboutMe}
-          age={profileForm.age}
-          setAge={profileForm.setAge}
+          birthDay={profileForm.birthDay}
+          setBirthDay={profileForm.setBirthDay}
+          birthMonth={profileForm.birthMonth}
+          setBirthMonth={profileForm.setBirthMonth}
+          birthYear={profileForm.birthYear}
+          setBirthYear={profileForm.setBirthYear}
           sex={profileForm.sex}
           setSex={profileForm.setSex}
           country={profileForm.country}

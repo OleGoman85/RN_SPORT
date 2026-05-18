@@ -41,102 +41,113 @@ export default function HomeScreen() {
     return sports.filter((sport) => sport.name.toLowerCase().includes(query));
   }, [searchText]);
 
-  const loadLocationAndEvents = async (sportName = selectedSport) => {
-    try {
-      setIsLoading(true);
+  const loadLocationAndEvents = useCallback(
+    async (sportName = selectedSport) => {
+      try {
+        setIsLoading(true);
 
-      let currentLatitude = latitude;
-      let currentLongitude = longitude;
+        let currentLatitude = latitude;
+        let currentLongitude = longitude;
 
-      if (currentLatitude === null || currentLongitude === null) {
-        const permission = await Location.requestForegroundPermissionsAsync();
+        if (currentLatitude === null || currentLongitude === null) {
+          const permission = await Location.requestForegroundPermissionsAsync();
 
-        if (permission.status === "granted") {
-          const currentPosition = await Location.getCurrentPositionAsync({});
+          if (permission.status === "granted") {
+            const currentPosition = await Location.getCurrentPositionAsync({});
 
-          currentLatitude = currentPosition.coords.latitude;
-          currentLongitude = currentPosition.coords.longitude;
+            currentLatitude = currentPosition.coords.latitude;
+            currentLongitude = currentPosition.coords.longitude;
 
-          setLatitude(currentLatitude);
-          setLongitude(currentLongitude);
+            setLatitude(currentLatitude);
+            setLongitude(currentLongitude);
+          }
         }
+
+        const loadedEvents = await loadSportEvents({
+          search: searchText,
+          sport: sportName,
+          latitude: currentLatitude,
+          longitude: currentLongitude,
+        });
+
+        setEvents(loadedEvents.slice(0, 10));
+      } catch (error) {
+        console.log("Home events loading error:", error);
+        Alert.alert("Error", "Could not load nearby events.");
+      } finally {
+        setIsLoading(false);
       }
-
-      const loadedEvents = await loadSportEvents({
-        search: searchText,
-        sport: sportName,
-        latitude: currentLatitude,
-        longitude: currentLongitude,
-      });
-
-      setEvents(loadedEvents.slice(0, 10));
-    } catch (error) {
-      console.log("Home events loading error:", error);
-      Alert.alert("Error", "Could not load nearby events.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    },
+    [latitude, longitude, searchText, selectedSport],
+  );
 
   useFocusEffect(
     useCallback(() => {
       loadLocationAndEvents();
-    }, []),
+    }, [loadLocationAndEvents]),
   );
 
-  const handleSearchSubmit = () => {
+  const handleSearchSubmit = useCallback(() => {
     loadLocationAndEvents();
-  };
+  }, [loadLocationAndEvents]);
 
-  const handleSportPress = (sport: Sport) => {
-    const nextSport = selectedSport === sport.name ? "" : sport.name;
+  const handleSportPress = useCallback(
+    (sport: Sport) => {
+      const nextSport = selectedSport === sport.name ? "" : sport.name;
 
-    setSelectedSport(nextSport);
-    loadLocationAndEvents(nextSport);
-  };
+      setSelectedSport(nextSport);
+      loadLocationAndEvents(nextSport);
+    },
+    [loadLocationAndEvents, selectedSport],
+  );
 
-  const handleEventPress = (eventId: number) => {
+  const handleEventPress = useCallback((eventId: number) => {
     setSelectedEventId(eventId);
     setIsDetailsVisible(true);
-  };
+  }, []);
 
-  const handleCloseDetails = () => {
+  const handleCloseDetails = useCallback(() => {
     setIsDetailsVisible(false);
     setSelectedEventId(null);
-  };
+  }, []);
 
-  const handleEventUpdated = (updatedEvent: SportEvent) => {
+  const handleEventUpdated = useCallback((updatedEvent: SportEvent) => {
     setEvents((currentEvents) =>
       currentEvents.map((event) =>
         event.id === updatedEvent.id ? updatedEvent : event,
       ),
     );
-  };
+  }, []);
 
-  const renderSportItem = ({ item }: { item: Sport }) => {
-    const isSelected = selectedSport === item.name;
+  const renderSportItem = useCallback(
+    ({ item }: { item: Sport }) => {
+      const isSelected = selectedSport === item.name;
 
-    return (
-      <Pressable
-        style={({ pressed }) => [
-          styles.sportItem,
-          pressed && styles.buttonPressed,
-        ]}
-        onPress={() => handleSportPress(item)}
-      >
-        <View style={[styles.sportIcon, isSelected && styles.sportIconActive]}>
-          <Image source={item.image} style={styles.sportImage} />
-        </View>
-
-        <Text
-          style={[styles.sportName, isSelected && styles.sportNameActive]}
-          numberOfLines={1}
+      return (
+        <Pressable
+          style={({ pressed }) => [
+            styles.sportItem,
+            pressed && styles.buttonPressed,
+          ]}
+          onPress={() => handleSportPress(item)}
         >
-          {item.name}
-        </Text>
-      </Pressable>
-    );
-  };
+          <View
+            style={[styles.sportIcon, isSelected && styles.sportIconActive]}
+          >
+            <Image source={item.image} style={styles.sportImage} />
+          </View>
+
+          <Text
+            style={[styles.sportName, isSelected && styles.sportNameActive]}
+            numberOfLines={1}
+          >
+            {item.name}
+          </Text>
+        </Pressable>
+      );
+    },
+    [handleSportPress, selectedSport],
+  );
 
   return (
     <View style={styles.container}>

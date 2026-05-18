@@ -20,6 +20,7 @@ export async function initDB() {
         last_name VARCHAR(100),
         nickname VARCHAR(100),
         about_me TEXT,
+        date_of_birth DATE,
         age INT,
         sex VARCHAR(20),
         country VARCHAR(100),
@@ -33,6 +34,11 @@ export async function initDB() {
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
       )
+    `;
+
+    await sql`
+      ALTER TABLE users
+      ADD COLUMN IF NOT EXISTS date_of_birth DATE
     `;
 
     await sql`

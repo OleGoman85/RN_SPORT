@@ -1,8 +1,9 @@
-import { styles } from "../styles/profile.styles";
 import { Pressable, Text, TextInput, View } from "react-native";
 import { colors } from "../constants/colors";
-import { sexOptions } from "../constants/profileOptions";
+import { styles } from "../styles/profile.styles";
 import { AvatarPicker } from "./AvatarPicker";
+
+const sexOptions = ["Male", "Female", "Other"];
 
 type ProfileInfoCardProps = {
   firstName: string;
@@ -13,8 +14,12 @@ type ProfileInfoCardProps = {
   setNickname: (value: string) => void;
   aboutMe: string;
   setAboutMe: (value: string) => void;
-  age: string;
-  setAge: (value: string) => void;
+  birthDay: string;
+  setBirthDay: (value: string) => void;
+  birthMonth: string;
+  setBirthMonth: (value: string) => void;
+  birthYear: string;
+  setBirthYear: (value: string) => void;
   sex: string;
   setSex: (value: string) => void;
   country: string;
@@ -39,8 +44,12 @@ export function ProfileInfoCard({
   setNickname,
   aboutMe,
   setAboutMe,
-  age,
-  setAge,
+  birthDay,
+  setBirthDay,
+  birthMonth,
+  setBirthMonth,
+  birthYear,
+  setBirthYear,
   sex,
   setSex,
   country,
@@ -102,15 +111,6 @@ export function ProfileInfoCard({
 
           <TextInput
             style={styles.input}
-            value={age}
-            onChangeText={setAge}
-            placeholder="Age"
-            placeholderTextColor={colors.secondaryText}
-            keyboardType="numeric"
-          />
-
-          <TextInput
-            style={styles.input}
             value={city}
             onChangeText={setCity}
             placeholder="City"
@@ -118,6 +118,44 @@ export function ProfileInfoCard({
           />
         </View>
       </View>
+
+      <Text style={styles.miniTitle}>Date of birth</Text>
+
+      <View style={styles.threeColumns}>
+        <TextInput
+          style={[styles.input, styles.dateInput]}
+          value={birthDay}
+          onChangeText={setBirthDay}
+          placeholder="DD"
+          placeholderTextColor={colors.secondaryText}
+          keyboardType="numeric"
+          maxLength={2}
+        />
+
+        <TextInput
+          style={[styles.input, styles.dateInput]}
+          value={birthMonth}
+          onChangeText={setBirthMonth}
+          placeholder="MM"
+          placeholderTextColor={colors.secondaryText}
+          keyboardType="numeric"
+          maxLength={2}
+        />
+
+        <TextInput
+          style={[styles.input, styles.dateInput]}
+          value={birthYear}
+          onChangeText={setBirthYear}
+          placeholder="YYYY"
+          placeholderTextColor={colors.secondaryText}
+          keyboardType="numeric"
+          maxLength={4}
+        />
+      </View>
+
+      <Text style={styles.helperText}>
+        Other users will see only your age, not your birthday.
+      </Text>
 
       <Text style={styles.miniTitle}>Sex</Text>
 

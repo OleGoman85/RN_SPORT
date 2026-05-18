@@ -31,6 +31,8 @@ export type SportEvent = {
   last_name: string | null;
   nickname: string | null;
   about_me?: string | null;
+  date_of_birth: string | null;
+  age?: number | null;
   avatar_url: string | null;
   rating_avg?: string | number | null;
   rating_count?: number | null;
@@ -45,7 +47,8 @@ export type EventCreator = {
   last_name: string | null;
   nickname: string | null;
   about_me: string | null;
-  age: number | null;
+  date_of_birth: string | null;
+  age?: number | null;
   sex: string | null;
   country: string | null;
   city: string | null;
@@ -54,9 +57,9 @@ export type EventCreator = {
   rating_count: number;
   games_count: number;
   events_created_count: number;
-  participated_events_count?: number;
-  languages?: string[];
-  sports?: UserSportProfile[];
+  participated_events_count: number;
+  languages: string[];
+  sports: UserSportProfile[];
 };
 
 export type EventMember = {

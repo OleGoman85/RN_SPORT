@@ -375,4 +375,13 @@ export const styles = StyleSheet.create({
 	buttonDisabled: {
 		opacity: 0.45,
 	},
+	threeColumns: {
+		flexDirection: "row",
+		gap: 10,
+	},
+
+	dateInput: {
+		flex: 1,
+		textAlign: "center",
+	},
 });
