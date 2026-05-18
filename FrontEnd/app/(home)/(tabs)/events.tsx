@@ -11,7 +11,7 @@ import {
   View,
 } from "react-native";
 import { EventCard } from "../../../components/EventCard";
-import { EventDetailsModal } from "../../../components/EventDetailsModal";
+import { EventDetailsModal } from "../../../components/eventDetails/EventDetailsModal";
 import { colors } from "../../../constants/colors";
 import { eventDayFilters, loadSportEvents } from "../../../services/eventsApi";
 import { styles } from "../../../styles/events.styles";
