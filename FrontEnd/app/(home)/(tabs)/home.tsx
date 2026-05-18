@@ -14,6 +14,7 @@ import {
   View,
 } from "react-native";
 import { EventCard } from "../../../components/EventCard";
+import { EventDetailsModal } from "../../../components/EventDetailsModal";
 import { colors } from "../../../constants/colors";
 import { Sport, sports } from "../../../data/sports";
 import { loadSportEvents } from "../../../services/eventsApi";
@@ -24,6 +25,8 @@ export default function HomeScreen() {
   const [searchText, setSearchText] = useState("");
   const [selectedSport, setSelectedSport] = useState("");
   const [events, setEvents] = useState<SportEvent[]>([]);
+  const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
+  const [isDetailsVisible, setIsDetailsVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [latitude, setLatitude] = useState<number | null>(null);
   const [longitude, setLongitude] = useState<number | null>(null);
@@ -90,6 +93,24 @@ export default function HomeScreen() {
 
     setSelectedSport(nextSport);
     loadLocationAndEvents(nextSport);
+  };
+
+  const handleEventPress = (eventId: number) => {
+    setSelectedEventId(eventId);
+    setIsDetailsVisible(true);
+  };
+
+  const handleCloseDetails = () => {
+    setIsDetailsVisible(false);
+    setSelectedEventId(null);
+  };
+
+  const handleEventUpdated = (updatedEvent: SportEvent) => {
+    setEvents((currentEvents) =>
+      currentEvents.map((event) =>
+        event.id === updatedEvent.id ? updatedEvent : event,
+      ),
+    );
   };
 
   const renderSportItem = ({ item }: { item: Sport }) => {
@@ -192,10 +213,21 @@ export default function HomeScreen() {
           contentContainerStyle={styles.eventsList}
         >
           {events.map((event) => (
-            <EventCard key={event.id} event={event} />
+            <EventCard
+              key={event.id}
+              event={event}
+              onPress={() => handleEventPress(event.id)}
+            />
           ))}
         </ScrollView>
       )}
+
+      <EventDetailsModal
+        eventId={selectedEventId}
+        visible={isDetailsVisible}
+        onClose={handleCloseDetails}
+        onEventUpdated={handleEventUpdated}
+      />
     </View>
   );
 }

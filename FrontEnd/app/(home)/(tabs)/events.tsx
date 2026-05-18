@@ -11,11 +11,9 @@ import {
   View,
 } from "react-native";
 import { EventCard } from "../../../components/EventCard";
+import { EventDetailsModal } from "../../../components/EventDetailsModal";
 import { colors } from "../../../constants/colors";
-import {
-  eventDayFilters,
-  loadSportEvents,
-} from "../../../services/eventsApi";
+import { eventDayFilters, loadSportEvents } from "../../../services/eventsApi";
 import { styles } from "../../../styles/events.styles";
 import { EventDayFilter, SportEvent } from "../../../types/events";
 
@@ -23,6 +21,8 @@ export default function EventsScreen() {
   const [events, setEvents] = useState<SportEvent[]>([]);
   const [activeFilter, setActiveFilter] = useState<EventDayFilter>("all");
   const [searchText, setSearchText] = useState("");
+  const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
+  const [isDetailsVisible, setIsDetailsVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   const loadEvents = useCallback(async () => {
@@ -55,6 +55,24 @@ export default function EventsScreen() {
 
   const handleFilterPress = (filter: EventDayFilter) => {
     setActiveFilter(filter);
+  };
+
+  const handleEventPress = (eventId: number) => {
+    setSelectedEventId(eventId);
+    setIsDetailsVisible(true);
+  };
+
+  const handleCloseDetails = () => {
+    setIsDetailsVisible(false);
+    setSelectedEventId(null);
+  };
+
+  const handleEventUpdated = (updatedEvent: SportEvent) => {
+    setEvents((currentEvents) =>
+      currentEvents.map((event) =>
+        event.id === updatedEvent.id ? updatedEvent : event,
+      ),
+    );
   };
 
   return (
@@ -102,10 +120,7 @@ export default function EventsScreen() {
               onPress={() => handleFilterPress(filter.value)}
             >
               <Text
-                style={[
-                  styles.filterText,
-                  isActive && styles.filterTextActive,
-                ]}
+                style={[styles.filterText, isActive && styles.filterTextActive]}
               >
                 {filter.label}
               </Text>
@@ -124,19 +139,26 @@ export default function EventsScreen() {
         <View style={styles.emptyBlock}>
           <Text style={styles.emptyTitle}>No events found</Text>
 
-          <Text style={styles.emptyText}>
-            Try another day or sport name.
-          </Text>
+          <Text style={styles.emptyText}>Try another day or sport name.</Text>
         </View>
       ) : (
         <FlatList
           data={events}
           keyExtractor={(item) => String(item.id)}
-          renderItem={({ item }) => <EventCard event={item} />}
+          renderItem={({ item }) => (
+            <EventCard event={item} onPress={() => handleEventPress(item.id)} />
+          )}
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
         />
       )}
+
+      <EventDetailsModal
+        eventId={selectedEventId}
+        visible={isDetailsVisible}
+        onClose={handleCloseDetails}
+        onEventUpdated={handleEventUpdated}
+      />
     </View>
   );
 }

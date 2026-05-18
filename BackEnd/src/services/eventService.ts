@@ -72,6 +72,91 @@ export async function getEventById(eventId: number) {
   return events[0] ?? null;
 }
 
+export async function getEventMembers(eventId: number) {
+  return sql`
+    SELECT
+      users.id,
+      users.clerk_user_id,
+      users.nickname,
+      users.first_name,
+      users.last_name,
+      users.avatar_url,
+      users.city,
+      users.rating_avg,
+      users.rating_count,
+      sport_event_members.created_at AS joined_at
+    FROM sport_event_members
+    INNER JOIN users ON users.id = sport_event_members.user_id
+    WHERE sport_event_members.event_id = ${eventId}
+    ORDER BY sport_event_members.created_at ASC
+  `;
+}
+
+export async function getEventDetailsById(eventId: number) {
+  const event = await getEventById(eventId);
+
+  if (!event) {
+    return null;
+  }
+
+  const members = await getEventMembers(eventId);
+
+  const creatorStats = await sql`
+    SELECT
+      (
+        SELECT COUNT(*)::int
+        FROM sport_events
+        WHERE user_id = ${event.user_id}
+        AND is_active = TRUE
+      ) AS events_created_count,
+      (
+        SELECT COUNT(*)::int
+        FROM sport_event_members
+        WHERE user_id = ${event.user_id}
+      ) AS participated_events_count
+  `;
+
+  const creatorLanguages = await sql`
+    SELECT language
+    FROM user_languages
+    WHERE user_id = ${event.user_id}
+    ORDER BY language ASC
+  `;
+
+  const creatorSports = await sql`
+    SELECT sport_name, level
+    FROM user_sports
+    WHERE user_id = ${event.user_id}
+    ORDER BY sport_name ASC
+  `;
+
+  return {
+    event,
+    creator: {
+      id: event.user_id,
+      clerk_user_id: event.clerk_user_id,
+      first_name: event.first_name,
+      last_name: event.last_name,
+      nickname: event.nickname,
+      about_me: event.about_me,
+      age: event.age,
+      sex: event.sex,
+      country: event.country,
+      city: event.city,
+      avatar_url: event.avatar_url,
+      rating_avg: event.rating_avg,
+      rating_count: event.rating_count,
+      games_count: event.games_count,
+      events_created_count: creatorStats[0]?.events_created_count ?? 0,
+      participated_events_count:
+        creatorStats[0]?.participated_events_count ?? 0,
+      languages: creatorLanguages.map((item) => item.language),
+      sports: creatorSports,
+    },
+    members,
+  };
+}
+
 export async function getPublicEvents(params: {
   dayFilter: DayFilter;
   search: string;
