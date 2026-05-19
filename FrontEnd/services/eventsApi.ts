@@ -6,8 +6,7 @@ import {
   SportEvent,
   UpdateSportEventParams,
 } from "../types/events";
-
-const API_URL = "http://192.168.32.127:5001";
+import { API_URL } from "./apiConfig";
 
 function buildEventsQuery(params: LoadSportEventsParams = {}) {
   const query = new URLSearchParams();

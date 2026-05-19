@@ -1,6 +1,5 @@
 import { SelectedSport, UserProfile } from "../types/profile";
-
-const API_URL = "http://192.168.32.127:5001";
+import { API_URL } from "./apiConfig";
 
 export type SaveProfileParams = {
   clerk_user_id: string;

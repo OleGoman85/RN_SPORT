@@ -1,4 +1,4 @@
-const API_URL = "http://192.168.32.127:5001";
+import { API_URL } from "./apiConfig";
 
 export async function uploadAvatarToServer(imageUri: string) {
 	const fileName = imageUri.split("/").pop() ?? "avatar.jpg";

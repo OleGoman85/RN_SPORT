@@ -1,5 +1,11 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Image, ImageSourcePropType, Pressable, Text, View } from "react-native";
+import {
+  Image,
+  ImageSourcePropType,
+  Pressable,
+  Text,
+  View,
+} from "react-native";
 import { colors } from "../constants/colors";
 import { sports } from "../data/sports";
 import { styles } from "../styles/EventCard.styles";
@@ -12,7 +18,10 @@ type EventCardProps = {
 };
 
 function getSportImage(sportName: string): ImageSourcePropType {
-  const sport = sports.find((item) => item.name.toLowerCase() === sportName.toLowerCase());
+  const sport = sports.find(
+    (item) => item.name.toLowerCase() === sportName.toLowerCase(),
+  );
+
   return sport?.image ?? sports[0].image;
 }
 
@@ -27,7 +36,7 @@ function formatTime(time: string) {
   return time.slice(0, 5);
 }
 
-function formatDistance(distance: string | number | null) {
+function formatDistance(distance: string | number | null | undefined) {
   if (distance === null || distance === undefined) {
     return null;
   }
@@ -75,14 +84,24 @@ export function EventCard({ event, compact = false, onPress }: EventCardProps) {
         </View>
 
         <View style={styles.metaRow}>
-          <Ionicons name="time-outline" size={14} color={colors.secondaryText} />
+          <Ionicons
+            name="time-outline"
+            size={14}
+            color={colors.secondaryText}
+          />
+
           <Text style={styles.metaText} numberOfLines={1}>
             {formatDate(event.available_date)} · {formatTime(event.time_from)}
           </Text>
         </View>
 
         <View style={styles.metaRow}>
-          <Ionicons name="location-outline" size={14} color={colors.secondaryText} />
+          <Ionicons
+            name="location-outline"
+            size={14}
+            color={colors.secondaryText}
+          />
+
           <Text style={styles.metaText} numberOfLines={1}>
             {event.location_name}
           </Text>
@@ -93,7 +112,9 @@ export function EventCard({ event, compact = false, onPress }: EventCardProps) {
             {event.current_participants}/{event.max_participants} players
           </Text>
 
-          {distanceText && <Text style={styles.distanceText}>{distanceText}</Text>}
+          {distanceText && (
+            <Text style={styles.distanceText}>{distanceText}</Text>
+          )}
         </View>
       </View>
     </Pressable>
