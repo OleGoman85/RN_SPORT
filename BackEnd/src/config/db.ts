@@ -116,6 +116,18 @@ export async function initDB() {
     `
 
 		await sql`
+      CREATE TABLE IF NOT EXISTS user_contacts (
+        id SERIAL PRIMARY KEY,
+        owner_user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        contact_user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(owner_user_id, contact_user_id),
+        CONSTRAINT user_contacts_no_self_check
+          CHECK (owner_user_id <> contact_user_id)
+      )
+    `
+
+		await sql`
       CREATE INDEX IF NOT EXISTS index_sport_events_active_date
       ON sport_events (is_active, available_date, time_from)
     `
@@ -138,6 +150,16 @@ export async function initDB() {
 		await sql`
       CREATE INDEX IF NOT EXISTS index_sport_event_members_user_id
       ON sport_event_members (user_id)
+    `
+
+		await sql`
+      CREATE INDEX IF NOT EXISTS index_user_contacts_owner_user_id
+      ON user_contacts (owner_user_id)
+    `
+
+		await sql`
+      CREATE INDEX IF NOT EXISTS index_user_contacts_contact_user_id
+      ON user_contacts (contact_user_id)
     `
 
 		console.log('Database initialized successfully')

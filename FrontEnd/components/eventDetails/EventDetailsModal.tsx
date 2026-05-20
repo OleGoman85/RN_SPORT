@@ -11,6 +11,7 @@ import {
   View,
 } from "react-native";
 import { colors } from "../../constants/colors";
+import { addContactToBook } from "../../services/contactsApi";
 import {
   joinSportEvent,
   loadSportEventDetails,
@@ -39,6 +40,7 @@ export function EventDetailsModal({
   const [details, setDetails] = useState<EventDetails | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isJoining, setIsJoining] = useState(false);
+  const [isAddingContact, setIsAddingContact] = useState(false);
 
   useEffect(() => {
     if (!visible || eventId === null) {
@@ -73,7 +75,9 @@ export function EventDetailsModal({
     return details?.members ?? [];
   }, [details?.members]);
 
-  const isCreator = creator?.clerk_user_id === user?.id;
+  const isCreator = Boolean(
+    creator && user?.id && creator.clerk_user_id === user.id,
+  );
 
   const isAlreadyJoined = useMemo(() => {
     return members.some((member) => member.clerk_user_id === user?.id);
@@ -114,8 +118,38 @@ export function EventDetailsModal({
     Alert.alert("Coming soon", "Chat will be connected later.");
   };
 
-  const handleAddContactPress = () => {
-    Alert.alert("Coming soon", "Contacts will be connected later.");
+  const handleAddContactPress = async () => {
+    if (!creator || !user?.id) {
+      Alert.alert("Error", "User is not loaded yet.");
+      return;
+    }
+
+    if (isCreator) {
+      Alert.alert("Contact", "This is your own profile.");
+      return;
+    }
+
+    try {
+      setIsAddingContact(true);
+
+      const result = await addContactToBook(user.id, creator.clerk_user_id);
+
+      Alert.alert(
+        "Contact saved",
+        result.is_new
+          ? "This player was added to your contacts."
+          : "This player is already in your contacts.",
+      );
+    } catch (error) {
+      console.log("Add contact error:", error);
+
+      Alert.alert(
+        "Could not add contact",
+        error instanceof Error ? error.message : "Please try again.",
+      );
+    } finally {
+      setIsAddingContact(false);
+    }
   };
 
   return (
@@ -218,19 +252,31 @@ export function EventDetailsModal({
                   </Pressable>
 
                   <Pressable
+                    disabled={isAddingContact || isCreator}
                     style={({ pressed }) => [
                       styles.secondaryButton,
+                      (isAddingContact || isCreator) && styles.disabledButton,
                       pressed && styles.buttonPressed,
                     ]}
                     onPress={handleAddContactPress}
                   >
                     <Ionicons
-                      name="person-add-outline"
+                      name={
+                        isCreator
+                          ? "person-circle-outline"
+                          : "person-add-outline"
+                      }
                       size={22}
                       color={colors.text}
                     />
 
-                    <Text style={styles.secondaryButtonText}>Add</Text>
+                    <Text style={styles.secondaryButtonText}>
+                      {isCreator
+                        ? "Your profile"
+                        : isAddingContact
+                          ? "Saving..."
+                          : "Add"}
+                    </Text>
                   </Pressable>
                 </View>
               </View>
