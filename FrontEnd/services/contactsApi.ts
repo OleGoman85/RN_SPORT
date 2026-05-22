@@ -1,6 +1,7 @@
 import { ContactUser } from "../types/contacts";
 import { API_URL } from "./apiConfig";
 
+// Reads backend JSON safely, including empty responses and plain-text errors.
 async function readJsonResponse(response: Response) {
   const text = await response.text();
 
@@ -15,6 +16,7 @@ async function readJsonResponse(response: Response) {
   }
 }
 
+// Loads all saved contacts for the current user.
 export async function loadContacts(
   currentClerkUserId: string,
 ): Promise<ContactUser[]> {
@@ -31,6 +33,7 @@ export async function loadContacts(
   return data.contacts ?? [];
 }
 
+// Saves another player into the current user's contacts.
 export async function addContactToBook(
   currentClerkUserId: string,
   contactClerkUserId: string,
@@ -58,6 +61,7 @@ export async function addContactToBook(
   return data;
 }
 
+// Removes one saved player from the current user's contacts.
 export async function removeContactFromBook(
   currentClerkUserId: string,
   contactClerkUserId: string,

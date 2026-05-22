@@ -13,6 +13,7 @@ const upload = multer({
 	},
 });
 
+// Receives an avatar image from the app, uploads it to Cloudinary, and returns its URL.
 router.post("/avatar", upload.single("avatar"), async (req, res) => {
 	try {
 		if (!req.file) {

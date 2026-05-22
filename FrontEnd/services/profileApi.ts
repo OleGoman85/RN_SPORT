@@ -1,24 +1,8 @@
-import { SelectedSport, UserProfile } from "../types/profile";
+import { SaveProfileParams, UserProfile } from "../types/profile";
+import { EventCreator } from "../types/events";
 import { API_URL } from "./apiConfig";
 
-export type SaveProfileParams = {
-  clerk_user_id: string;
-  email: string;
-  first_name: string;
-  last_name: string;
-  nickname: string;
-  about_me: string;
-  date_of_birth: string;
-  sex: string;
-  country: string;
-  city: string;
-  avatar_url: string;
-  latitude: number | null;
-  longitude: number | null;
-  sports: SelectedSport[];
-  languages: string[];
-};
-
+// Loads the current user's full editable profile.
 export async function loadUserProfile(
   clerkUserId: string,
 ): Promise<UserProfile | null> {
@@ -39,6 +23,24 @@ export async function loadUserProfile(
   return data;
 }
 
+// Loads a public player profile for preview modals. (Joined players)
+export async function loadPublicUserProfile(
+  clerkUserId: string,
+): Promise<EventCreator> {
+  const response = await fetch(
+    `${API_URL}/api/users/${encodeURIComponent(clerkUserId)}/public-profile`,
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message ?? "Profile loading failed");
+  }
+
+  return data.profile;
+}
+
+// Creates or updates the current user's profile.
 export async function saveUserProfile(
   profileData: SaveProfileParams,
 ): Promise<UserProfile> {

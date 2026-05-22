@@ -2,12 +2,14 @@ import {
   CreateSportEventParams,
   EventDayFilter,
   EventDetails,
+  EventFormatFilter,
   LoadSportEventsParams,
   SportEvent,
   UpdateSportEventParams,
 } from "../types/events";
 import { API_URL } from "./apiConfig";
 
+// Converts event filters from the UI into URL query parameters.
 function buildEventsQuery(params: LoadSportEventsParams = {}) {
   const query = new URLSearchParams();
 
@@ -23,6 +25,10 @@ function buildEventsQuery(params: LoadSportEventsParams = {}) {
     query.set("sport", params.sport.trim());
   }
 
+  if (params.eventFormat && params.eventFormat !== "all") {
+    query.set("event_format", params.eventFormat);
+  }
+
   if (
     typeof params.latitude === "number" &&
     typeof params.longitude === "number"
@@ -36,6 +42,7 @@ function buildEventsQuery(params: LoadSportEventsParams = {}) {
   return queryString ? `?${queryString}` : "";
 }
 
+// Reads backend JSON safely, including empty responses and plain-text errors.
 async function readJsonResponse(response: Response) {
   const text = await response.text();
 
@@ -72,6 +79,25 @@ export const eventDayFilters: {
   },
 ];
 
+export const eventFormatFilters: {
+  label: string;
+  value: EventFormatFilter;
+}[] = [
+  {
+    label: "All",
+    value: "all",
+  },
+  {
+    label: "1v1",
+    value: "1v1",
+  },
+  {
+    label: "Team",
+    value: "team",
+  },
+];
+
+// Loads public events for Home/Events screens with optional filters.
 export async function loadSportEvents(
   params: LoadSportEventsParams = {},
 ): Promise<SportEvent[]> {
@@ -88,6 +114,7 @@ export async function loadSportEvents(
   return data.events ?? [];
 }
 
+// Loads one event with creator profile, event info, and joined members.
 export async function loadSportEventDetails(
   eventId: number,
 ): Promise<EventDetails> {
@@ -102,6 +129,7 @@ export async function loadSportEventDetails(
   return data as EventDetails;
 }
 
+// Loads active events created by the current user for the edit-event list.
 export async function loadMySportEvents(
   currentClerkUserId: string,
 ): Promise<SportEvent[]> {
@@ -118,6 +146,7 @@ export async function loadMySportEvents(
   return data.events ?? [];
 }
 
+// Sends create-event form data to the backend and returns the created event.
 export async function createSportEvent(
   params: CreateSportEventParams,
 ): Promise<SportEvent> {
@@ -138,6 +167,7 @@ export async function createSportEvent(
   return data.event;
 }
 
+// Sends edited event data to the backend and returns the updated event.
 export async function updateSportEvent(
   eventId: number,
   params: UpdateSportEventParams,
@@ -159,6 +189,7 @@ export async function updateSportEvent(
   return data.event;
 }
 
+// Soft-deletes one event owned by the current user.
 export async function deleteSportEvent(
   eventId: number,
   currentClerkUserId: string,
@@ -182,6 +213,7 @@ export async function deleteSportEvent(
   return data.event;
 }
 
+// Adds the current user as a participant of one event.
 export async function joinSportEvent(
   eventId: number,
   currentClerkUserId: string,

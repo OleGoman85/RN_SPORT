@@ -3,10 +3,13 @@ import { Dispatch, SetStateAction } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
 import { colors } from "../../constants/colors";
 import { styles } from "../../styles/createEvent.styles";
+import { EventFormat } from "../../types/events";
 
 type EventFormFieldsProps = {
   eventName: string;
   setEventName: (value: string) => void;
+  eventFormat: EventFormat | "";
+  onChangeEventFormat: (value: EventFormat) => void;
   date: string;
   setDate: (value: string) => void;
   time: string;
@@ -24,6 +27,8 @@ type EventFormFieldsProps = {
 export function EventFormFields({
   eventName,
   setEventName,
+  eventFormat,
+  onChangeEventFormat,
   date,
   setDate,
   time,
@@ -48,6 +53,38 @@ export function EventFormFields({
         placeholder="5v5 Football Match"
         placeholderTextColor={colors.secondaryText}
       />
+
+      <Text style={styles.label}>Event Format</Text>
+
+      <View style={styles.formatSelector}>
+        {[
+          { label: "1v1", value: "1v1" as const },
+          { label: "Team", value: "team" as const },
+        ].map((format) => {
+          const isActive = eventFormat === format.value;
+
+          return (
+            <Pressable
+              key={format.value}
+              style={({ pressed }) => [
+                styles.formatButton,
+                isActive && styles.formatButtonActive,
+                pressed && styles.buttonPressed,
+              ]}
+              onPress={() => onChangeEventFormat(format.value)}
+            >
+              <Text
+                style={[
+                  styles.formatButtonText,
+                  isActive && styles.formatButtonTextActive,
+                ]}
+              >
+                {format.label}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </View>
 
       <View style={styles.twoColumns}>
         <View style={styles.column}>
@@ -99,7 +136,11 @@ export function EventFormFields({
 
       <View style={styles.counter}>
         <Pressable
-          style={styles.counterButton}
+          disabled={eventFormat === "1v1"}
+          style={[
+            styles.counterButton,
+            eventFormat === "1v1" && styles.counterButtonDisabled,
+          ]}
           onPress={() => setMaxParticipants((value) => Math.max(2, value - 1))}
         >
           <Ionicons name="remove" size={22} color={colors.text} />
@@ -108,7 +149,11 @@ export function EventFormFields({
         <Text style={styles.counterValue}>{maxParticipants}</Text>
 
         <Pressable
-          style={styles.counterButton}
+          disabled={eventFormat === "1v1"}
+          style={[
+            styles.counterButton,
+            eventFormat === "1v1" && styles.counterButtonDisabled,
+          ]}
           onPress={() =>
             setMaxParticipants((value) => Math.min(100, value + 1))
           }

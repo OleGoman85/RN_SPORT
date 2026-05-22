@@ -54,6 +54,10 @@ function formatDistance(distance: string | number | null | undefined) {
   return `${numericDistance.toFixed(1)} km away`;
 }
 
+function getEventFormatLabel(format: SportEvent["event_format"]) {
+  return format === "1v1" ? "1v1" : "Team";
+}
+
 export function EventCard({ event, compact = false, onPress }: EventCardProps) {
   const imageSource = event.event_image_url
     ? { uri: event.event_image_url }
@@ -92,6 +96,18 @@ export function EventCard({ event, compact = false, onPress }: EventCardProps) {
 
           <Text style={styles.metaText} numberOfLines={1}>
             {formatDate(event.available_date)} · {formatTime(event.time_from)}
+          </Text>
+        </View>
+
+        <View style={styles.metaRow}>
+          <Ionicons
+            name="people-circle-outline"
+            size={14}
+            color={colors.secondaryText}
+          />
+
+          <Text style={styles.metaText} numberOfLines={1}>
+            {getEventFormatLabel(event.event_format)}
           </Text>
         </View>
 

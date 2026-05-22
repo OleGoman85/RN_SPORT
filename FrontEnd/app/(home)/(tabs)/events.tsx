@@ -13,13 +13,23 @@ import {
 import { EventCard } from "../../../components/EventCard";
 import { EventDetailsModal } from "../../../components/eventDetails/EventDetailsModal";
 import { colors } from "../../../constants/colors";
-import { eventDayFilters, loadSportEvents } from "../../../services/eventsApi";
+import {
+  eventDayFilters,
+  eventFormatFilters,
+  loadSportEvents,
+} from "../../../services/eventsApi";
 import { styles } from "../../../styles/events.styles";
-import { EventDayFilter, SportEvent } from "../../../types/events";
+import {
+  EventDayFilter,
+  EventFormatFilter,
+  SportEvent,
+} from "../../../types/events";
 
 export default function EventsScreen() {
   const [events, setEvents] = useState<SportEvent[]>([]);
   const [activeFilter, setActiveFilter] = useState<EventDayFilter>("all");
+  const [activeFormatFilter, setActiveFormatFilter] =
+    useState<EventFormatFilter>("all");
   const [searchText, setSearchText] = useState("");
   const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
   const [isDetailsVisible, setIsDetailsVisible] = useState(false);
@@ -31,6 +41,7 @@ export default function EventsScreen() {
 
       const loadedEvents = await loadSportEvents({
         day: activeFilter,
+        eventFormat: activeFormatFilter,
         search: searchText,
       });
 
@@ -41,7 +52,7 @@ export default function EventsScreen() {
     } finally {
       setIsLoading(false);
     }
-  }, [activeFilter, searchText]);
+  }, [activeFilter, activeFormatFilter, searchText]);
 
   useFocusEffect(
     useCallback(() => {
@@ -55,6 +66,10 @@ export default function EventsScreen() {
 
   const handleFilterPress = (filter: EventDayFilter) => {
     setActiveFilter(filter);
+  };
+
+  const handleFormatFilterPress = (filter: EventFormatFilter) => {
+    setActiveFormatFilter(filter);
   };
 
   const handleEventPress = (eventId: number) => {
@@ -118,6 +133,30 @@ export default function EventsScreen() {
                 pressed && styles.buttonPressed,
               ]}
               onPress={() => handleFilterPress(filter.value)}
+            >
+              <Text
+                style={[styles.filterText, isActive && styles.filterTextActive]}
+              >
+                {filter.label}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </View>
+
+      <View style={styles.filtersRow}>
+        {eventFormatFilters.map((filter) => {
+          const isActive = activeFormatFilter === filter.value;
+
+          return (
+            <Pressable
+              key={filter.value}
+              style={({ pressed }) => [
+                styles.filterButton,
+                isActive && styles.filterButtonActive,
+                pressed && styles.buttonPressed,
+              ]}
+              onPress={() => handleFormatFilterPress(filter.value)}
             >
               <Text
                 style={[styles.filterText, isActive && styles.filterTextActive]}

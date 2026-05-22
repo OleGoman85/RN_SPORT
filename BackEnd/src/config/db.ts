@@ -74,6 +74,7 @@ export async function initDB() {
         user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
 
         sport_name VARCHAR(100) NOT NULL,
+        event_format VARCHAR(20) NOT NULL DEFAULT 'team',
         event_name VARCHAR(160) NOT NULL,
         event_description TEXT,
 
@@ -101,8 +102,32 @@ export async function initDB() {
           CHECK (
             current_participants >= 1
             AND current_participants <= max_participants
-          )
+          ),
+
+        CONSTRAINT sport_events_event_format_check
+          CHECK (event_format IN ('1v1', 'team'))
       )
+    `
+
+		await sql`
+      ALTER TABLE sport_events
+      ADD COLUMN IF NOT EXISTS event_format VARCHAR(20) NOT NULL DEFAULT 'team'
+    `
+
+		await sql`
+      DO $$
+      BEGIN
+        IF NOT EXISTS (
+          SELECT 1
+          FROM pg_constraint
+          WHERE conname = 'sport_events_event_format_check'
+        ) THEN
+          ALTER TABLE sport_events
+          ADD CONSTRAINT sport_events_event_format_check
+          CHECK (event_format IN ('1v1', 'team'));
+        END IF;
+      END;
+      $$
     `
 
 		await sql`
@@ -135,6 +160,11 @@ export async function initDB() {
 		await sql`
       CREATE INDEX IF NOT EXISTS index_sport_events_sport_name
       ON sport_events (sport_name)
+    `
+
+		await sql`
+      CREATE INDEX IF NOT EXISTS index_sport_events_event_format
+      ON sport_events (event_format)
     `
 
 		await sql`

@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Alert, Pressable, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { colors } from "../../constants/colors";
 import { styles } from "../../styles/eventDetailsModal.styles";
 import { EventMember } from "../../types/events";
@@ -12,9 +12,10 @@ import { UserAvatar } from "./UserAvatar";
 
 type MemberCardProps = {
   member: EventMember;
+  onPress: () => void;
 };
 
-export function MemberCard({ member }: MemberCardProps) {
+export function MemberCard({ member, onPress }: MemberCardProps) {
   const memberName = getFullName(member);
 
   return (
@@ -23,12 +24,7 @@ export function MemberCard({ member }: MemberCardProps) {
         styles.memberCard,
         pressed && styles.buttonPressed,
       ]}
-      onPress={() => {
-        Alert.alert(
-          "Coming soon",
-          "User profile preview will be connected later.",
-        );
-      }}
+      onPress={onPress}
     >
       <UserAvatar avatarUrl={member.avatar_url} name={memberName} size={46} />
 

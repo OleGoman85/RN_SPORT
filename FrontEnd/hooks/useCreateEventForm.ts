@@ -9,7 +9,7 @@ import {
 	loadMySportEvents,
 	updateSportEvent,
 } from "../services/eventsApi";
-import { SportEvent } from "../types/events";
+import { EventFormat, SportEvent } from "../types/events";
 import {
 	getEventCity,
 	getTodayDate,
@@ -24,6 +24,7 @@ export function useCreateEventForm() {
 		sports[0]?.name ?? "",
 	);
 	const [eventName, setEventName] = useState("");
+	const [eventFormat, setEventFormat] = useState<EventFormat | "">("");
 	const [date, setDate] = useState(getTodayDate());
 	const [time, setTime] = useState("19:00");
 	const [locationName, setLocationName] = useState("");
@@ -85,6 +86,7 @@ export function useCreateEventForm() {
 	const resetForm = () => {
 		setSelectedSportName(sports[0]?.name ?? "");
 		setEventName("");
+		setEventFormat("");
 		setDate(getTodayDate());
 		setTime("19:00");
 		setLocationName("");
@@ -98,6 +100,7 @@ export function useCreateEventForm() {
 		setEditingEventId(event.id);
 		setSelectedSportName(event.sport_name);
 		setEventName(event.event_name);
+		setEventFormat(event.event_format ?? "team");
 		setDate(event.available_date.slice(0, 10));
 		setTime(normalizeTime(event.time_from));
 		setLocationName(event.location_name);
@@ -114,6 +117,7 @@ export function useCreateEventForm() {
 
 		if (
 			!selectedSportName ||
+			!eventFormat ||
 			!eventName.trim() ||
 			!date.trim() ||
 			!time.trim() ||
@@ -121,18 +125,32 @@ export function useCreateEventForm() {
 		) {
 			Alert.alert(
 				"Missing data",
-				"Sport, event name, date, time and location are required.",
+				"Sport, format, event name, date, time and location are required.",
 			);
+			return false;
+		}
+
+		if (eventFormat === "1v1" && maxParticipants !== 2) {
+			Alert.alert("Check participants", "1v1 events must have 2 participants.");
 			return false;
 		}
 
 		return true;
 	};
 
+	const handleChangeEventFormat = (value: EventFormat) => {
+		setEventFormat(value);
+
+		if (value === "1v1") {
+			setMaxParticipants(2);
+		}
+	};
+
 	const buildEventPayload = () => {
 		return {
 			current_clerk_user_id: user!.id,
 			sport_name: selectedSportName,
+			event_format: eventFormat as EventFormat,
 			event_name: eventName.trim(),
 			event_description: description.trim() || null,
 			available_date: date.trim(),
@@ -198,12 +216,12 @@ export function useCreateEventForm() {
 		}
 	};
 
-	const handleDeleteEvent = () => {
-		if (!user?.id || editingEventId === null) {
+	const handleDeleteEvent = (eventToDelete: SportEvent) => {
+		if (!user?.id || isSaving) {
 			return;
 		}
 
-		Alert.alert("Delete event", "Are you sure you want to delete this event?", [
+		Alert.alert("Delete event", `Delete "${eventToDelete.event_name}"?`, [
 			{
 				text: "Cancel",
 				style: "cancel",
@@ -215,14 +233,17 @@ export function useCreateEventForm() {
 					try {
 						setIsSaving(true);
 
-						await deleteSportEvent(editingEventId, user.id);
+						await deleteSportEvent(eventToDelete.id, user.id);
 
 						setMyEvents((currentEvents) =>
-							currentEvents.filter((event) => event.id !== editingEventId),
+							currentEvents.filter((event) => event.id !== eventToDelete.id),
 						);
 
 						Alert.alert("Success", "Event deleted.");
-						resetForm();
+
+						if (editingEventId === eventToDelete.id) {
+							resetForm();
+						}
 					} catch (error) {
 						console.log("Delete event error:", error);
 						Alert.alert("Error", "Could not delete event.");
@@ -239,6 +260,8 @@ export function useCreateEventForm() {
 		setSearchText,
 		selectedSportName,
 		setSelectedSportName,
+		eventFormat,
+		handleChangeEventFormat,
 		eventName,
 		setEventName,
 		date,

@@ -49,18 +49,36 @@ export const styles = StyleSheet.create({
 
   myEventCard: {
     width: 170,
-    minHeight: 92,
+    minHeight: 112,
     backgroundColor: colors.card,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: 18,
-    padding: 12,
     marginRight: 8,
+    position: "relative",
   },
 
   myEventCardActive: {
     borderColor: colors.primary,
     borderWidth: 2,
+  },
+
+  myEventCardContent: {
+    minHeight: 110,
+    padding: 12,
+    paddingRight: 40,
+  },
+
+  myEventDeleteButton: {
+    position: "absolute",
+    top: 8,
+    right: 8,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: "rgba(251, 113, 133, 0.12)",
+    alignItems: "center",
+    justifyContent: "center",
   },
 
   myEventTitle: {
@@ -198,6 +216,37 @@ export const styles = StyleSheet.create({
     fontWeight: "600",
   },
 
+  formatSelector: {
+    flexDirection: "row",
+    gap: 10,
+  },
+
+  formatButton: {
+    flex: 1,
+    minHeight: 46,
+    borderRadius: 14,
+    backgroundColor: colors.card,
+    borderWidth: 1,
+    borderColor: colors.border,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  formatButtonActive: {
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
+  },
+
+  formatButtonText: {
+    color: colors.secondaryText,
+    fontSize: 14,
+    fontWeight: "900",
+  },
+
+  formatButtonTextActive: {
+    color: colors.background,
+  },
+
   twoColumns: {
     flexDirection: "row",
     gap: 12,
@@ -226,6 +275,10 @@ export const styles = StyleSheet.create({
     backgroundColor: colors.borderCol,
     alignItems: "center",
     justifyContent: "center",
+  },
+
+  counterButtonDisabled: {
+    opacity: 0.45,
   },
 
   counterValue: {
@@ -261,17 +314,6 @@ export const styles = StyleSheet.create({
     marginTop: 22,
   },
 
-  deleteButton: {
-    flex: 1,
-    height: 52,
-    borderRadius: 16,
-    backgroundColor: "rgba(239, 68, 68, 0.18)",
-    borderWidth: 1,
-    borderColor: "#ef4444",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-
   cancelButton: {
     flex: 1,
     height: 52,
@@ -290,12 +332,6 @@ export const styles = StyleSheet.create({
     backgroundColor: colors.primary,
     alignItems: "center",
     justifyContent: "center",
-  },
-
-  deleteButtonText: {
-    color: "#ef4444",
-    fontSize: 14,
-    fontWeight: "900",
   },
 
   cancelButtonText: {

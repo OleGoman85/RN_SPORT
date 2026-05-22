@@ -9,6 +9,7 @@ import { isValidString } from "../utils/eventValidation";
 
 const router = express.Router();
 
+// Loads all saved contacts for the current Clerk user.
 router.get("/:clerkUserId", async (req, res) => {
 	try {
 		const { clerkUserId } = req.params;
@@ -26,6 +27,7 @@ router.get("/:clerkUserId", async (req, res) => {
 	}
 });
 
+// Saves another user into the current user's contact book.
 router.post("/", async (req, res) => {
 	try {
 		const { current_clerk_user_id, contact_clerk_user_id } = req.body;
@@ -63,6 +65,7 @@ router.post("/", async (req, res) => {
 	}
 });
 
+// Removes one saved contact from the current user's contact book.
 router.delete("/:contactClerkUserId", async (req, res) => {
 	try {
 		const { contactClerkUserId } = req.params;

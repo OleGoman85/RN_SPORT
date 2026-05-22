@@ -1,3 +1,4 @@
+import { Ionicons } from "@expo/vector-icons";
 import {
   ActivityIndicator,
   FlatList,
@@ -14,43 +15,69 @@ type MyEventsListProps = {
   myEvents: SportEvent[];
   editingEventId: number | null;
   isLoadingMyEvents: boolean;
+  isSaving: boolean;
   onSelectEvent: (event: SportEvent) => void;
+  onDeleteEvent: (event: SportEvent) => void;
 };
 
 export function MyEventsList({
   myEvents,
   editingEventId,
   isLoadingMyEvents,
+  isSaving,
   onSelectEvent,
+  onDeleteEvent,
 }: MyEventsListProps) {
   const renderMyEventItem = ({ item }: { item: SportEvent }) => {
     const isSelected = editingEventId === item.id;
+    const eventFormatLabel = item.event_format === "1v1" ? "1v1" : "Team";
 
     return (
-      <Pressable
-        style={({ pressed }) => [
+      <View
+        style={[
           styles.myEventCard,
           isSelected && styles.myEventCardActive,
-          pressed && styles.buttonPressed,
         ]}
-        onPress={() => onSelectEvent(item)}
       >
-        <Text style={styles.myEventTitle} numberOfLines={1}>
-          {item.event_name}
-        </Text>
+        <Pressable
+          style={({ pressed }) => [
+            styles.myEventCardContent,
+            pressed && styles.buttonPressed,
+          ]}
+          onPress={() => onSelectEvent(item)}
+        >
+          <Text style={styles.myEventTitle} numberOfLines={1}>
+            {item.event_name}
+          </Text>
 
-        <Text style={styles.myEventSport} numberOfLines={1}>
-          {item.sport_name}
-        </Text>
+          <Text style={styles.myEventSport} numberOfLines={1}>
+            {item.sport_name}
+          </Text>
 
-        <Text style={styles.myEventMeta} numberOfLines={1}>
-          {item.available_date.slice(0, 10)} · {normalizeTime(item.time_from)}
-        </Text>
+          <Text style={styles.myEventMeta} numberOfLines={1}>
+            {item.available_date.slice(0, 10)} · {normalizeTime(item.time_from)}
+          </Text>
 
-        <Text style={styles.myEventMeta} numberOfLines={1}>
-          {item.current_participants}/{item.max_participants} players
-        </Text>
-      </Pressable>
+          <Text style={styles.myEventMeta} numberOfLines={1}>
+            {eventFormatLabel}
+          </Text>
+
+          <Text style={styles.myEventMeta} numberOfLines={1}>
+            {item.current_participants}/{item.max_participants} players
+          </Text>
+        </Pressable>
+
+        <Pressable
+          disabled={isSaving}
+          style={({ pressed }) => [
+            styles.myEventDeleteButton,
+            (pressed || isSaving) && styles.buttonPressed,
+          ]}
+          onPress={() => onDeleteEvent(item)}
+        >
+          <Ionicons name="close" size={17} color="#fb7185" />
+        </Pressable>
+      </View>
     );
   };
 

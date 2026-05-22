@@ -11,6 +11,7 @@ import {
   View,
 } from "react-native";
 import { UserAvatar } from "../../../components/eventDetails/UserAvatar";
+import { UserProfileModal } from "../../../components/eventDetails/UserProfileModal";
 import { colors } from "../../../constants/colors";
 import {
   loadContacts,
@@ -29,6 +30,9 @@ export default function ContactsScreen() {
 
   const [contacts, setContacts] = useState<ContactUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedProfileClerkUserId, setSelectedProfileClerkUserId] = useState<
+    string | null
+  >(null);
 
   const loadSavedContacts = useCallback(async () => {
     if (!user?.id) {
@@ -103,7 +107,13 @@ export default function ContactsScreen() {
     const fullName = getFullName(item);
 
     return (
-      <View style={styles.contactCard}>
+      <Pressable
+        style={({ pressed }) => [
+          styles.contactCard,
+          pressed && styles.buttonPressed,
+        ]}
+        onPress={() => setSelectedProfileClerkUserId(item.clerk_user_id)}
+      >
         <UserAvatar avatarUrl={item.avatar_url} name={fullName} size={58} />
 
         <View style={styles.contactInfo}>
@@ -161,7 +171,7 @@ export default function ContactsScreen() {
             <Ionicons name="trash-outline" size={20} color="#fb7185" />
           </Pressable>
         </View>
-      </View>
+      </Pressable>
     );
   };
 
@@ -208,6 +218,12 @@ export default function ContactsScreen() {
           showsVerticalScrollIndicator={false}
         />
       )}
+
+      <UserProfileModal
+        clerkUserId={selectedProfileClerkUserId}
+        visible={selectedProfileClerkUserId !== null}
+        onClose={() => setSelectedProfileClerkUserId(null)}
+      />
     </View>
   );
 }

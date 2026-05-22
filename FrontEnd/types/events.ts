@@ -1,4 +1,6 @@
 export type EventDayFilter = "all" | "today" | "tomorrow" | "week";
+export type EventFormat = "1v1" | "team";
+export type EventFormatFilter = "all" | EventFormat;
 
 export type UserSportProfile = {
   sport_name: string;
@@ -10,6 +12,7 @@ export type SportEvent = {
   user_id: number;
   clerk_user_id: string;
   sport_name: string;
+  event_format: EventFormat;
   event_name: string;
   event_description: string | null;
   available_date: string;
@@ -83,6 +86,7 @@ export type EventDetails = {
 
 export type LoadSportEventsParams = {
   day?: EventDayFilter;
+  eventFormat?: EventFormatFilter;
   search?: string;
   sport?: string;
   latitude?: number | null;
@@ -92,6 +96,7 @@ export type LoadSportEventsParams = {
 export type CreateSportEventParams = {
   current_clerk_user_id: string;
   sport_name: string;
+  event_format: EventFormat;
   event_name: string;
   event_description: string | null;
   available_date: string;

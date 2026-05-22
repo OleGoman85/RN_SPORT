@@ -58,7 +58,9 @@ export default function CreateEventScreen() {
           myEvents={form.myEvents}
           editingEventId={form.editingEventId}
           isLoadingMyEvents={form.isLoadingMyEvents}
+          isSaving={form.isSaving}
           onSelectEvent={form.fillFormFromEvent}
+          onDeleteEvent={form.handleDeleteEvent}
         />
 
         <SportPicker
@@ -72,6 +74,8 @@ export default function CreateEventScreen() {
         <EventFormFields
           eventName={form.eventName}
           setEventName={form.setEventName}
+          eventFormat={form.eventFormat}
+          onChangeEventFormat={form.handleChangeEventFormat}
           date={form.date}
           setDate={form.setDate}
           time={form.time}
@@ -91,7 +95,6 @@ export default function CreateEventScreen() {
           isSaving={form.isSaving}
           onCreate={form.handleCreateEvent}
           onUpdate={form.handleUpdateEvent}
-          onDelete={form.handleDeleteEvent}
           onCancel={form.resetForm}
         />
       </ScrollView>

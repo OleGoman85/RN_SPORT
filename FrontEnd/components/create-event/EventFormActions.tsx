@@ -6,7 +6,6 @@ type EventFormActionsProps = {
   isSaving: boolean;
   onCreate: () => void;
   onUpdate: () => void;
-  onDelete: () => void;
   onCancel: () => void;
 };
 
@@ -15,23 +14,11 @@ export function EventFormActions({
   isSaving,
   onCreate,
   onUpdate,
-  onDelete,
   onCancel,
 }: EventFormActionsProps) {
   if (isEditing) {
     return (
       <View style={styles.editActions}>
-        <Pressable
-          style={({ pressed }) => [
-            styles.deleteButton,
-            (pressed || isSaving) && styles.buttonPressed,
-          ]}
-          onPress={onDelete}
-          disabled={isSaving}
-        >
-          <Text style={styles.deleteButtonText}>Delete</Text>
-        </Pressable>
-
         <Pressable
           style={({ pressed }) => [
             styles.cancelButton,

@@ -21,6 +21,7 @@ import { EventDetails, SportEvent } from "../../types/events";
 import { CreatorProfile } from "./CreatorProfile";
 import { EventInfoCard } from "./EventInfoCard";
 import { MemberCard } from "./MemberCard";
+import { UserProfileSheetContent } from "./UserProfileModal";
 
 type EventDetailsModalProps = {
   eventId: number | null;
@@ -41,6 +42,18 @@ export function EventDetailsModal({
   const [isLoading, setIsLoading] = useState(false);
   const [isJoining, setIsJoining] = useState(false);
   const [isAddingContact, setIsAddingContact] = useState(false);
+  const [selectedProfileClerkUserId, setSelectedProfileClerkUserId] = useState<
+    string | null
+  >(null);
+
+  const handleSheetClose = () => {
+    if (selectedProfileClerkUserId !== null) {
+      setSelectedProfileClerkUserId(null);
+      return;
+    }
+
+    onClose();
+  };
 
   useEffect(() => {
     if (!visible || eventId === null) {
@@ -67,6 +80,12 @@ export function EventDetailsModal({
 
     loadDetails();
   }, [eventId, visible, onClose]);
+
+  useEffect(() => {
+    if (!visible) {
+      setSelectedProfileClerkUserId(null);
+    }
+  }, [visible]);
 
   const creator = details?.creator;
   const event = details?.event;
@@ -157,129 +176,149 @@ export function EventDetailsModal({
       visible={visible}
       transparent
       animationType="slide"
-      onRequestClose={onClose}
+      onRequestClose={handleSheetClose}
     >
       <View style={styles.overlay}>
-        <Pressable style={styles.backdrop} onPress={onClose} />
+        <Pressable style={styles.backdrop} onPress={handleSheetClose} />
 
         <View style={styles.sheet}>
-          <View style={styles.dragHandle} />
-
-          <View style={styles.header}>
-            <Text style={styles.headerTitle}>Event details</Text>
-
-            <Pressable
-              style={({ pressed }) => [
-                styles.closeButton,
-                pressed && styles.buttonPressed,
-              ]}
-              onPress={onClose}
-            >
-              <Ionicons name="close" size={28} color={colors.text} />
-            </Pressable>
-          </View>
-
-          {isLoading || !details || !creator || !event ? (
-            <View style={styles.loadingBlock}>
-              <ActivityIndicator size="large" color={colors.primary} />
-
-              <Text style={styles.loadingText}>Loading event...</Text>
-            </View>
+          {selectedProfileClerkUserId ? (
+            <UserProfileSheetContent
+              clerkUserId={selectedProfileClerkUserId}
+              onClose={() => setSelectedProfileClerkUserId(null)}
+            />
           ) : (
             <>
-              <ScrollView
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={styles.scrollContent}
-              >
-                <CreatorProfile creator={creator} />
+              <View style={styles.dragHandle} />
 
-                <EventInfoCard event={event} />
+              <View style={styles.header}>
+                <Text style={styles.headerTitle}>Event details</Text>
 
-                <View style={styles.joinedSection}>
-                  <Text style={styles.joinedTitle}>Joined players</Text>
-
-                  {members.length === 0 ? (
-                    <Text style={styles.emptyText}>Nobody has joined yet.</Text>
-                  ) : (
-                    members.map((member) => (
-                      <MemberCard key={member.id} member={member} />
-                    ))
-                  )}
-                </View>
-              </ScrollView>
-
-              <View style={styles.actions}>
                 <Pressable
-                  disabled={
-                    isJoining || isCreator || isAlreadyJoined || isEventFull
-                  }
                   style={({ pressed }) => [
-                    styles.joinButton,
-                    (isCreator || isAlreadyJoined || isEventFull) &&
-                      styles.disabledButton,
+                    styles.closeButton,
                     pressed && styles.buttonPressed,
                   ]}
-                  onPress={handleJoinEvent}
+                  onPress={onClose}
                 >
-                  <Text style={styles.joinButtonText}>
-                    {isCreator
-                      ? "Your event"
-                      : isAlreadyJoined
-                        ? "Already joined"
-                        : isEventFull
-                          ? "Event is full"
-                          : isJoining
-                            ? "Joining..."
-                            : "Join Event"}
-                  </Text>
+                  <Ionicons name="close" size={28} color={colors.text} />
                 </Pressable>
-
-                <View style={styles.secondaryActions}>
-                  <Pressable
-                    style={({ pressed }) => [
-                      styles.secondaryButton,
-                      pressed && styles.buttonPressed,
-                    ]}
-                    onPress={handleMessagePress}
-                  >
-                    <Ionicons
-                      name="chatbubble-outline"
-                      size={22}
-                      color={colors.text}
-                    />
-
-                    <Text style={styles.secondaryButtonText}>Message</Text>
-                  </Pressable>
-
-                  <Pressable
-                    disabled={isAddingContact || isCreator}
-                    style={({ pressed }) => [
-                      styles.secondaryButton,
-                      (isAddingContact || isCreator) && styles.disabledButton,
-                      pressed && styles.buttonPressed,
-                    ]}
-                    onPress={handleAddContactPress}
-                  >
-                    <Ionicons
-                      name={
-                        isCreator
-                          ? "person-circle-outline"
-                          : "person-add-outline"
-                      }
-                      size={22}
-                      color={colors.text}
-                    />
-
-                    <Text style={styles.secondaryButtonText}>
-                      {isCreator
-                        ? "Your profile"
-                        : isAddingContact
-                          ? "Saving..."
-                          : "Add"}
-                    </Text>
-                  </Pressable>
-                </View>
               </View>
+
+              {isLoading || !details || !creator || !event ? (
+                <View style={styles.loadingBlock}>
+                  <ActivityIndicator size="large" color={colors.primary} />
+
+                  <Text style={styles.loadingText}>Loading event...</Text>
+                </View>
+              ) : (
+                <>
+                  <ScrollView
+                    showsVerticalScrollIndicator={false}
+                    contentContainerStyle={styles.scrollContent}
+                  >
+                    <CreatorProfile creator={creator} />
+
+                    <EventInfoCard event={event} />
+
+                    <View style={styles.joinedSection}>
+                      <Text style={styles.joinedTitle}>Joined players</Text>
+
+                      {members.length === 0 ? (
+                        <Text style={styles.emptyText}>
+                          Nobody has joined yet.
+                        </Text>
+                      ) : (
+                        members.map((member) => (
+                          <MemberCard
+                            key={member.id}
+                            member={member}
+                            onPress={() =>
+                              setSelectedProfileClerkUserId(
+                                member.clerk_user_id,
+                              )
+                            }
+                          />
+                        ))
+                      )}
+                    </View>
+                  </ScrollView>
+
+                  <View style={styles.actions}>
+                    <Pressable
+                      disabled={
+                        isJoining || isCreator || isAlreadyJoined || isEventFull
+                      }
+                      style={({ pressed }) => [
+                        styles.joinButton,
+                        (isCreator || isAlreadyJoined || isEventFull) &&
+                          styles.disabledButton,
+                        pressed && styles.buttonPressed,
+                      ]}
+                      onPress={handleJoinEvent}
+                    >
+                      <Text style={styles.joinButtonText}>
+                        {isCreator
+                          ? "Your event"
+                          : isAlreadyJoined
+                            ? "Already joined"
+                            : isEventFull
+                              ? "Event is full"
+                              : isJoining
+                                ? "Joining..."
+                                : "Join Event"}
+                      </Text>
+                    </Pressable>
+
+                    <View style={styles.secondaryActions}>
+                      <Pressable
+                        style={({ pressed }) => [
+                          styles.secondaryButton,
+                          pressed && styles.buttonPressed,
+                        ]}
+                        onPress={handleMessagePress}
+                      >
+                        <Ionicons
+                          name="chatbubble-outline"
+                          size={22}
+                          color={colors.text}
+                        />
+
+                        <Text style={styles.secondaryButtonText}>Message</Text>
+                      </Pressable>
+
+                      <Pressable
+                        disabled={isAddingContact || isCreator}
+                        style={({ pressed }) => [
+                          styles.secondaryButton,
+                          (isAddingContact || isCreator) &&
+                            styles.disabledButton,
+                          pressed && styles.buttonPressed,
+                        ]}
+                        onPress={handleAddContactPress}
+                      >
+                        <Ionicons
+                          name={
+                            isCreator
+                              ? "person-circle-outline"
+                              : "person-add-outline"
+                          }
+                          size={22}
+                          color={colors.text}
+                        />
+
+                        <Text style={styles.secondaryButtonText}>
+                          {isCreator
+                            ? "Your profile"
+                            : isAddingContact
+                              ? "Saving..."
+                              : "Add"}
+                        </Text>
+                      </Pressable>
+                    </View>
+                  </View>
+                </>
+              )}
             </>
           )}
         </View>

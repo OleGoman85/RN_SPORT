@@ -22,7 +22,6 @@ export async function getContactsByClerkUserId(clerkUserId: string) {
         SELECT COUNT(*)::int
         FROM sport_events
         WHERE user_id = contacts.id
-        AND is_active = TRUE
       ) AS events_created_count,
       (
         SELECT COUNT(*)::int
@@ -62,7 +61,6 @@ export async function getContactByUserIds(
         SELECT COUNT(*)::int
         FROM sport_events
         WHERE user_id = contacts.id
-        AND is_active = TRUE
       ) AS events_created_count,
       (
         SELECT COUNT(*)::int

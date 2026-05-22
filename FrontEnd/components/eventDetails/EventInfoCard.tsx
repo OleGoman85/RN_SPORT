@@ -15,6 +15,7 @@ type EventInfoCardProps = {
 
 export function EventInfoCard({ event }: EventInfoCardProps) {
   const sportImage = getSportImage(event.sport_name);
+  const eventFormatLabel = event.event_format === "1v1" ? "1v1" : "Team";
 
   return (
     <View style={styles.eventCard}>
@@ -25,6 +26,16 @@ export function EventInfoCard({ event }: EventInfoCardProps) {
           <Ionicons name="football-outline" size={18} color={colors.primary} />
 
           <Text style={styles.eventInfoText}>{event.sport_name}</Text>
+        </View>
+
+        <View style={styles.eventInfoRow}>
+          <Ionicons
+            name="people-circle-outline"
+            size={18}
+            color={colors.primary}
+          />
+
+          <Text style={styles.eventInfoText}>{eventFormatLabel}</Text>
         </View>
 
         <View style={styles.eventInfoRow}>

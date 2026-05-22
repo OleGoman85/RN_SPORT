@@ -12,12 +12,14 @@ import {
 } from "../services/eventService";
 import {
   getDayFilter,
+  getEventFormatFilter,
   getRequiredEventFieldsError,
   isValidString,
 } from "../utils/eventValidation";
 
 const router = express.Router();
 
+// Loads public events for the home/events screens with filters from query params.
 router.get("/events", async (req, res) => {
   try {
     const dayFilter = getDayFilter(req.query.day);
@@ -25,12 +27,14 @@ router.get("/events", async (req, res) => {
       typeof req.query.search === "string" ? req.query.search.trim() : "";
     const sport =
       typeof req.query.sport === "string" ? req.query.sport.trim() : "";
+    const eventFormat = getEventFormatFilter(req.query.event_format);
     const latitude = Number(req.query.latitude);
     const longitude = Number(req.query.longitude);
     const hasCoordinates = !Number.isNaN(latitude) && !Number.isNaN(longitude);
 
     const events = await getPublicEvents({
       dayFilter,
+      eventFormat,
       search,
       sport,
       latitude,
@@ -45,6 +49,7 @@ router.get("/events", async (req, res) => {
   }
 });
 
+// Loads one event with creator profile and joined players for the details modal.
 router.get("/events/:eventId/details", async (req, res) => {
   try {
     const numericEventId = Number(req.params.eventId);
@@ -66,6 +71,7 @@ router.get("/events/:eventId/details", async (req, res) => {
   }
 });
 
+// Loads events created by one Clerk user for the "My events" section.
 router.get("/my-events/:clerkUserId", async (req, res) => {
   try {
     const { clerkUserId } = req.params;
@@ -83,6 +89,7 @@ router.get("/my-events/:clerkUserId", async (req, res) => {
   }
 });
 
+// Creates a new event after validating the request body and current user.
 router.post("/events", async (req, res) => {
   try {
     const errorMessage = getRequiredEventFieldsError(req.body);
@@ -108,6 +115,7 @@ router.post("/events", async (req, res) => {
   }
 });
 
+// Updates an existing event only when the current user is its creator.
 router.put("/events/:eventId", async (req, res) => {
   try {
     const numericEventId = Number(req.params.eventId);
@@ -163,6 +171,7 @@ router.put("/events/:eventId", async (req, res) => {
   }
 });
 
+// Adds the current user to an event member list if there is free space.
 router.post("/events/:eventId/join", async (req, res) => {
   try {
     const numericEventId = Number(req.params.eventId);
@@ -226,6 +235,7 @@ router.post("/events/:eventId/join", async (req, res) => {
   }
 });
 
+// Soft-deletes an event only for its creator.
 router.delete("/events/:eventId", async (req, res) => {
   try {
     const numericEventId = Number(req.params.eventId);

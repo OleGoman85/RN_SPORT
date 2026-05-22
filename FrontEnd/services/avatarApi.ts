@@ -1,5 +1,6 @@
 import { API_URL } from "./apiConfig";
 
+// Uploads a local avatar image file to the backend/Cloudinary.
 export async function uploadAvatarToServer(imageUri: string) {
 	const fileName = imageUri.split("/").pop() ?? "avatar.jpg";
 	const fileType = fileName.endsWith(".png") ? "image/png" : "image/jpeg";

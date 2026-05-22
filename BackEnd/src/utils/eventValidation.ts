@@ -1,4 +1,6 @@
 export type DayFilter = "all" | "today" | "tomorrow" | "week";
+export type EventFormat = "1v1" | "team";
+export type EventFormatFilter = "all" | EventFormat;
 
 export function isValidString(value: unknown) {
 	return typeof value === "string" && value.trim().length > 0;
@@ -10,6 +12,18 @@ export function isValidNumber(value: unknown) {
 
 export function getDayFilter(value: unknown): DayFilter {
 	if (value === "today" || value === "tomorrow" || value === "week") {
+		return value;
+	}
+
+	return "all";
+}
+
+export function isEventFormat(value: unknown): value is EventFormat {
+	return value === "1v1" || value === "team";
+}
+
+export function getEventFormatFilter(value: unknown): EventFormatFilter {
+	if (isEventFormat(value)) {
 		return value;
 	}
 
@@ -41,6 +55,7 @@ export function getRequiredEventFieldsError(body: {
 	time_from?: unknown;
 	location_name?: unknown;
 	max_participants?: unknown;
+	event_format?: unknown;
 }) {
 	if (
 		!isValidString(body.current_clerk_user_id) ||
@@ -54,11 +69,20 @@ export function getRequiredEventFieldsError(body: {
 		return "Missing required event fields.";
 	}
 
+	if (!isEventFormat(body.event_format)) {
+		return "Event format must be 1v1 or team.";
+	}
+
 	if (!isValidNumber(body.max_participants)) {
 		return "Missing required event fields.";
 	}
 
 	const maxParticipants = body.max_participants as number;
+	const eventFormat = body.event_format;
+
+	if (eventFormat === "1v1" && maxParticipants !== 2) {
+		return "1v1 events must have exactly 2 participants.";
+	}
 
 	if (maxParticipants < 2 || maxParticipants > 100) {
 		return "Max participants must be between 2 and 100.";

@@ -1,6 +1,8 @@
 import { sql } from "../config/db";
 import {
 	DayFilter,
+	EventFormat,
+	EventFormatFilter,
 	getOptionalNumberValue,
 	getOptionalStringValue,
 } from "../utils/eventValidation";
@@ -8,6 +10,7 @@ import {
 type EventPayload = {
 	current_clerk_user_id: string;
 	sport_name: string;
+	event_format: EventFormat;
 	event_name: string;
 	event_description?: string | null;
 	available_date: string;
@@ -36,6 +39,7 @@ export async function getEventById(eventId: number) {
       sport_events.id,
       sport_events.user_id,
       sport_events.sport_name,
+      sport_events.event_format,
       sport_events.event_name,
       sport_events.event_description,
       TO_CHAR(sport_events.available_date, 'YYYY-MM-DD') AS available_date,
@@ -109,7 +113,6 @@ export async function getEventDetailsById(eventId: number) {
         SELECT COUNT(*)::int
         FROM sport_events
         WHERE user_id = ${event.user_id}
-        AND is_active = TRUE
       ) AS events_created_count,
       (
         SELECT COUNT(*)::int
@@ -161,6 +164,7 @@ export async function getEventDetailsById(eventId: number) {
 
 export async function getPublicEvents(params: {
 	dayFilter: DayFilter;
+	eventFormat: EventFormatFilter;
 	search: string;
 	sport: string;
 	latitude: number;
@@ -172,6 +176,7 @@ export async function getPublicEvents(params: {
       sport_events.id,
       sport_events.user_id,
       sport_events.sport_name,
+      sport_events.event_format,
       sport_events.event_name,
       sport_events.event_description,
       TO_CHAR(sport_events.available_date, 'YYYY-MM-DD') AS available_date,
@@ -227,6 +232,7 @@ export async function getPublicEvents(params: {
     WHERE sport_events.is_active = TRUE
     AND sport_events.available_date >= CURRENT_DATE
     AND (${params.sport} = '' OR LOWER(sport_events.sport_name) = LOWER(${params.sport}))
+    AND (${params.eventFormat} = 'all' OR sport_events.event_format = ${params.eventFormat})
     AND (
       ${params.search} = ''
       OR LOWER(sport_events.sport_name) LIKE LOWER(${"%" + params.search + "%"})
@@ -256,6 +262,7 @@ export async function getMyEvents(clerkUserId: string) {
       sport_events.id,
       sport_events.user_id,
       sport_events.sport_name,
+      sport_events.event_format,
       sport_events.event_name,
       sport_events.event_description,
       TO_CHAR(sport_events.available_date, 'YYYY-MM-DD') AS available_date,
@@ -302,6 +309,7 @@ export async function createEvent(payload: EventPayload, userId: number) {
     INSERT INTO sport_events (
       user_id,
       sport_name,
+      event_format,
       event_name,
       event_description,
       available_date,
@@ -318,6 +326,7 @@ export async function createEvent(payload: EventPayload, userId: number) {
     VALUES (
       ${userId},
       ${payload.sport_name.trim()},
+      ${payload.event_format},
       ${payload.event_name.trim()},
       ${getOptionalStringValue(payload.event_description)},
       ${payload.available_date}::date,
@@ -353,6 +362,7 @@ export async function updateEvent(
     UPDATE sport_events
     SET
       sport_name = ${payload.sport_name.trim()},
+      event_format = ${payload.event_format},
       event_name = ${payload.event_name.trim()},
       event_description = ${getOptionalStringValue(payload.event_description)},
       available_date = ${payload.available_date}::date,

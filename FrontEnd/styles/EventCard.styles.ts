@@ -19,8 +19,8 @@ export const styles = StyleSheet.create({
     transform: [{ scale: 0.98 }],
   },
   image: {
-    width: 88,
-    height: 88,
+    width: 104,
+    height: 104,
     borderRadius: 14,
     backgroundColor: colors.borderCol,
   },

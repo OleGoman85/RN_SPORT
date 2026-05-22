@@ -54,6 +54,10 @@ export const styles = StyleSheet.create({
 		paddingHorizontal: 18,
 		paddingBottom: 18,
 	},
+	profileModalContent: {
+		paddingHorizontal: 18,
+		paddingBottom: 28,
+	},
 	loadingBlock: {
 		minHeight: 360,
 		alignItems: "center",
