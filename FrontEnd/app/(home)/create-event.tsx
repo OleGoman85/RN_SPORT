@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { EventFormActions } from "../../components/create-event/EventFormActions";
 import { EventFormFields } from "../../components/create-event/EventFormFields";
+import { LocationPickerModal } from "../../components/create-event/LocationPickerModal";
 import { MyEventsList } from "../../components/create-event/MyEventsList";
 import { SportPicker } from "../../components/create-event/SportPicker";
 import { colors } from "../../constants/colors";
@@ -81,9 +82,9 @@ export default function CreateEventScreen() {
           time={form.time}
           setTime={form.setTime}
           locationName={form.locationName}
-          setLocationName={form.setLocationName}
-          city={form.city}
-          setCity={form.setCity}
+          latitude={form.latitude}
+          longitude={form.longitude}
+          onOpenLocationPicker={form.handleOpenLocationPicker}
           maxParticipants={form.maxParticipants}
           setMaxParticipants={form.setMaxParticipants}
           description={form.description}
@@ -98,6 +99,22 @@ export default function CreateEventScreen() {
           onCancel={form.resetForm}
         />
       </ScrollView>
+
+      <LocationPickerModal
+        visible={form.isLocationPickerVisible}
+        initialLocation={
+          form.latitude !== null && form.longitude !== null
+            ? {
+                latitude: form.latitude,
+                longitude: form.longitude,
+                locationName: form.locationName || "Selected location",
+                city: form.city,
+              }
+            : null
+        }
+        onClose={form.handleCloseLocationPicker}
+        onConfirm={form.handleConfirmLocation}
+      />
     </KeyboardAvoidingView>
   );
 }

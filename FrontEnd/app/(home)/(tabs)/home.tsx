@@ -50,16 +50,26 @@ export default function HomeScreen() {
         let currentLongitude = longitude;
 
         if (currentLatitude === null || currentLongitude === null) {
-          const permission = await Location.requestForegroundPermissionsAsync();
+          try {
+            const permission =
+              await Location.requestForegroundPermissionsAsync();
 
-          if (permission.status === "granted") {
-            const currentPosition = await Location.getCurrentPositionAsync({});
+            if (permission.status === "granted") {
+              const currentPosition = await Location.getCurrentPositionAsync(
+                {},
+              );
 
-            currentLatitude = currentPosition.coords.latitude;
-            currentLongitude = currentPosition.coords.longitude;
+              currentLatitude = currentPosition.coords.latitude;
+              currentLongitude = currentPosition.coords.longitude;
 
-            setLatitude(currentLatitude);
-            setLongitude(currentLongitude);
+              setLatitude(currentLatitude);
+              setLongitude(currentLongitude);
+            }
+          } catch (error) {
+            console.log("Home location unavailable:", error);
+
+            currentLatitude = null;
+            currentLongitude = null;
           }
         }
 

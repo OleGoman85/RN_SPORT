@@ -3,6 +3,7 @@ import {
   EventDayFilter,
   EventDetails,
   EventFormatFilter,
+  EventRadiusFilter,
   LoadSportEventsParams,
   SportEvent,
   UpdateSportEventParams,
@@ -27,6 +28,10 @@ function buildEventsQuery(params: LoadSportEventsParams = {}) {
 
   if (params.eventFormat && params.eventFormat !== "all") {
     query.set("event_format", params.eventFormat);
+  }
+
+  if (typeof params.radiusKm === "number") {
+    query.set("radius_km", String(params.radiusKm));
   }
 
   if (
@@ -94,6 +99,32 @@ export const eventFormatFilters: {
   {
     label: "Team",
     value: "team",
+  },
+];
+
+export const eventRadiusFilters: {
+  label: string;
+  value: EventRadiusFilter;
+}[] = [
+  {
+    label: "5 km",
+    value: 5,
+  },
+  {
+    label: "10 km",
+    value: 10,
+  },
+  {
+    label: "25 km",
+    value: 25,
+  },
+  {
+    label: "50 km",
+    value: 50,
+  },
+  {
+    label: "All",
+    value: "all",
   },
 ];
 

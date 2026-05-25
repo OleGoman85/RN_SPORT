@@ -31,10 +31,16 @@ router.get("/events", async (req, res) => {
     const latitude = Number(req.query.latitude);
     const longitude = Number(req.query.longitude);
     const hasCoordinates = !Number.isNaN(latitude) && !Number.isNaN(longitude);
+    const requestedRadiusKm = Number(req.query.radius_km);
+    const radiusKm =
+      !Number.isNaN(requestedRadiusKm) && requestedRadiusKm > 0
+        ? requestedRadiusKm
+        : null;
 
     const events = await getPublicEvents({
       dayFilter,
       eventFormat,
+      radiusKm,
       search,
       sport,
       latitude,

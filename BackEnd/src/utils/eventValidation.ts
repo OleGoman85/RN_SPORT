@@ -6,8 +6,16 @@ export function isValidString(value: unknown) {
 	return typeof value === "string" && value.trim().length > 0;
 }
 
-export function isValidNumber(value: unknown) {
+export function isValidNumber(value: unknown): value is number {
 	return typeof value === "number" && !Number.isNaN(value);
+}
+
+function isValidLatitude(value: unknown) {
+	return isValidNumber(value) && value >= -90 && value <= 90;
+}
+
+function isValidLongitude(value: unknown) {
+	return isValidNumber(value) && value >= -180 && value <= 180;
 }
 
 export function getDayFilter(value: unknown): DayFilter {
@@ -54,6 +62,8 @@ export function getRequiredEventFieldsError(body: {
 	available_date?: unknown;
 	time_from?: unknown;
 	location_name?: unknown;
+	latitude?: unknown;
+	longitude?: unknown;
 	max_participants?: unknown;
 	event_format?: unknown;
 }) {
@@ -64,6 +74,8 @@ export function getRequiredEventFieldsError(body: {
 		!isValidString(body.available_date) ||
 		!isValidString(body.time_from) ||
 		!isValidString(body.location_name) ||
+		!isValidLatitude(body.latitude) ||
+		!isValidLongitude(body.longitude) ||
 		!isValidNumber(body.max_participants)
 	) {
 		return "Missing required event fields.";

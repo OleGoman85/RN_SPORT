@@ -63,7 +63,7 @@ export const styles = StyleSheet.create({
   filtersRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: 6,
     marginBottom: 16,
   },
 
@@ -84,15 +84,62 @@ export const styles = StyleSheet.create({
     borderColor: colors.primary,
   },
 
+  dayFilterButtonSmall: {
+    flex: 0.72,
+  },
+
+  dayFilterButtonMedium: {
+    flex: 0.92,
+  },
+
+  dayFilterButtonLarge: {
+    flex: 1.32,
+  },
+
   filterText: {
     color: colors.secondaryText,
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: "900",
     textAlign: "center",
   },
 
   filterTextActive: {
     color: colors.background,
+  },
+
+  radiusHeaderRow: {
+    marginBottom: 8,
+  },
+
+  radiusTitleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+
+  radiusTitle: {
+    color: colors.text,
+    fontSize: 13,
+    fontWeight: "900",
+  },
+
+  radiusFiltersRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    marginBottom: 16,
+  },
+
+  radiusFilterButton: {
+    flex: 1,
+    minHeight: 36,
+    borderRadius: 18,
+    backgroundColor: colors.card,
+    borderWidth: 1,
+    borderColor: colors.border,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 6,
   },
 
   centerBlock: {

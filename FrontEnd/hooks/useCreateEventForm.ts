@@ -9,12 +9,26 @@ import {
 	loadMySportEvents,
 	updateSportEvent,
 } from "../services/eventsApi";
-import { EventFormat, SportEvent } from "../types/events";
+import {
+	EventFormat,
+	EventLocationSelection,
+	SportEvent,
+} from "../types/events";
 import {
 	getEventCity,
 	getTodayDate,
 	normalizeTime,
 } from "../utils/eventForm";
+
+function getNumericCoordinate(value: string | number | null | undefined) {
+	if (value === null || value === undefined) {
+		return null;
+	}
+
+	const numericValue = Number(value);
+
+	return Number.isNaN(numericValue) ? null : numericValue;
+}
 
 export function useCreateEventForm() {
 	const { user } = useUser();
@@ -28,7 +42,10 @@ export function useCreateEventForm() {
 	const [date, setDate] = useState(getTodayDate());
 	const [time, setTime] = useState("19:00");
 	const [locationName, setLocationName] = useState("");
-	const [city, setCity] = useState("Helsinki");
+	const [city, setCity] = useState<string | null>(null);
+	const [latitude, setLatitude] = useState<number | null>(null);
+	const [longitude, setLongitude] = useState<number | null>(null);
+	const [isLocationPickerVisible, setIsLocationPickerVisible] = useState(false);
 	const [maxParticipants, setMaxParticipants] = useState(2);
 	const [description, setDescription] = useState("");
 	const [isSaving, setIsSaving] = useState(false);
@@ -90,7 +107,10 @@ export function useCreateEventForm() {
 		setDate(getTodayDate());
 		setTime("19:00");
 		setLocationName("");
-		setCity("Helsinki");
+		setCity(null);
+		setLatitude(null);
+		setLongitude(null);
+		setIsLocationPickerVisible(false);
 		setMaxParticipants(2);
 		setDescription("");
 		setEditingEventId(null);
@@ -104,7 +124,9 @@ export function useCreateEventForm() {
 		setDate(event.available_date.slice(0, 10));
 		setTime(normalizeTime(event.time_from));
 		setLocationName(event.location_name);
-		setCity(getEventCity(event));
+		setCity(getEventCity(event) || null);
+		setLatitude(getNumericCoordinate(event.event_latitude ?? event.latitude));
+		setLongitude(getNumericCoordinate(event.event_longitude ?? event.longitude));
 		setMaxParticipants(event.max_participants);
 		setDescription(event.event_description ?? "");
 	};
@@ -121,11 +143,12 @@ export function useCreateEventForm() {
 			!eventName.trim() ||
 			!date.trim() ||
 			!time.trim() ||
-			!locationName.trim()
+			latitude === null ||
+			longitude === null
 		) {
 			Alert.alert(
 				"Missing data",
-				"Sport, format, event name, date, time and location are required.",
+				"Sport, format, event name, date, time and map location are required.",
 			);
 			return false;
 		}
@@ -146,6 +169,22 @@ export function useCreateEventForm() {
 		}
 	};
 
+	const handleOpenLocationPicker = () => {
+		setIsLocationPickerVisible(true);
+	};
+
+	const handleCloseLocationPicker = () => {
+		setIsLocationPickerVisible(false);
+	};
+
+	const handleConfirmLocation = (location: EventLocationSelection) => {
+		setLocationName(location.locationName);
+		setCity(location.city);
+		setLatitude(location.latitude);
+		setLongitude(location.longitude);
+		setIsLocationPickerVisible(false);
+	};
+
 	const buildEventPayload = () => {
 		return {
 			current_clerk_user_id: user!.id,
@@ -155,10 +194,10 @@ export function useCreateEventForm() {
 			event_description: description.trim() || null,
 			available_date: date.trim(),
 			time_from: time.trim(),
-			location_name: locationName.trim(),
-			city: city.trim() || null,
-			latitude: null,
-			longitude: null,
+			location_name: locationName.trim() || "Selected location",
+			city,
+			latitude,
+			longitude,
 			max_participants: maxParticipants,
 			event_image_url: selectedEditingEvent?.event_image_url ?? null,
 		};
@@ -269,9 +308,13 @@ export function useCreateEventForm() {
 		time,
 		setTime,
 		locationName,
-		setLocationName,
+		latitude,
+		longitude,
+		isLocationPickerVisible,
+		handleOpenLocationPicker,
+		handleCloseLocationPicker,
+		handleConfirmLocation,
 		city,
-		setCity,
 		maxParticipants,
 		setMaxParticipants,
 		description,

@@ -1,5 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "expo-router";
+import * as Location from "expo-location";
 import { useCallback, useState } from "react";
 import {
   ActivityIndicator,
@@ -16,12 +17,14 @@ import { colors } from "../../../constants/colors";
 import {
   eventDayFilters,
   eventFormatFilters,
+  eventRadiusFilters,
   loadSportEvents,
 } from "../../../services/eventsApi";
 import { styles } from "../../../styles/events.styles";
 import {
   EventDayFilter,
   EventFormatFilter,
+  EventRadiusFilter,
   SportEvent,
 } from "../../../types/events";
 
@@ -30,19 +33,78 @@ export default function EventsScreen() {
   const [activeFilter, setActiveFilter] = useState<EventDayFilter>("all");
   const [activeFormatFilter, setActiveFormatFilter] =
     useState<EventFormatFilter>("all");
+  const [activeRadiusFilter, setActiveRadiusFilter] =
+    useState<EventRadiusFilter>("all");
   const [searchText, setSearchText] = useState("");
   const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
   const [isDetailsVisible, setIsDetailsVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
+  const loadCurrentLocation = useCallback(async () => {
+    try {
+      const permission = await Location.requestForegroundPermissionsAsync();
+
+      if (permission.status !== "granted") {
+        Alert.alert(
+          "Permission required",
+          "Location permission is required to use nearby filters.",
+        );
+
+        return null;
+      }
+
+      const currentPosition = await Location.getCurrentPositionAsync({});
+
+      return {
+        latitude: currentPosition.coords.latitude,
+        longitude: currentPosition.coords.longitude,
+      };
+    } catch (error) {
+      console.log("Device location loading error:", error);
+
+      Alert.alert("Error", "Could not get current location.");
+
+      return null;
+    }
+  }, []);
+
+  const loadSearchCoordinates = useCallback(async () => {
+    if (activeRadiusFilter === "all") {
+      return null;
+    }
+
+    const currentCoordinates = await loadCurrentLocation();
+
+    if (!currentCoordinates) {
+      setActiveRadiusFilter("all");
+
+      return null;
+    }
+
+    return currentCoordinates;
+  }, [activeRadiusFilter, loadCurrentLocation]);
+
+  const handleRadiusFilterPress = (filter: EventRadiusFilter) => {
+    setActiveRadiusFilter(filter);
+  };
+
   const loadEvents = useCallback(async () => {
     try {
       setIsLoading(true);
 
+      const searchCoordinates = await loadSearchCoordinates();
+      const radiusKm =
+        activeRadiusFilter !== "all" && searchCoordinates
+          ? activeRadiusFilter
+          : null;
+
       const loadedEvents = await loadSportEvents({
         day: activeFilter,
         eventFormat: activeFormatFilter,
+        radiusKm,
         search: searchText,
+        latitude: searchCoordinates?.latitude ?? null,
+        longitude: searchCoordinates?.longitude ?? null,
       });
 
       setEvents(loadedEvents);
@@ -52,7 +114,13 @@ export default function EventsScreen() {
     } finally {
       setIsLoading(false);
     }
-  }, [activeFilter, activeFormatFilter, searchText]);
+  }, [
+    activeFilter,
+    activeFormatFilter,
+    activeRadiusFilter,
+    loadSearchCoordinates,
+    searchText,
+  ]);
 
   useFocusEffect(
     useCallback(() => {
@@ -129,6 +197,10 @@ export default function EventsScreen() {
               key={filter.value}
               style={({ pressed }) => [
                 styles.filterButton,
+                filter.value === "all" && styles.dayFilterButtonSmall,
+                filter.value === "today" && styles.dayFilterButtonMedium,
+                (filter.value === "tomorrow" || filter.value === "week") &&
+                  styles.dayFilterButtonLarge,
                 isActive && styles.filterButtonActive,
                 pressed && styles.buttonPressed,
               ]}
@@ -136,6 +208,7 @@ export default function EventsScreen() {
             >
               <Text
                 style={[styles.filterText, isActive && styles.filterTextActive]}
+                numberOfLines={1}
               >
                 {filter.label}
               </Text>
@@ -160,6 +233,43 @@ export default function EventsScreen() {
             >
               <Text
                 style={[styles.filterText, isActive && styles.filterTextActive]}
+                numberOfLines={1}
+              >
+                {filter.label}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </View>
+
+      <View style={styles.radiusHeaderRow}>
+        <View style={styles.radiusTitleRow}>
+          <Ionicons name="navigate-outline" size={15} color={colors.primary} />
+
+          <Text style={styles.radiusTitle}>
+            Nearby:{" "}
+            {activeRadiusFilter === "all" ? "All" : `${activeRadiusFilter} km`}
+          </Text>
+        </View>
+      </View>
+
+      <View style={styles.radiusFiltersRow}>
+        {eventRadiusFilters.map((filter) => {
+          const isActive = activeRadiusFilter === filter.value;
+
+          return (
+            <Pressable
+              key={filter.value}
+              style={({ pressed }) => [
+                styles.radiusFilterButton,
+                isActive && styles.filterButtonActive,
+                pressed && styles.buttonPressed,
+              ]}
+              onPress={() => handleRadiusFilterPress(filter.value)}
+            >
+              <Text
+                style={[styles.filterText, isActive && styles.filterTextActive]}
+                numberOfLines={1}
               >
                 {filter.label}
               </Text>

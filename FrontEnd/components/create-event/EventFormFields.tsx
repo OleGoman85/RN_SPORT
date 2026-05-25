@@ -15,9 +15,9 @@ type EventFormFieldsProps = {
   time: string;
   setTime: (value: string) => void;
   locationName: string;
-  setLocationName: (value: string) => void;
-  city: string;
-  setCity: (value: string) => void;
+  latitude: number | null;
+  longitude: number | null;
+  onOpenLocationPicker: () => void;
   maxParticipants: number;
   setMaxParticipants: Dispatch<SetStateAction<number>>;
   description: string;
@@ -34,14 +34,16 @@ export function EventFormFields({
   time,
   setTime,
   locationName,
-  setLocationName,
-  city,
-  setCity,
+  latitude,
+  longitude,
+  onOpenLocationPicker,
   maxParticipants,
   setMaxParticipants,
   description,
   setDescription,
 }: EventFormFieldsProps) {
+  const hasLocation = latitude !== null && longitude !== null;
+
   return (
     <>
       <Text style={styles.label}>Event Name</Text>
@@ -114,23 +116,36 @@ export function EventFormFields({
 
       <Text style={styles.label}>Location</Text>
 
-      <TextInput
-        style={styles.input}
-        value={locationName}
-        onChangeText={setLocationName}
-        placeholder="Central Park"
-        placeholderTextColor={colors.secondaryText}
-      />
+      <Pressable
+        style={({ pressed }) => [
+          styles.locationSelectButton,
+          hasLocation && styles.locationSelectButtonActive,
+          pressed && styles.buttonPressed,
+        ]}
+        onPress={onOpenLocationPicker}
+      >
+        <View style={styles.locationSelectIcon}>
+          <Ionicons name="location" size={21} color={colors.primary} />
+        </View>
 
-      <Text style={styles.label}>City</Text>
+        <View style={styles.locationSelectTextBlock}>
+          <Text style={styles.locationSelectTitle} numberOfLines={1}>
+            {hasLocation ? locationName || "Selected location" : "Choose on map"}
+          </Text>
 
-      <TextInput
-        style={styles.input}
-        value={city}
-        onChangeText={setCity}
-        placeholder="Helsinki"
-        placeholderTextColor={colors.secondaryText}
-      />
+          <Text style={styles.locationSelectMeta} numberOfLines={1}>
+            {hasLocation
+              ? `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`
+              : "Location is required"}
+          </Text>
+        </View>
+
+        <Ionicons
+          name="chevron-forward"
+          size={20}
+          color={colors.secondaryText}
+        />
+      </Pressable>
 
       <Text style={styles.label}>Max participants</Text>
 

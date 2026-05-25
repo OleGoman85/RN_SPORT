@@ -216,6 +216,48 @@ export const styles = StyleSheet.create({
     fontWeight: "600",
   },
 
+  locationSelectButton: {
+    minHeight: 62,
+    borderRadius: 16,
+    backgroundColor: colors.card,
+    borderWidth: 1,
+    borderColor: colors.border,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 12,
+    gap: 10,
+  },
+
+  locationSelectButtonActive: {
+    borderColor: colors.primary,
+  },
+
+  locationSelectIcon: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: colors.borderCol,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  locationSelectTextBlock: {
+    flex: 1,
+  },
+
+  locationSelectTitle: {
+    color: colors.text,
+    fontSize: 15,
+    fontWeight: "900",
+    marginBottom: 3,
+  },
+
+  locationSelectMeta: {
+    color: colors.secondaryText,
+    fontSize: 12,
+    fontWeight: "700",
+  },
+
   formatSelector: {
     flexDirection: "row",
     gap: 10,
@@ -348,5 +390,105 @@ export const styles = StyleSheet.create({
 
   buttonPressed: {
     opacity: 0.75,
+  },
+
+  locationPickerContainer: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+
+  locationPickerHeader: {
+    height: 58,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 16,
+  },
+
+  locationPickerTitle: {
+    color: colors.text,
+    fontSize: 17,
+    fontWeight: "900",
+  },
+
+  locationPickerHeaderButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: colors.card,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+
+  locationPickerMapWrapper: {
+    flex: 1,
+    overflow: "hidden",
+  },
+
+  locationPickerMap: {
+    flex: 1,
+  },
+
+  locationPickerLoading: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  locationPickerLoadingText: {
+    color: colors.secondaryText,
+    fontSize: 14,
+    fontWeight: "700",
+    marginTop: 10,
+  },
+
+  locationPickerFooter: {
+    backgroundColor: colors.background,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+    paddingHorizontal: 16,
+    paddingTop: 14,
+    paddingBottom: 28,
+  },
+
+  locationPickerSummary: {
+    minHeight: 52,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    marginBottom: 12,
+  },
+
+  locationPickerSummaryTextBlock: {
+    flex: 1,
+  },
+
+  locationPickerSummaryTitle: {
+    color: colors.text,
+    fontSize: 15,
+    fontWeight: "900",
+    marginBottom: 3,
+  },
+
+  locationPickerSummaryText: {
+    color: colors.secondaryText,
+    fontSize: 12,
+    fontWeight: "700",
+  },
+
+  locationPickerConfirmButton: {
+    height: 52,
+    borderRadius: 16,
+    backgroundColor: colors.primary,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  locationPickerConfirmText: {
+    color: colors.background,
+    fontSize: 15,
+    fontWeight: "900",
   },
 });

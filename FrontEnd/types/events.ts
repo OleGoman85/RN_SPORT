@@ -1,6 +1,14 @@
 export type EventDayFilter = "all" | "today" | "tomorrow" | "week";
 export type EventFormat = "1v1" | "team";
 export type EventFormatFilter = "all" | EventFormat;
+export type EventRadiusFilter = "all" | 5 | 10 | 25 | 50;
+
+export type EventLocationSelection = {
+  latitude: number;
+  longitude: number;
+  locationName: string;
+  city: string | null;
+};
 
 export type UserSportProfile = {
   sport_name: string;
@@ -87,6 +95,7 @@ export type EventDetails = {
 export type LoadSportEventsParams = {
   day?: EventDayFilter;
   eventFormat?: EventFormatFilter;
+  radiusKm?: number | null;
   search?: string;
   sport?: string;
   latitude?: number | null;

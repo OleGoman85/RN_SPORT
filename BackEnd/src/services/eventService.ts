@@ -165,6 +165,7 @@ export async function getEventDetailsById(eventId: number) {
 export async function getPublicEvents(params: {
 	dayFilter: DayFilter;
 	eventFormat: EventFormatFilter;
+	radiusKm: number | null;
 	search: string;
 	sport: string;
 	latitude: number;
@@ -233,6 +234,28 @@ export async function getPublicEvents(params: {
     AND sport_events.available_date >= CURRENT_DATE
     AND (${params.sport} = '' OR LOWER(sport_events.sport_name) = LOWER(${params.sport}))
     AND (${params.eventFormat} = 'all' OR sport_events.event_format = ${params.eventFormat})
+    AND (
+      ${params.radiusKm === null || !params.hasCoordinates} = TRUE
+      OR (
+        sport_events.latitude IS NOT NULL
+        AND sport_events.longitude IS NOT NULL
+        AND (
+          6371 * acos(
+            LEAST(
+              1,
+              GREATEST(
+                -1,
+                cos(radians(${params.hasCoordinates ? params.latitude : 0}))
+                * cos(radians(sport_events.latitude::float))
+                * cos(radians(sport_events.longitude::float) - radians(${params.hasCoordinates ? params.longitude : 0}))
+                + sin(radians(${params.hasCoordinates ? params.latitude : 0}))
+                * sin(radians(sport_events.latitude::float))
+              )
+            )
+          )
+        ) <= ${params.radiusKm ?? 0}
+      )
+    )
     AND (
       ${params.search} = ''
       OR LOWER(sport_events.sport_name) LIKE LOWER(${"%" + params.search + "%"})

@@ -6,9 +6,21 @@
     "orientation": "portrait",
     "scheme": "frontend",
     "userInterfaceStyle": "automatic",
+    "ios": {
+      "bundleIdentifier": "com.olegoman.rnsport"
+    },
+    "android": {
+      "package": "com.olegoman.rnsport"
+    },
     "plugins": [
       "expo-router",
-      "@react-native-community/datetimepicker"
+      "@react-native-community/datetimepicker",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Allow FrontEnd to use your location to find nearby events and choose event places."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
