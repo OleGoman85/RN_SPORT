@@ -1,3 +1,4 @@
+// Full-screen map modal for choosing exact event coordinates.
 import { Ionicons } from "@expo/vector-icons";
 import * as Location from "expo-location";
 import { useCallback, useEffect, useState } from "react";

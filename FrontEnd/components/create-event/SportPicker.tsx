@@ -1,3 +1,4 @@
+// Searchable sport picker used by the create/edit event form.
 import { Ionicons } from "@expo/vector-icons";
 import {
   FlatList,

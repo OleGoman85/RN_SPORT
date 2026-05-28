@@ -1,3 +1,4 @@
+// Header block for the Profile tab with sign-out action.
 import { styles } from "../styles/profile.styles";
 import { Text, View } from "react-native";
 

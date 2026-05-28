@@ -1,3 +1,4 @@
+// Public upload API endpoint for sending images to Cloudinary.
 import express from "express";
 import multer from "multer";
 import cloudinary from "../config/cloudinary";

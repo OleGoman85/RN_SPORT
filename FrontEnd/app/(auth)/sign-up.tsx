@@ -1,3 +1,4 @@
+// Sign-up screen: creates a Clerk account and starts email verification.
 import { useAuth, useSignUp } from "@clerk/expo";
 import { type Href, Link, useRouter } from "expo-router";
 import React, { useState } from "react";

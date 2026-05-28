@@ -1,3 +1,4 @@
+// Frontend API service for editable profiles and public player previews.
 import { SaveProfileParams, UserProfile } from "../types/profile";
 import { EventCreator } from "../types/events";
 import { API_URL } from "./apiConfig";

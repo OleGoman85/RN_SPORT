@@ -1,3 +1,4 @@
+// Public player profile modal/sheet used from Contacts and joined players.
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import {

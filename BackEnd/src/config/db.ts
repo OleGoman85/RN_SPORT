@@ -1,3 +1,4 @@
+// Neon/Postgres connection and startup-time table/index initialization.
 import { neon } from '@neondatabase/serverless'
 import 'dotenv/config'
 
@@ -153,6 +154,61 @@ export async function initDB() {
     `
 
 		await sql`
+      CREATE TABLE IF NOT EXISTS chats (
+        id SERIAL PRIMARY KEY,
+        type VARCHAR(20) NOT NULL,
+        event_id INT UNIQUE REFERENCES sport_events(id) ON DELETE CASCADE,
+        private_key VARCHAR(80) UNIQUE,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+        CONSTRAINT chats_type_check
+          CHECK (type IN ('private', 'event')),
+
+        CONSTRAINT chats_shape_check
+          CHECK (
+            (
+              type = 'private'
+              AND private_key IS NOT NULL
+              AND event_id IS NULL
+            )
+            OR (
+              type = 'event'
+              AND event_id IS NOT NULL
+              AND private_key IS NULL
+            )
+          )
+      )
+    `
+
+		await sql`
+      CREATE TABLE IF NOT EXISTS chat_participants (
+        id SERIAL PRIMARY KEY,
+        chat_id INT NOT NULL REFERENCES chats(id) ON DELETE CASCADE,
+        user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        last_read_at TIMESTAMP,
+        archived_at TIMESTAMP,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(chat_id, user_id)
+      )
+    `
+
+		await sql`
+      ALTER TABLE chat_participants
+      ADD COLUMN IF NOT EXISTS archived_at TIMESTAMP
+    `
+
+		await sql`
+      CREATE TABLE IF NOT EXISTS chat_messages (
+        id SERIAL PRIMARY KEY,
+        chat_id INT NOT NULL REFERENCES chats(id) ON DELETE CASCADE,
+        sender_user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        message_text TEXT NOT NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+      )
+    `
+
+		await sql`
       CREATE INDEX IF NOT EXISTS index_sport_events_active_date
       ON sport_events (is_active, available_date, time_from)
     `
@@ -190,6 +246,31 @@ export async function initDB() {
 		await sql`
       CREATE INDEX IF NOT EXISTS index_user_contacts_contact_user_id
       ON user_contacts (contact_user_id)
+    `
+
+		await sql`
+      CREATE INDEX IF NOT EXISTS index_chats_type_updated_at
+      ON chats (type, updated_at DESC)
+    `
+
+		await sql`
+      CREATE INDEX IF NOT EXISTS index_chat_participants_user_id
+      ON chat_participants (user_id)
+    `
+
+		await sql`
+      CREATE INDEX IF NOT EXISTS index_chat_participants_chat_id
+      ON chat_participants (chat_id)
+    `
+
+		await sql`
+      CREATE INDEX IF NOT EXISTS index_chat_participants_archived_at
+      ON chat_participants (archived_at)
+    `
+
+		await sql`
+      CREATE INDEX IF NOT EXISTS index_chat_messages_chat_id_created_at
+      ON chat_messages (chat_id, created_at ASC)
     `
 
 		console.log('Database initialized successfully')

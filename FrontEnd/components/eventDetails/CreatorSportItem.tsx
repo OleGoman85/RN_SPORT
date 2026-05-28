@@ -1,3 +1,4 @@
+// Compact sport+level item for event creator/public profile sections.
 import { Ionicons } from "@expo/vector-icons";
 import { Image, Text, View } from "react-native";
 import { colors } from "../../constants/colors";

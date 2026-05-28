@@ -1,3 +1,4 @@
+// Profile form control for selecting spoken languages.
 import { Pressable, Text, View } from "react-native";
 import { languageOptions } from "../constants/profileOptions";
 import { styles } from "../styles/profile.styles";

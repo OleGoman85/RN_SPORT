@@ -1,3 +1,4 @@
+// Create/edit event modal screen.
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import {

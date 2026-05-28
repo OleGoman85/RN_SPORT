@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import { serverTests } from "./serverTests";
 import { initDB } from "./config/db";
 import ratelimit from "./middleware/rateLimiter";
+import chatRouters from "./routes/chatRoutes";
 import contactRouters from "./routes/contactRoutes";
 import sportRouters from "./routes/sportRoutes";
 import uploadRouters from "./routes/uploadRoutes";
@@ -27,6 +28,7 @@ app.use("/api/sports", sportRouters); //-> search, events, sport requests
 app.use("/api/upload", uploadRouters); //-> upload avatar
 app.use("/api/users", userRouters); //-> All about the user profile
 app.use("/api/contacts", contactRouters); //-> saved users / address book
+app.use("/api/chats", chatRouters); //-> private messages and event chats
 
 async function startServer() {
 	await initDB();

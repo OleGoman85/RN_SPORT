@@ -1,3 +1,4 @@
+// Creator profile block shown at the top of event details.
 import { Ionicons } from "@expo/vector-icons";
 import { ScrollView, Text, View } from "react-native";
 import { colors } from "../../constants/colors";

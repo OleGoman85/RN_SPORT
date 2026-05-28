@@ -1,3 +1,4 @@
+// Public sports/events API endpoints for discovery, details, joining, create/edit/delete.
 import express from "express";
 import { sql } from "../config/db";
 import {

@@ -1,9 +1,11 @@
+// Helpers for converting and validating profile birth date inputs.
 export type BirthDateParts = {
 	day: string;
 	month: string;
 	year: string;
 };
 
+// Converts separate day/month/year inputs into YYYY-MM-DD for the backend.
 export function buildDateOfBirth({
 	day,
 	month,
@@ -16,6 +18,7 @@ export function buildDateOfBirth({
 	return `${normalizedYear}-${normalizedMonth}-${normalizedDay}`;
 }
 
+// Splits a saved YYYY-MM-DD date into visible input fields.
 export function splitDateOfBirth(dateOfBirth: string | null): BirthDateParts {
 	if (!dateOfBirth) {
 		return {
@@ -34,6 +37,7 @@ export function splitDateOfBirth(dateOfBirth: string | null): BirthDateParts {
 	};
 }
 
+// Validates the real calendar date and prevents future birth dates.
 export function isValidBirthDate({
 	day,
 	month,

@@ -1,3 +1,4 @@
+// Profile tab screen: editable player profile form.
 import { useClerk } from "@clerk/expo";
 import React from "react";
 import {

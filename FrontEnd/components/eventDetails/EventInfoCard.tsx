@@ -1,3 +1,4 @@
+// Event information card shown inside event details.
 import { Ionicons } from "@expo/vector-icons";
 import { Image, Text, View } from "react-native";
 import { colors } from "../../constants/colors";

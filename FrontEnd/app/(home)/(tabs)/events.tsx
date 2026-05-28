@@ -1,3 +1,4 @@
+// Events tab screen: searchable/filterable list of public sport events.
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "expo-router";
 import * as Location from "expo-location";

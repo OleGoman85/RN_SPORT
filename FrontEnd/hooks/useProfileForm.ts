@@ -1,3 +1,4 @@
+// Owns profile form state, validation, loading saved profile data, and saving updates.
 import { useUser } from "@clerk/expo";
 import { useEffect, useMemo, useState } from "react";
 import { Alert } from "react-native";
@@ -7,6 +8,7 @@ import { useAvatarUpload } from "./useAvatarUpload";
 import { useBirthDateFields } from "./useBirthDateFields";
 import { useCurrentLocation } from "./useCurrentLocation";
 
+// Provides all profile field state and actions used by the Profile tab.
 export function useProfileForm() {
 	const { user } = useUser();
 
@@ -79,6 +81,7 @@ export function useProfileForm() {
 		selectedLanguages,
 	]);
 
+	// Loads saved profile data and hydrates the form when Clerk user is available.
 	useEffect(() => {
 		async function loadProfile() {
 			if (!user?.id) {
@@ -126,6 +129,7 @@ export function useProfileForm() {
 		setLongitude,
 	]);
 
+	// Adds/removes a sport from the selected sports list.
 	const handleToggleSport = (sportName: string) => {
 		setSelectedSports((currentSports) => {
 			const alreadySelected = currentSports.some(
@@ -146,6 +150,7 @@ export function useProfileForm() {
 		});
 	};
 
+	// Changes the selected level for one sport.
 	const handleChangeSportLevel = (sportName: string, level: string) => {
 		setSelectedSports((currentSports) =>
 			currentSports.map((sport) =>
@@ -159,10 +164,12 @@ export function useProfileForm() {
 		);
 	};
 
+	// Finds the selected level for rendering sport selector state.
 	const getSportLevel = (sportName: string) => {
 		return selectedSports.find((sport) => sport.sport_name === sportName)?.level;
 	};
 
+	// Adds/removes one spoken language.
 	const handleToggleLanguage = (language: string) => {
 		setSelectedLanguages((currentLanguages) => {
 			if (currentLanguages.includes(language)) {
@@ -173,6 +180,7 @@ export function useProfileForm() {
 		});
 	};
 
+	// Validates and sends the full profile payload to the backend.
 	const handleSaveProfile = async () => {
 		if (!user?.id || !user.primaryEmailAddress?.emailAddress) {
 			Alert.alert("Error", "User is not loaded yet.");

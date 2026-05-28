@@ -1,3 +1,4 @@
+// Frontend API service for public events, event details, My Events, and joining.
 import {
   CreateSportEventParams,
   EventDayFilter,

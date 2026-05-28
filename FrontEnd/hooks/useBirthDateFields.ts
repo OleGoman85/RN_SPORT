@@ -1,3 +1,4 @@
+// Keeps day/month/year inputs in sync with the final profile date_of_birth value.
 import { useMemo, useState } from "react";
 import {
 	buildDateOfBirth,
@@ -5,6 +6,7 @@ import {
 	splitDateOfBirth,
 } from "../utils/birthDate";
 
+// Converts separate date fields into one validated YYYY-MM-DD value.
 export function useBirthDateFields() {
 	const [birthDay, setBirthDay] = useState("");
 	const [birthMonth, setBirthMonth] = useState("");
@@ -26,6 +28,7 @@ export function useBirthDateFields() {
 		});
 	}, [birthDay, birthMonth, birthYear]);
 
+	// Hydrates the three visible inputs from a saved profile date.
 	const setBirthDateFromProfile = (dateOfBirthFromProfile: string | null) => {
 		const birthDate = splitDateOfBirth(dateOfBirthFromProfile);
 

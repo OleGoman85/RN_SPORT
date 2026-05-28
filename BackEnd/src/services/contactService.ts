@@ -1,5 +1,7 @@
+// DB service for one-way user contacts / address book records.
 import { sql } from "../config/db";
 
+// Loads every saved contact for one current Clerk user.
 export async function getContactsByClerkUserId(clerkUserId: string) {
 	return sql`
     SELECT
@@ -36,6 +38,7 @@ export async function getContactsByClerkUserId(clerkUserId: string) {
   `;
 }
 
+// Loads one saved contact row by internal DB user ids.
 export async function getContactByUserIds(
 	ownerUserId: number,
 	contactUserId: number,
@@ -76,6 +79,7 @@ export async function getContactByUserIds(
 	return contacts[0] ?? null;
 }
 
+// Saves a contact once and returns the hydrated contact card data.
 export async function addContact(ownerUserId: number, contactUserId: number) {
 	const insertedContacts = await sql`
     INSERT INTO user_contacts (owner_user_id, contact_user_id)
@@ -93,6 +97,7 @@ export async function addContact(ownerUserId: number, contactUserId: number) {
 	};
 }
 
+// Removes one contact from the owner's address book.
 export async function removeContact(
 	ownerUserId: number,
 	contactUserId: number,

@@ -1,3 +1,4 @@
+// Protected home stack: blocks guests and hosts tabs, create-event modal, and chat room.
 import { useAuth } from "@clerk/expo";
 import { Redirect, Stack } from "expo-router";
 
@@ -27,6 +28,8 @@ export default function HomeLayout() {
           animation: "slide_from_bottom",
         }}
       />
+
+      <Stack.Screen name="chat-room/[chatId]" />
     </Stack>
   );
 }

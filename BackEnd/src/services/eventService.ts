@@ -1,3 +1,4 @@
+// DB service for sport event discovery, details, creation, editing, and soft deletion.
 import { sql } from "../config/db";
 import {
 	DayFilter,
@@ -23,6 +24,7 @@ type EventPayload = {
 	event_image_url?: string | null;
 };
 
+// Resolves Clerk user id to the internal DB user id used by event tables.
 export async function getUserIdByClerkId(clerkUserId: string) {
 	const users = await sql`
     SELECT id
@@ -33,6 +35,7 @@ export async function getUserIdByClerkId(clerkUserId: string) {
 	return users[0]?.id ?? null;
 }
 
+// Loads one event with creator fields for cards/details.
 export async function getEventById(eventId: number) {
 	const events = await sql`
     SELECT
@@ -78,6 +81,7 @@ export async function getEventById(eventId: number) {
 	return events[0] ?? null;
 }
 
+// Loads all joined players for one event.
 export async function getEventMembers(eventId: number) {
 	return sql`
     SELECT
@@ -98,6 +102,7 @@ export async function getEventMembers(eventId: number) {
   `;
 }
 
+// Loads the complete details modal payload: event, creator profile, members.
 export async function getEventDetailsById(eventId: number) {
 	const event = await getEventById(eventId);
 
@@ -162,6 +167,7 @@ export async function getEventDetailsById(eventId: number) {
 	};
 }
 
+// Loads public active future events with search, day, format, and radius filters.
 export async function getPublicEvents(params: {
 	dayFilter: DayFilter;
 	eventFormat: EventFormatFilter;
@@ -279,6 +285,7 @@ export async function getPublicEvents(params: {
   `;
 }
 
+// Loads active events created by one current user for My Events.
 export async function getMyEvents(clerkUserId: string) {
 	return sql`
     SELECT
@@ -327,6 +334,7 @@ export async function getMyEvents(clerkUserId: string) {
   `;
 }
 
+// Creates an event and automatically joins the creator as the first member.
 export async function createEvent(payload: EventPayload, userId: number) {
 	const createdEvents = await sql`
     INSERT INTO sport_events (
@@ -376,6 +384,7 @@ export async function createEvent(payload: EventPayload, userId: number) {
 	return getEventById(createdEvents[0].id);
 }
 
+// Updates one active event owned by the current user.
 export async function updateEvent(
 	payload: EventPayload,
 	eventId: number,
@@ -411,6 +420,7 @@ export async function updateEvent(
 	return getEventById(updatedEvents[0].id);
 }
 
+// Soft-deletes an event so activity history can still count it later.
 export async function softDeleteEvent(eventId: number, userId: number) {
 	const deletedEvents = await sql`
     UPDATE sport_events

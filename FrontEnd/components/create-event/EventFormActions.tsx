@@ -1,3 +1,4 @@
+// Create/edit event form buttons.
 import { Pressable, Text, View } from "react-native";
 import { styles } from "../../styles/createEvent.styles";
 

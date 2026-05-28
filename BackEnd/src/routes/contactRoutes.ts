@@ -1,3 +1,4 @@
+// Public contacts API endpoints for loading, saving, and removing address-book players.
 import express from "express";
 import {
 	addContact,

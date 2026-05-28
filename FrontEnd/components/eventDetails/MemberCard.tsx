@@ -1,3 +1,4 @@
+// One joined player row inside event details.
 import { Ionicons } from "@expo/vector-icons";
 import { Pressable, Text, View } from "react-native";
 import { colors } from "../../constants/colors";

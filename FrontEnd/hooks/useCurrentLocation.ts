@@ -1,11 +1,14 @@
+// Owns current-device location state for profile and nearby-event features.
 import * as Location from "expo-location";
 import { useState } from "react";
 import { Alert, Platform } from "react-native";
 
+// Requests location permission and exposes the latest latitude/longitude.
 export function useCurrentLocation() {
 	const [latitude, setLatitude] = useState<number | null>(null);
 	const [longitude, setLongitude] = useState<number | null>(null);
 
+	// Reads the device location and stores coordinates for future API calls.
 	const handleUseMyLocation = async () => {
 		try {
 			const permission = await Location.requestForegroundPermissionsAsync();

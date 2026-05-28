@@ -1,3 +1,4 @@
+// Cloudinary client configuration used by upload routes.
 import { v2 as cloudinary } from "cloudinary";
 import "dotenv/config";
 

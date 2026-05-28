@@ -1,3 +1,4 @@
+// Shared frontend types for sport events, event filters, details, and form payloads.
 export type EventDayFilter = "all" | "today" | "tomorrow" | "week";
 export type EventFormat = "1v1" | "team";
 export type EventFormatFilter = "all" | EventFormat;

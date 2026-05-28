@@ -1,5 +1,7 @@
+// Shared display helpers for event details and public player profile UI.
 import { sports } from "../data/sports";
 
+// Formats event dates for visible text.
 export function formatDate(date: string) {
 	return new Date(date).toLocaleDateString("en-GB", {
 		day: "2-digit",
@@ -8,10 +10,12 @@ export function formatDate(date: string) {
 	});
 }
 
+// Formats backend time strings as HH:mm.
 export function formatTime(time: string) {
 	return time.slice(0, 5);
 }
 
+// Formats trust rating values and handles users with no rating.
 export function formatRating(rating: string | number | null | undefined) {
 	const numericRating = Number(rating);
 
@@ -22,6 +26,7 @@ export function formatRating(rating: string | number | null | undefined) {
 	return numericRating.toFixed(1);
 }
 
+// Calculates age from a saved date_of_birth.
 export function calculateAge(dateOfBirth: string | null | undefined) {
 	if (!dateOfBirth) {
 		return null;
@@ -48,6 +53,7 @@ export function calculateAge(dateOfBirth: string | null | undefined) {
 	return age;
 }
 
+// Builds the public @nickname fallback.
 export function getNickname(user: {
 	nickname: string | null;
 	first_name?: string | null;
@@ -62,6 +68,7 @@ export function getNickname(user: {
 	return fullName ? `@${fullName.replace(/\s+/g, "")}` : "@Unknown";
 }
 
+// Builds a display name from first/last name with nickname fallback.
 export function getFullName(user: {
 	first_name?: string | null;
 	last_name?: string | null;
@@ -72,6 +79,7 @@ export function getFullName(user: {
 	return fullName || user.nickname || "Unknown user";
 }
 
+// Builds initials for fallback avatar circles.
 export function getInitials(name: string) {
 	return name
 		.split(" ")
@@ -81,6 +89,7 @@ export function getInitials(name: string) {
 		.join("");
 }
 
+// Shortens sport level labels for compact badges.
 export function getLevelDisplayName(level: string) {
 	const normalizedLevel = level.toLowerCase();
 
@@ -99,6 +108,7 @@ export function getLevelDisplayName(level: string) {
 	return level;
 }
 
+// Finds the configured local sport image by sport name.
 export function getSportImage(sportName: string) {
 	return sports.find(
 		(sport) => sport.name.toLowerCase() === sportName.toLowerCase(),

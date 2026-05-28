@@ -1,3 +1,4 @@
+// Horizontal list of the current user's active events for editing/deleting.
 import { Ionicons } from "@expo/vector-icons";
 import {
   ActivityIndicator,

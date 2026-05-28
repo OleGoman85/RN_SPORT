@@ -1,3 +1,4 @@
+// Welcome screen for unauthenticated users.
 import { router } from "expo-router";
 import { ImageBackground, Pressable, Text, View } from "react-native";
 import { styles } from "../../styles/welcome.styles";

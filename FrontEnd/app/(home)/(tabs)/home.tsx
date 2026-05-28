@@ -1,3 +1,5 @@
+// Home tab screen: nearby event discovery, sport shortcuts, and unread chat badge.
+import { useUser } from "@clerk/expo";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useFocusEffect } from "expo-router";
 import * as Location from "expo-location";
@@ -17,11 +19,19 @@ import { EventCard } from "../../../components/EventCard";
 import { EventDetailsModal } from "../../../components/eventDetails/EventDetailsModal";
 import { colors } from "../../../constants/colors";
 import { Sport, sports } from "../../../data/sports";
+import { loadUnreadChatCounts } from "../../../services/chatsApi";
 import { loadSportEvents } from "../../../services/eventsApi";
 import { styles } from "../../../styles/home.styles";
+import { UnreadChatCounts } from "../../../types/chats";
 import { SportEvent } from "../../../types/events";
 
+function formatBadgeCount(count: number) {
+  return count > 9 ? "9+" : String(count);
+}
+
 export default function HomeScreen() {
+  const { user } = useUser();
+
   const [searchText, setSearchText] = useState("");
   const [selectedSport, setSelectedSport] = useState("");
   const [events, setEvents] = useState<SportEvent[]>([]);
@@ -30,6 +40,11 @@ export default function HomeScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [latitude, setLatitude] = useState<number | null>(null);
   const [longitude, setLongitude] = useState<number | null>(null);
+  const [unreadCounts, setUnreadCounts] = useState<UnreadChatCounts>({
+    private: 0,
+    event: 0,
+    total: 0,
+  });
 
   const filteredSports = useMemo(() => {
     const query = searchText.trim().toLowerCase();
@@ -97,6 +112,35 @@ export default function HomeScreen() {
     }, [loadLocationAndEvents]),
   );
 
+  const loadUnreadCounts = useCallback(async () => {
+    if (!user?.id) {
+      setUnreadCounts({
+        private: 0,
+        event: 0,
+        total: 0,
+      });
+      return;
+    }
+
+    try {
+      const loadedUnreadCounts = await loadUnreadChatCounts(user.id);
+
+      setUnreadCounts(loadedUnreadCounts);
+    } catch (error) {
+      console.log("Home unread counts loading error:", error);
+    }
+  }, [user?.id]);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadUnreadCounts();
+
+      const intervalId = setInterval(loadUnreadCounts, 12000);
+
+      return () => clearInterval(intervalId);
+    }, [loadUnreadCounts]),
+  );
+
   const handleSearchSubmit = useCallback(() => {
     loadLocationAndEvents();
   }, [loadLocationAndEvents]);
@@ -128,6 +172,20 @@ export default function HomeScreen() {
       ),
     );
   }, []);
+
+  const handleNotificationPress = useCallback(() => {
+    const targetTab =
+      unreadCounts.total === 0 || unreadCounts.private > 0
+        ? "messages"
+        : "eventChats";
+
+    router.push({
+      pathname: "/(home)/(tabs)/contacts",
+      params: {
+        tab: targetTab,
+      },
+    });
+  }, [unreadCounts.private, unreadCounts.total]);
 
   const renderSportItem = useCallback(
     ({ item }: { item: Sport }) => {
@@ -172,12 +230,21 @@ export default function HomeScreen() {
             styles.notificationButton,
             pressed && styles.buttonPressed,
           ]}
+          onPress={handleNotificationPress}
         >
           <Ionicons
             name="notifications-outline"
             size={22}
             color={colors.text}
           />
+
+          {unreadCounts.total > 0 && (
+            <View style={styles.notificationBadge}>
+              <Text style={styles.notificationBadgeText}>
+                {formatBadgeCount(unreadCounts.total)}
+              </Text>
+            </View>
+          )}
         </Pressable>
       </View>
 

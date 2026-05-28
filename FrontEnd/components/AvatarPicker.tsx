@@ -1,3 +1,4 @@
+// Profile form control for choosing avatar from gallery or camera.
 import { styles } from "../styles/profile.styles";
 import { ActivityIndicator, Image, Pressable, Text, View } from "react-native";
 import { colors } from "../constants/colors";

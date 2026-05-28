@@ -1,3 +1,4 @@
+// Small creator stat cell used in event details.
 import { Ionicons } from "@expo/vector-icons";
 import { Text, View } from "react-native";
 import { colors } from "../../constants/colors";

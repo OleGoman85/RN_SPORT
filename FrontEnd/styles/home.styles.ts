@@ -44,6 +44,27 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
   },
 
+  notificationBadge: {
+    position: "absolute",
+    top: -4,
+    right: -4,
+    minWidth: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: colors.primary,
+    borderWidth: 2,
+    borderColor: colors.background,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 5,
+  },
+
+  notificationBadgeText: {
+    color: colors.background,
+    fontSize: 10,
+    fontWeight: "900",
+  },
+
   searchBox: {
     height: 48,
     borderRadius: 16,

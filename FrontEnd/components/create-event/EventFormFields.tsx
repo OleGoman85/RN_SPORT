@@ -1,3 +1,4 @@
+// Main create/edit event form fields.
 import { Ionicons } from "@expo/vector-icons";
 import { Dispatch, SetStateAction } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";

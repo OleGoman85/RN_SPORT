@@ -1,3 +1,4 @@
+// Bottom tab layout: Home, Events, Create button, Contacts, and Profile.
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs, router } from "expo-router";
 import { Pressable, View } from "react-native";

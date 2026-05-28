@@ -1,11 +1,14 @@
+// Validation helpers for sport event route payloads and filters.
 export type DayFilter = "all" | "today" | "tomorrow" | "week";
 export type EventFormat = "1v1" | "team";
 export type EventFormatFilter = "all" | EventFormat;
 
+// Checks required string fields after trimming whitespace.
 export function isValidString(value: unknown) {
 	return typeof value === "string" && value.trim().length > 0;
 }
 
+// Checks numeric payload fields and rejects NaN.
 export function isValidNumber(value: unknown): value is number {
 	return typeof value === "number" && !Number.isNaN(value);
 }
@@ -18,6 +21,7 @@ function isValidLongitude(value: unknown) {
 	return isValidNumber(value) && value >= -180 && value <= 180;
 }
 
+// Converts query day filters into a safe known value.
 export function getDayFilter(value: unknown): DayFilter {
 	if (value === "today" || value === "tomorrow" || value === "week") {
 		return value;
@@ -26,10 +30,12 @@ export function getDayFilter(value: unknown): DayFilter {
 	return "all";
 }
 
+// Narrows unknown payload values to allowed event formats.
 export function isEventFormat(value: unknown): value is EventFormat {
 	return value === "1v1" || value === "team";
 }
 
+// Converts query event format filters into a safe known value.
 export function getEventFormatFilter(value: unknown): EventFormatFilter {
 	if (isEventFormat(value)) {
 		return value;
@@ -38,6 +44,7 @@ export function getEventFormatFilter(value: unknown): EventFormatFilter {
 	return "all";
 }
 
+// Returns a trimmed string or null for optional DB fields.
 export function getOptionalStringValue(value: unknown) {
 	if (!isValidString(value)) {
 		return null;
@@ -47,6 +54,7 @@ export function getOptionalStringValue(value: unknown) {
 	return stringValue.trim();
 }
 
+// Returns a number or null for optional DB numeric fields.
 export function getOptionalNumberValue(value: unknown) {
 	if (!isValidNumber(value)) {
 		return null;
@@ -55,6 +63,7 @@ export function getOptionalNumberValue(value: unknown) {
 	return value;
 }
 
+// Validates the create/update event body and returns the first user-facing error.
 export function getRequiredEventFieldsError(body: {
 	current_clerk_user_id?: unknown;
 	sport_name?: unknown;

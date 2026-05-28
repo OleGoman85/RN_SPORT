@@ -1,3 +1,4 @@
+// Central API base URL read from Expo public environment variables.
 const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 
 if (!apiUrl) {

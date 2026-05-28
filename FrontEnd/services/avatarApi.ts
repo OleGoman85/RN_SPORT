@@ -1,3 +1,4 @@
+// Frontend API service for avatar image uploads.
 import { API_URL } from "./apiConfig";
 
 // Uploads a local avatar image file to the backend/Cloudinary.

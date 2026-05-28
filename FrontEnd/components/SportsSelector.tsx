@@ -1,3 +1,4 @@
+// Profile form control for choosing sports and sport levels.
 import { Image, Pressable, Text, View } from "react-native";
 import { sports } from "../data/sports";
 import { sportLevels } from "../constants/profileOptions";

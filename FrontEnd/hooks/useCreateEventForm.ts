@@ -1,3 +1,4 @@
+// Owns the create/edit event form, including map location, validation, and My Events.
 import { useUser } from "@clerk/expo";
 import { router, useFocusEffect } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
@@ -20,6 +21,7 @@ import {
 	normalizeTime,
 } from "../utils/eventForm";
 
+// Converts DB/API coordinate strings into numbers for the map picker.
 function getNumericCoordinate(value: string | number | null | undefined) {
 	if (value === null || value === undefined) {
 		return null;
@@ -30,6 +32,7 @@ function getNumericCoordinate(value: string | number | null | undefined) {
 	return Number.isNaN(numericValue) ? null : numericValue;
 }
 
+// Provides state and actions for the create-event modal screen.
 export function useCreateEventForm() {
 	const { user } = useUser();
 
@@ -75,6 +78,7 @@ export function useCreateEventForm() {
 		return myEvents.find((event) => event.id === editingEventId) ?? null;
 	}, [editingEventId, myEvents]);
 
+	// Loads active events created by the current user for editing/deleting.
 	const loadMyEvents = useCallback(async () => {
 		if (!user?.id) {
 			return;
@@ -100,6 +104,7 @@ export function useCreateEventForm() {
 		}, [loadMyEvents]),
 	);
 
+	// Clears the form back to create mode.
 	const resetForm = () => {
 		setSelectedSportName(sports[0]?.name ?? "");
 		setEventName("");
@@ -116,6 +121,7 @@ export function useCreateEventForm() {
 		setEditingEventId(null);
 	};
 
+	// Fills the form with an existing event when the user chooses to edit it.
 	const fillFormFromEvent = (event: SportEvent) => {
 		setEditingEventId(event.id);
 		setSelectedSportName(event.sport_name);
@@ -131,6 +137,7 @@ export function useCreateEventForm() {
 		setDescription(event.event_description ?? "");
 	};
 
+	// Checks required form fields before create/update API calls.
 	const validateForm = () => {
 		if (!user?.id) {
 			Alert.alert("Error", "User is not loaded yet.");
@@ -161,6 +168,7 @@ export function useCreateEventForm() {
 		return true;
 	};
 
+	// Keeps 1v1 events locked to exactly two participants.
 	const handleChangeEventFormat = (value: EventFormat) => {
 		setEventFormat(value);
 
@@ -177,6 +185,7 @@ export function useCreateEventForm() {
 		setIsLocationPickerVisible(false);
 	};
 
+	// Stores the selected map location in the form state.
 	const handleConfirmLocation = (location: EventLocationSelection) => {
 		setLocationName(location.locationName);
 		setCity(location.city);
@@ -185,6 +194,7 @@ export function useCreateEventForm() {
 		setIsLocationPickerVisible(false);
 	};
 
+	// Builds the backend payload from current form state.
 	const buildEventPayload = () => {
 		return {
 			current_clerk_user_id: user!.id,
@@ -203,6 +213,7 @@ export function useCreateEventForm() {
 		};
 	};
 
+	// Creates a new event and navigates back to Events on success.
 	const handleCreateEvent = async () => {
 		if (!validateForm() || !user?.id) {
 			return;
@@ -226,6 +237,7 @@ export function useCreateEventForm() {
 		}
 	};
 
+	// Saves changes to the selected event.
 	const handleUpdateEvent = async () => {
 		if (!validateForm() || !user?.id || editingEventId === null) {
 			return;
@@ -255,6 +267,7 @@ export function useCreateEventForm() {
 		}
 	};
 
+	// Soft-deletes one of the current user's events after confirmation.
 	const handleDeleteEvent = (eventToDelete: SportEvent) => {
 		if (!user?.id || isSaving) {
 			return;

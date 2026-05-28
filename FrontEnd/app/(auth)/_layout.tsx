@@ -1,3 +1,4 @@
+// Auth stack layout for welcome, sign-in, and sign-up screens.
 import { useAuth } from "@clerk/expo";
 import { Redirect, Stack } from "expo-router";
 

@@ -1,3 +1,4 @@
+// Shared frontend types for editable user profiles and profile API payloads.
 export type SelectedSport = {
   sport_name: string;
   level: string;

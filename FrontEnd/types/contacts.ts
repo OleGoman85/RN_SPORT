@@ -1,3 +1,4 @@
+// Shared frontend type for one saved contact/player card.
 export type ContactUser = {
   id: number;
   clerk_user_id: string;

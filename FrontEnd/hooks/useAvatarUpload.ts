@@ -1,12 +1,15 @@
+// Owns avatar picking and upload state for profile screens.
 import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
 import { Alert } from "react-native";
 import { uploadAvatarToServer } from "../services/avatarApi";
 
+// Exposes gallery/camera actions and the uploaded avatar URL.
 export function useAvatarUpload() {
 	const [avatarUrl, setAvatarUrl] = useState("");
 	const [isAvatarUploading, setIsAvatarUploading] = useState(false);
 
+	// Uploads a local image URI to the backend and stores the returned public URL.
 	const uploadAvatar = async (imageUri: string) => {
 		try {
 			setIsAvatarUploading(true);
@@ -22,6 +25,7 @@ export function useAvatarUpload() {
 		}
 	};
 
+	// Opens the phone gallery and uploads the selected image.
 	const handlePickAvatarFromGallery = async () => {
 		try {
 			const permission =
@@ -50,6 +54,7 @@ export function useAvatarUpload() {
 		}
 	};
 
+	// Opens the phone camera and uploads the captured image.
 	const handleTakeAvatarPhoto = async () => {
 		try {
 			const permission = await ImagePicker.requestCameraPermissionsAsync();

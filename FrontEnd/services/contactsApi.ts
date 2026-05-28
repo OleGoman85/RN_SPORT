@@ -1,3 +1,4 @@
+// Frontend API service for the current user's saved contacts/address book.
 import { ContactUser } from "../types/contacts";
 import { API_URL } from "./apiConfig";
 

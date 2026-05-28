@@ -1,3 +1,4 @@
+// Public user profile API endpoints for loading and saving profile data.
 import express from "express";
 import { sql } from "../config/db";
 

@@ -1,3 +1,4 @@
+// Root app layout: sets providers, fonts, splash behavior, and global navigation stack.
 import { ClerkProvider } from "@clerk/expo";
 import { tokenCache } from "@clerk/expo/token-cache";
 import { Stack } from "expo-router";

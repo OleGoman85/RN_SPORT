@@ -1,3 +1,4 @@
+// Avatar image with initials fallback.
 import { useState } from "react";
 import { Image, Text, View } from "react-native";
 import { styles } from "../../styles/eventDetailsModal.styles";

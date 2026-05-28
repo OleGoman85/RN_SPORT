@@ -1,3 +1,4 @@
+// Reusable public event card used on Home and Events lists.
 import { Ionicons } from "@expo/vector-icons";
 import {
   Image,

@@ -1,3 +1,4 @@
+// Entry route: sends signed-in users to Home and guests to Welcome.
 import { useAuth } from "@clerk/expo";
 import { Redirect } from "expo-router";
 

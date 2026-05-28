@@ -1,3 +1,4 @@
+// Sign-in screen: authenticates with Clerk and redirects after successful login.
 import { useSignIn } from "@clerk/expo";
 import { type Href, Link, useRouter } from "expo-router";
 import React, { useState } from "react";

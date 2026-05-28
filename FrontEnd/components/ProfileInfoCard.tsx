@@ -1,3 +1,4 @@
+// Reusable labeled text input card for profile fields.
 import { Pressable, Text, TextInput, View } from "react-native";
 import { colors } from "../constants/colors";
 import { styles } from "../styles/profile.styles";
